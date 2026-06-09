@@ -535,7 +535,9 @@ function resetScenario() {
   els.severity.value = 65;
   els.correlation.checked = true;
   els.keeper.checked = true;
-  renderRiskGrid(state.selectedProfile);
+  document.querySelectorAll(".risk-option input").forEach((input) => {
+    input.checked = false;
+  });
   runStress();
 }
 
