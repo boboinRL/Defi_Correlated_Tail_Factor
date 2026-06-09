@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DeFi Tail-Risk Skynet</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="DeFi Tail-Risk Skynet">
+        <span class="brand-mark">S</span>
+        <span>Skynet Stress Lab</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#overview">Overview</a>
+        <a href="#stress">Stress Test</a>
+        <a href="#audit">Audit</a>
+        <a href="#monitor">Monitor</a>
+      </nav>
+      <div class="contract-picker">
+        <label for="contractSelect">Smart Contract</label>
+        <select id="contractSelect"></select>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="project-panel" aria-label="Protocol profile">
+        <section class="identity-card">
+          <div class="protocol-icon" id="protocolIcon">A</div>
+          <div>
+            <p class="eyebrow">DeFi Protocol</p>
+            <h1 id="protocolName">Aave V3</h1>
+            <p id="protocolMeta">Lending pool / Ethereum</p>
+          </div>
+        </section>
+
+        <section class="score-card">
+          <div class="score-ring" id="scoreRing" aria-label="Risk score">
+            <span id="riskScore">82</span>
+          </div>
+          <div>
+            <p class="eyebrow">Liquidation Resilience</p>
+            <strong id="riskGrade">AA</strong>
+            <p id="riskNarrative">Liquidation paths are stable and tail-risk coupling is contained.</p>
+          </div>
+        </section>
+
+        <section class="quick-facts">
+          <div>
+            <span>TVL</span>
+            <strong id="tvlValue">$4.8B</strong>
+          </div>
+          <div>
+            <span>Oracle</span>
+            <strong id="oracleValue">Chainlink</strong>
+          </div>
+          <div>
+            <span>Coverage</span>
+            <strong id="coverageValue">84%</strong>
+          </div>
+          <div>
+            <span>Last Audit</span>
+            <strong id="auditValue">2026-05-18</strong>
+          </div>
+        </section>
+
+        <section class="badges" aria-label="Protocol badges">
+          <span>Formal Verified</span>
+          <span>Bug Bounty</span>
+          <span>Oracle Monitor</span>
+          <span>Keeper SLA</span>
+        </section>
+      </aside>
+
+      <section class="content">
+        <section class="search-card" id="search">
+          <div>
+            <p class="eyebrow">Live Contract Search</p>
+            <h2>Search Ethereum contracts by name or address</h2>
+            <p>
+              The backend can resolve known protocols locally, fetch verified metadata from Sourcify,
+              and use Etherscan when an API key is configured.
+            </p>
+          </div>
+          <form class="search-form" id="contractSearchForm">
+            <input id="contractSearchInput" type="search" autocomplete="off" placeholder="Try Aave V3 Pool or 0x87870b...">
+            <button class="primary-button" type="submit">Search</button>
+          </form>
+          <div class="search-status" id="searchStatus">Ready to search Ethereum mainnet.</div>
+          <div class="search-results" id="searchResults"></div>
+        </section>
+
+        <section class="hero-band" id="overview">
+          <div>
+            <p class="eyebrow">Tail Event Audit</p>
+            <h2>Multi-factor stress testing for liquidation resilience</h2>
+            <p>
+              Select a contract and combine stress factors to estimate joint tail-event probability,
+              bad-debt exposure, liquidity shock, keeper congestion, and governance upgrade risk.
+            </p>
+          </div>
+          <div class="hero-metrics">
+            <div>
+              <span>Joint Tail Probability</span>
+              <strong id="jointProbability">3.74%</strong>
+            </div>
+            <div>
+              <span>Expected Bad Debt</span>
+              <strong id="badDebt">$12.4M</strong>
+            </div>
+            <div>
+              <span>Recovery Window</span>
+              <strong id="recoveryWindow">18m</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="workspace" id="stress">
+          <section class="control-panel">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Scenario Builder</p>
+                <h3>Linked Risk Factors</h3>
+              </div>
+              <button class="ghost-button" id="resetButton" type="button">Reset</button>
+            </div>
+
+            <div class="risk-grid" id="riskGrid"></div>
+
+            <div class="slider-block">
+              <div class="slider-label">
+                <span>Shock Severity</span>
+                <strong id="severityLabel">65%</strong>
+              </div>
+              <input id="severityRange" type="range" min="20" max="100" value="65">
+            </div>
+
+            <div class="switch-row">
+              <label>
+                <input id="correlationToggle" type="checkbox" checked>
+                <span>Apply tail-dependence matrix</span>
+              </label>
+              <label>
+                <input id="keeperToggle" type="checkbox" checked>
+                <span>Simulate keeper delay</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="analysis-panel">
+            <div class="risk-summary">
+              <div class="probability-orb" id="probabilityOrb">
+                <span id="orbValue">3.74%</span>
+                <small>Tail Probability</small>
+              </div>
+              <div>
+                <p class="eyebrow">Current Scenario</p>
+                <h3 id="scenarioTitle">Oracle depeg + Liquidity drain</h3>
+                <p id="scenarioCopy">Oracle lag and DEX depth contraction create moderate liquidation queue pressure.</p>
+              </div>
+            </div>
+
+            <div class="metric-grid">
+              <article>
+                <span>Liquidation Coverage</span>
+                <strong id="coverageMetric">83%</strong>
+                <div class="bar"><i id="coverageBar"></i></div>
+              </article>
+              <article>
+                <span>Capital Gap</span>
+                <strong id="gapMetric">$12.4M</strong>
+                <div class="bar danger"><i id="gapBar"></i></div>
+              </article>
+              <article>
+                <span>Queue Congestion</span>
+                <strong id="queueMetric">41%</strong>
+                <div class="bar warning"><i id="queueBar"></i></div>
+              </article>
+              <article>
+                <span>Governance Exposure</span>
+                <strong id="governanceMetric">29%</strong>
+                <div class="bar cool"><i id="governanceBar"></i></div>
+              </article>
+            </div>
+
+            <div class="chart-card">
+              <div class="panel-head compact">
+                <div>
+                  <p class="eyebrow">Event Surface</p>
+                  <h3>Tail Probability Heatmap</h3>
+                </div>
+                <span id="heatmapScale">1d / 7d / 30d</span>
+              </div>
+              <div class="heatmap" id="heatmap" aria-label="Tail probability heatmap"></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="panel-head compact">
+                <div>
+                  <p class="eyebrow">Dependency Model</p>
+                  <h3>Active Factor Pair Coupling</h3>
+                </div>
+                <span id="dependencySource">Historical prior + expert calibration</span>
+              </div>
+              <div class="dependency-list" id="dependencyList"></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="section-grid" id="audit">
+          <article class="audit-card">
+            <div class="section-title">
+              <span>Code Security</span>
+              <strong id="codeScore">91%</strong>
+            </div>
+            <p>Static review of proxy contracts, external calls, oracle reads, and liquidation function paths.</p>
+            <ul id="codeFindings"></ul>
+          </article>
+
+          <article class="audit-card">
+            <div class="section-title">
+              <span>Operational Resilience</span>
+              <strong id="opsScore">78%</strong>
+            </div>
+            <p>Keeper availability, oracle freshness, execution congestion, and insurance-fund absorption capacity.</p>
+            <ul id="opsFindings"></ul>
+          </article>
+
+          <article class="audit-card">
+            <div class="section-title">
+              <span>Market Stability</span>
+              <strong id="marketScore">74%</strong>
+            </div>
+            <p>DEX depth, collateral correlation, volatility jumps, liquidation incentives, and slippage spread.</p>
+            <ul id="marketFindings"></ul>
+          </article>
+        </section>
+
+        <section class="timeline-card" id="monitor">
+          <div class="panel-head compact">
+            <div>
+              <p class="eyebrow">Liquidation Path</p>
+              <h3>Stress Event Execution Path</h3>
+            </div>
+            <span id="pathStatus">Monitoring active</span>
+          </div>
+          <div class="event-table" id="eventTable"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
