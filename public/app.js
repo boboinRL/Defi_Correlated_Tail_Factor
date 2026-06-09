@@ -333,13 +333,15 @@ function renderResult(result) {
   els.orb.style.setProperty("--score", `${clamp(result.jointProbability * 300, 4, 100)}%`);
   els.orb.style.background = `radial-gradient(circle at center, #14233b 0 56%, transparent 57%), conic-gradient(${probabilityColor} var(--score), rgba(255, 255, 255, 0.16) 0)`;
   els.scenarioTitle.textContent = names.length ? names.join(" + ") : "Baseline liquidation monitor";
-  els.scenarioCopy.textContent = `${level}: the backend stress engine uses marginal probabilities plus a tail-dependence matrix for the selected factor set.`;
+  els.scenarioCopy.textContent = names.length
+    ? `${level}: the backend stress engine uses marginal probabilities plus a tail-dependence matrix for the selected factor set.`
+    : "No risk factor is selected, so scenario probability and stress metrics are reset to zero.";
   els.coverageMetric.textContent = `${Math.round(result.liquidationCoverage)}%`;
   els.gapMetric.textContent = money(result.expectedBadDebtUsdM);
   els.queueMetric.textContent = `${Math.round(result.queueCongestion)}%`;
   els.governanceMetric.textContent = `${Math.round(result.governanceExposure)}%`;
   els.coverageBar.style.width = `${result.liquidationCoverage}%`;
-  els.gapBar.style.width = `${clamp(result.expectedBadDebtUsdM, 5, 100)}%`;
+  els.gapBar.style.width = `${result.expectedBadDebtUsdM ? clamp(result.expectedBadDebtUsdM, 5, 100) : 0}%`;
   els.queueBar.style.width = `${result.queueCongestion}%`;
   els.governanceBar.style.width = `${result.governanceExposure}%`;
   els.codeScore.textContent = `${Math.round(clamp(result.resilienceScore + 8 - result.governanceExposure * 0.08, 38, 97))}%`;
@@ -359,13 +361,12 @@ function updateRiskProbabilities(result) {
     const input = option.querySelector("input");
     const weight = option.querySelector(".risk-weight");
     const factor = byId.get(input.value);
-    if (factor) {
+    if (input.checked && factor) {
       weight.textContent = percent(factor.marginalProbability, 1);
       weight.title = `${factor.priorSource}; ${factor.eventCount} event samples`;
     } else {
-      const fallback = riskFactors.find((risk) => risk.id === input.value);
-      weight.textContent = fallback ? percent(fallback.baseProb, 1) : "";
-      weight.title = "Static model prior";
+      weight.textContent = "0.0%";
+      weight.title = "Not selected in the current scenario";
     }
   });
 }

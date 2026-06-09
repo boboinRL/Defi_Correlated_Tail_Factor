@@ -596,7 +596,7 @@ function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true,
     .map(probabilityForFactor)
     .map((risk) => applyMarketSignalToFactor(risk, marketSignals));
   const selected = probabilityFactors.filter((risk) => factorIds.includes(risk.id));
-  const risks = selected.length ? selected : probabilityFactors.filter((risk) => profile.riskFactorIds.includes(risk.id));
+  const risks = selected;
   const pairs = [];
   let dependencySum = 0;
 
@@ -619,19 +619,19 @@ function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true,
   const dependenceBoost = useCorrelation ? 1 + avgDependency * Math.log2(risks.length + 1) : 1;
   const keeperPenalty = simulateKeeper ? 1 + (1 - profile.keeperQuality) * 0.46 : 1;
   const baseNoEvent = risks.reduce((acc, risk) => acc * (1 - risk.marginalProbability * (0.72 + severity)), 1);
-  const jointProbability = clamp((1 - baseNoEvent) * dependenceBoost * keeperPenalty, 0.001, 0.48);
+  const jointProbability = risks.length ? clamp((1 - baseNoEvent) * dependenceBoost * keeperPenalty, 0.001, 0.48) : 0;
   const lossLoad = risks.reduce((sum, risk) => sum + risk.loss, 0);
   const queueLoad = risks.reduce((sum, risk) => sum + risk.queue, 0);
   const governanceLoad = risks.reduce((sum, risk) => sum + risk.governance, 0);
   const liquidityStress = (1 - profile.liquidityDepth) * 42;
   const insuranceRelief = profile.insuranceBuffer * 24;
   const keeperStress = simulateKeeper ? (1 - profile.keeperQuality) * 32 : 0;
-  const gap = clamp((lossLoad * severity + liquidityStress - insuranceRelief) * (1 + jointProbability), 2.4, 220);
-  const queue = clamp(queueLoad * severity + keeperStress + jointProbability * 120, 4, 98);
-  const governance = clamp(governanceLoad * severity + profile.governanceExposure * 100, 3, 98);
-  const coverage = clamp(100 - gap * 0.28 - queue * 0.13 + profile.insuranceBuffer * 16, 18, 98);
-  const score = Math.round(clamp(profile.baseResilience - jointProbability * 140 - gap * 0.08 - queue * 0.06, 24, 96));
-  const recovery = Math.round(clamp(8 + queue * 0.21 + gap * 0.1, 8, 90));
+  const gap = risks.length ? clamp((lossLoad * severity + liquidityStress - insuranceRelief) * (1 + jointProbability), 2.4, 220) : 0;
+  const queue = risks.length ? clamp(queueLoad * severity + keeperStress + jointProbability * 120, 4, 98) : 0;
+  const governance = risks.length ? clamp(governanceLoad * severity + profile.governanceExposure * 100, 3, 98) : 0;
+  const coverage = risks.length ? clamp(100 - gap * 0.28 - queue * 0.13 + profile.insuranceBuffer * 16, 18, 98) : 100;
+  const score = risks.length ? Math.round(clamp(profile.baseResilience - jointProbability * 140 - gap * 0.08 - queue * 0.06, 24, 96)) : 100;
+  const recovery = risks.length ? Math.round(clamp(8 + queue * 0.21 + gap * 0.1, 8, 90)) : 0;
   const confidence = clamp((profile.verified ? 0.62 : 0.38) + pairs.length * 0.03 + (profile.source === "Curated registry" ? 0.18 : 0), 0.32, 0.91);
 
   return {
