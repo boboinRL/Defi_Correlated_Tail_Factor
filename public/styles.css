@@ -504,6 +504,37 @@ h3 {
   color: var(--blue);
 }
 
+.scenario-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.agent-status {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--line);
+  background: #f8fbff;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.agent-status[data-tone="ok"] {
+  color: #137a55;
+  background: #edf9f3;
+}
+
+.agent-status[data-tone="warn"] {
+  color: #946313;
+  background: #fff7e7;
+}
+
 .risk-grid {
   display: grid;
   gap: 10px;

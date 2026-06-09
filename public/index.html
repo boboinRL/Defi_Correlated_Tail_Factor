@@ -123,8 +123,13 @@
                 <p class="eyebrow">Scenario Builder</p>
                 <h3>Linked Risk Factors</h3>
               </div>
-              <button class="ghost-button" id="resetButton" type="button">Reset</button>
+              <div class="scenario-actions">
+                <button class="ghost-button" id="glmFactorButton" type="button">Ask GLM-5.1</button>
+                <button class="ghost-button" id="resetButton" type="button">Reset</button>
+              </div>
             </div>
+
+            <div class="agent-status" id="agentStatus">GLM factor selection is available when GLM_API_KEY is configured.</div>
 
             <div class="risk-grid" id="riskGrid"></div>
 

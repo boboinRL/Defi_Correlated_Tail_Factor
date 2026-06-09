@@ -8,7 +8,7 @@ const root = join(process.cwd(), "public");
 const etherscanKey = process.env.ETHERSCAN_API_KEY || "";
 const glmApiKey = process.env.GLM_API_KEY || "";
 const glmBaseUrl = process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4/chat/completions";
-const glmModel = process.env.GLM_MODEL || "glm-4.5";
+const glmModel = process.env.GLM_MODEL || "glm-5.1";
 const coingeckoKey = process.env.COINGECKO_API_KEY || "";
 const duneKey = process.env.DUNE_API_KEY || "";
 const duneQueryId = process.env.DUNE_QUERY_ID || "";
@@ -738,7 +738,21 @@ function deterministicClassification(profile) {
     riskFactorIds: factorIds,
     confidence: profile.verified ? 0.68 : 0.42,
     rationale: "Deterministic fallback based on protocol name, contract category, verified metadata, and risk_factor_map.json.",
-    source: "deterministic"
+    source: "deterministic fallback",
+    model: "local rules"
+  };
+}
+
+function normalizeClassification(classification, fallback) {
+  const allowed = new Set(riskFactors.map((risk) => risk.id));
+  const ids = Array.isArray(classification?.riskFactorIds)
+    ? classification.riskFactorIds.filter((id) => allowed.has(id))
+    : fallback.riskFactorIds;
+  return {
+    ...fallback,
+    ...classification,
+    riskFactorIds: ids,
+    confidence: clamp(Number(classification?.confidence ?? fallback.confidence), 0, 1)
   };
 }
 
@@ -787,14 +801,18 @@ async function handleClassify(req, res) {
 
   const content = response?.choices?.[0]?.message?.content || "{}";
   let classification;
+  const fallback = deterministicClassification(profile);
   try {
     classification = JSON.parse(content);
   } catch {
-    classification = deterministicClassification(profile);
+    classification = fallback;
     classification.rationale = `GLM returned non-JSON output; fallback used. Raw: ${content.slice(0, 160)}`;
   }
 
-  return sendJson(res, 200, { profile, classification: { ...deterministicClassification(profile), ...classification, source: "GLM" } });
+  return sendJson(res, 200, {
+    profile,
+    classification: normalizeClassification({ ...classification, source: "GLM", model: glmModel }, fallback)
+  });
 }
 
 async function handleExplain(req, res) {

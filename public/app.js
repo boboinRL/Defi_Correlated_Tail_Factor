@@ -77,6 +77,8 @@ const els = {
   searchInput: document.querySelector("#contractSearchInput"),
   searchStatus: document.querySelector("#searchStatus"),
   searchResults: document.querySelector("#searchResults"),
+  glmFactor: document.querySelector("#glmFactorButton"),
+  agentStatus: document.querySelector("#agentStatus"),
   contract: document.querySelector("#contractSelect"),
   icon: document.querySelector("#protocolIcon"),
   name: document.querySelector("#protocolName"),
@@ -188,6 +190,11 @@ async function api(path, options = {}) {
 function setStatus(message, tone = "") {
   els.searchStatus.textContent = message;
   els.searchStatus.dataset.tone = tone;
+}
+
+function setAgentStatus(message, tone = "") {
+  els.agentStatus.textContent = message;
+  els.agentStatus.dataset.tone = tone;
 }
 
 function upsertProfiles(profiles) {
@@ -302,6 +309,41 @@ async function runStress() {
     renderResult(result);
   } catch (error) {
     setStatus(`Stress engine failed: ${error.message}`, "warn");
+  }
+}
+
+async function applyGlmFactors() {
+  const profile = state.selectedProfile;
+  if (!profile) return;
+
+  els.glmFactor.disabled = true;
+  setAgentStatus("Asking GLM-5.1 to classify this contract and select suitable factors...");
+
+  try {
+    const data = await api("/api/agent/classify", {
+      method: "POST",
+      body: JSON.stringify({
+        chainId: profile.chainId,
+        address: profile.address,
+        profile
+      })
+    });
+    const allowed = new Set(riskFactors.map((risk) => risk.id));
+    const ids = new Set((data.classification?.riskFactorIds || []).filter((id) => allowed.has(id)));
+
+    document.querySelectorAll(".risk-option input").forEach((input) => {
+      input.checked = ids.has(input.value);
+    });
+
+    const source = data.classification?.source || "classification agent";
+    const confidence = data.classification?.confidence ? percent(Number(data.classification.confidence), 0) : "n/a";
+    const factorNames = [...ids].map((id) => riskFactors.find((risk) => risk.id === id)?.name || id).join(", ") || "none";
+    setAgentStatus(`${source} selected: ${factorNames}. Confidence: ${confidence}. ${data.classification?.rationale || ""}`, "ok");
+    await runStress();
+  } catch (error) {
+    setAgentStatus(`GLM factor selection failed: ${error.message}`, "warn");
+  } finally {
+    els.glmFactor.disabled = false;
   }
 }
 
@@ -539,6 +581,7 @@ function resetScenario() {
   document.querySelectorAll(".risk-option input").forEach((input) => {
     input.checked = false;
   });
+  setAgentStatus("Scenario cleared. No risk factor is selected.", "");
   runStress();
 }
 
@@ -563,11 +606,13 @@ els.searchResults.addEventListener("click", (event) => {
 els.contract.addEventListener("change", () => {
   state.selectedProfile = state.profiles.find((profile) => profileKey(profile) === els.contract.value) || state.profiles[0];
   renderRiskGrid(state.selectedProfile);
+  setAgentStatus("Contract changed. Use Ask GLM-5.1 to classify recommended factors.", "");
   runStress();
 });
 els.severity.addEventListener("input", runStress);
 els.correlation.addEventListener("change", runStress);
 els.keeper.addEventListener("change", runStress);
+els.glmFactor.addEventListener("click", applyGlmFactors);
 els.reset.addEventListener("click", resetScenario);
 els.riskGrid.addEventListener("change", runStress);
 
