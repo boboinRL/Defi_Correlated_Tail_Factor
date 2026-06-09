@@ -9,8 +9,12 @@ const etherscanKey = process.env.ETHERSCAN_API_KEY || "";
 const glmApiKey = process.env.GLM_API_KEY || "";
 const glmBaseUrl = process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4/chat/completions";
 const glmModel = process.env.GLM_MODEL || "glm-4.5";
+const coingeckoKey = process.env.COINGECKO_API_KEY || "";
+const duneKey = process.env.DUNE_API_KEY || "";
+const duneQueryId = process.env.DUNE_QUERY_ID || "";
 const dataRoot = join(process.cwd(), "data");
 const DUMMY_EVENT_PRIOR_WEIGHT = 0.62;
+const MARKET_PRIOR_WEIGHT = 0.18;
 
 const mime = {
   ".html": "text/html; charset=utf-8",
@@ -109,7 +113,9 @@ const riskFactors = [
 
 const tailEvents = loadJson("tail_events.json", []);
 const riskFactorMap = loadJson("risk_factor_map.json", { default: { riskFactorIds: ["liquidity", "volatility"] }, categories: {}, protocolOverrides: {} });
+const marketSources = loadJson("market_sources.json", { protocols: {}, defaults: { coingeckoIds: ["ethereum"], days: 30 }, dune: {} });
 const eventPriors = buildEventPriors(tailEvents);
+const marketCache = new Map();
 
 const tailDependence = {
   "oracle:liquidity": { value: 0.58, source: "Historical prior", label: "Strong" },
@@ -197,8 +203,170 @@ function probabilityForFactor(risk) {
   };
 }
 
+function applyMarketSignalToFactor(risk, marketSignals) {
+  if (!marketSignals) return risk;
+  const stress = marketSignals.stress || {};
+  const multipliers = {
+    volatility: 1 + Number(stress.volatility || 0) * MARKET_PRIOR_WEIGHT,
+    liquidity: 1 + Number(stress.liquidity || 0) * MARKET_PRIOR_WEIGHT,
+    stablecoin: 1 + Number(stress.stablecoin || 0) * MARKET_PRIOR_WEIGHT,
+    oracle: 1 + Number(stress.oracle || 0) * MARKET_PRIOR_WEIGHT,
+    keeper: 1 + Number(stress.gas || 0) * MARKET_PRIOR_WEIGHT,
+    gas: 1 + Number(stress.gas || 0) * MARKET_PRIOR_WEIGHT,
+    mev: 1 + Number(stress.liquidity || 0) * MARKET_PRIOR_WEIGHT,
+    governance: 1
+  };
+  const multiplier = multipliers[risk.id] || 1;
+  return {
+    ...risk,
+    marginalProbability: clamp(risk.marginalProbability * multiplier, 0.003, 0.12),
+    marketMultiplier: multiplier
+  };
+}
+
 function categoryDefaults(category) {
   return riskFactorMap.categories?.[category] || riskFactorMap.default || {};
+}
+
+function sourceConfigForProfile(profile) {
+  return marketSources.protocols?.[profile.protocol] || marketSources.protocols?.["Unknown protocol"] || marketSources.defaults || {};
+}
+
+function pctChange(latest, previous) {
+  if (!Number.isFinite(latest) || !Number.isFinite(previous) || previous === 0) return 0;
+  return (latest - previous) / previous;
+}
+
+function maxDrawdown(values) {
+  let peak = values[0] || 0;
+  let worst = 0;
+  for (const value of values) {
+    if (value > peak) peak = value;
+    if (peak > 0) worst = Math.min(worst, (value - peak) / peak);
+  }
+  return Math.abs(worst);
+}
+
+function volumeSpike(volumes) {
+  if (volumes.length < 3) return 0;
+  const latest = volumes.at(-1) || 0;
+  const average = volumes.slice(0, -1).reduce((sum, value) => sum + value, 0) / Math.max(volumes.length - 1, 1);
+  return average > 0 ? latest / average : 0;
+}
+
+async function fetchDefiLlamaProtocol(slug) {
+  if (!slug) return null;
+  const data = await fetchJson(`https://api.llama.fi/protocol/${encodeURIComponent(slug)}`);
+  const tvl = Array.isArray(data?.tvl) ? data.tvl : [];
+  const latest = Number(tvl.at(-1)?.totalLiquidityUSD || data?.tvl || 0);
+  const weekAgo = Number(tvl.at(-8)?.totalLiquidityUSD || tvl.at(0)?.totalLiquidityUSD || latest);
+  return {
+    source: "DefiLlama",
+    slug,
+    latestTvlUsd: latest,
+    tvl7dChange: pctChange(latest, weekAgo)
+  };
+}
+
+async function fetchCoinGeckoCoin(id, days = 30) {
+  const baseUrl = coingeckoKey ? "https://pro-api.coingecko.com/api/v3" : "https://api.coingecko.com/api/v3";
+  const headers = coingeckoKey ? { "x-cg-pro-api-key": coingeckoKey } : {};
+  const data = await fetchJson(`${baseUrl}/coins/${encodeURIComponent(id)}/market_chart?vs_currency=usd&days=${days}&interval=daily`, { headers });
+  const prices = (data.prices || []).map((row) => Number(row[1])).filter(Number.isFinite);
+  const volumes = (data.total_volumes || []).map((row) => Number(row[1])).filter(Number.isFinite);
+  const latest = prices.at(-1) || 0;
+  const previous = prices.at(-2) || prices[0] || latest;
+  return {
+    source: "CoinGecko",
+    id,
+    latestPriceUsd: latest,
+    dailyChange: pctChange(latest, previous),
+    maxDrawdown30d: maxDrawdown(prices),
+    volumeSpike: volumeSpike(volumes)
+  };
+}
+
+async function executeDuneQuery(profile) {
+  const queryId = duneQueryId || marketSources.dune?.queryId;
+  if (!duneKey || !queryId) return null;
+  const data = await fetchJson(`https://api.dune.com/api/v1/query/${queryId}/execute`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Dune-API-Key": duneKey
+    },
+    body: JSON.stringify({
+      query_parameters: {
+        chain_id: profile.chainId,
+        contract_address: profile.address
+      },
+      performance: "medium"
+    })
+  });
+  return {
+    source: "Dune",
+    queryId,
+    executionId: data.execution_id,
+    state: data.state
+  };
+}
+
+function aggregateMarketSignals(protocol, coins, dune) {
+  const maxCoinDrawdown = Math.max(0, ...coins.map((coin) => coin.maxDrawdown30d || 0));
+  const maxVolumeSpike = Math.max(0, ...coins.map((coin) => coin.volumeSpike || 0));
+  const stablecoinStress = Math.max(
+    0,
+    ...coins
+      .filter((coin) => /usd|dai|frax|lusd|crvusd/i.test(coin.id))
+      .map((coin) => Math.abs((coin.latestPriceUsd || 1) - 1))
+  );
+  const tvlDrop = protocol?.tvl7dChange < 0 ? Math.abs(protocol.tvl7dChange) : 0;
+  return {
+    stress: {
+      volatility: clamp(maxCoinDrawdown * 2.8, 0, 1),
+      liquidity: clamp(tvlDrop * 2 + Math.max(0, maxVolumeSpike - 1) * 0.16, 0, 1),
+      stablecoin: clamp(stablecoinStress * 8, 0, 1),
+      oracle: clamp(maxCoinDrawdown * 1.1 + stablecoinStress * 4, 0, 1),
+      gas: 0
+    },
+    protocol,
+    coins,
+    dune,
+    updatedAt: new Date().toISOString(),
+    warnings: []
+  };
+}
+
+async function collectMarketSignals(profile, force = false) {
+  const cacheKey = `${profile.chainId}:${profile.address.toLowerCase()}`;
+  const cached = marketCache.get(cacheKey);
+  if (!force && cached && Date.now() - cached.timestamp < 10 * 60 * 1000) return cached.value;
+
+  const config = sourceConfigForProfile(profile);
+  const coinIds = config.coingeckoIds?.length ? config.coingeckoIds : marketSources.defaults?.coingeckoIds || ["ethereum"];
+  const days = Number(marketSources.defaults?.days || 30);
+  const warnings = [];
+
+  const [protocolResult, duneResult, ...coinResults] = await Promise.allSettled([
+    fetchDefiLlamaProtocol(config.defillamaSlug),
+    executeDuneQuery(profile),
+    ...coinIds.map((id) => fetchCoinGeckoCoin(id, days))
+  ]);
+
+  const protocol = protocolResult.status === "fulfilled" ? protocolResult.value : null;
+  const dune = duneResult.status === "fulfilled" ? duneResult.value : null;
+  const coins = coinResults
+    .filter((result) => result.status === "fulfilled")
+    .map((result) => result.value);
+
+  for (const result of [protocolResult, duneResult, ...coinResults]) {
+    if (result.status === "rejected") warnings.push(result.reason?.message || "Market collector failed");
+  }
+
+  const signals = aggregateMarketSignals(protocol, coins, dune);
+  signals.warnings = warnings;
+  marketCache.set(cacheKey, { timestamp: Date.now(), value: signals });
+  return signals;
 }
 
 function sendJson(res, status, payload) {
@@ -423,8 +591,10 @@ async function resolveProfile(chainId, address) {
   });
 }
 
-function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true, simulateKeeper = true }) {
-  const probabilityFactors = riskFactors.map(probabilityForFactor);
+function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true, simulateKeeper = true, marketSignals = null }) {
+  const probabilityFactors = riskFactors
+    .map(probabilityForFactor)
+    .map((risk) => applyMarketSignalToFactor(risk, marketSignals));
   const selected = probabilityFactors.filter((risk) => factorIds.includes(risk.id));
   const risks = selected.length ? selected : probabilityFactors.filter((risk) => profile.riskFactorIds.includes(risk.id));
   const pairs = [];
@@ -487,9 +657,10 @@ function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true,
     resilienceScore: score,
     recoveryWindowMinutes: recovery,
     dependencies: pairs.sort((a, b) => b.tailDependence - a.tailDependence),
+    marketSignals,
     model: {
       name: "Tail dependence matrix v0.1",
-      source: "tail_events.json dummy prior + risk_factor_map.json + tail-dependence matrix",
+      source: "tail_events.json dummy prior + risk_factor_map.json + market collectors + tail-dependence matrix",
       tailEventCount: tailEvents.length,
       confidence
     }
@@ -536,16 +707,94 @@ async function handleStress(req, res) {
   let profile = body.profile;
   if (!profile && isAddress(body.address)) profile = await resolveProfile(chainId, body.address);
   if (!profile) profile = profileFromKnown(knownContracts[0]);
+  const marketSignals = body.useMarketData === false ? null : await collectMarketSignals(profile, Boolean(body.forceMarketRefresh));
 
   const result = runStress({
     profile,
     factorIds: Array.isArray(body.factors) ? body.factors : profile.riskFactorIds,
     severity: Number(body.severity || 0.65),
     useCorrelation: body.useCorrelation !== false,
-    simulateKeeper: body.simulateKeeper !== false
+    simulateKeeper: body.simulateKeeper !== false,
+    marketSignals
   });
 
   return sendJson(res, 200, result);
+}
+
+async function handleMarketSnapshot(url, res) {
+  const chainId = Number(url.searchParams.get("chainId") || 1);
+  const address = url.searchParams.get("address");
+  const force = url.searchParams.get("force") === "1";
+  if (!isAddress(address)) return sendJson(res, 400, { error: "Expected address query parameter" });
+  const profile = await resolveProfile(chainId, address);
+  const marketSignals = await collectMarketSignals(profile, force);
+  return sendJson(res, 200, { profile, marketSignals });
+}
+
+function deterministicClassification(profile) {
+  const factorIds = inferRiskFactorIds(profile);
+  return {
+    category: profile.category || inferCategory(profile.name, profile),
+    riskFactorIds: factorIds,
+    confidence: profile.verified ? 0.68 : 0.42,
+    rationale: "Deterministic fallback based on protocol name, contract category, verified metadata, and risk_factor_map.json.",
+    source: "deterministic"
+  };
+}
+
+async function handleClassify(req, res) {
+  const body = await parseBody(req);
+  const profile = body.profile || (isAddress(body.address) ? await resolveProfile(Number(body.chainId || 1), body.address) : null);
+  if (!profile) return sendJson(res, 400, { error: "Expected profile or contract address" });
+
+  if (!glmApiKey) return sendJson(res, 200, { profile, classification: deterministicClassification(profile) });
+
+  const response = await fetchJson(glmBaseUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${glmApiKey}`
+    },
+    body: JSON.stringify({
+      model: glmModel,
+      messages: [
+        {
+          role: "system",
+          content: [
+            "Classify a DeFi smart contract for risk-factor mapping.",
+            "Return strict JSON with category, riskFactorIds, confidence, and rationale.",
+            "Allowed riskFactorIds: oracle, liquidity, volatility, keeper, governance, stablecoin, gas, mev.",
+            "Do not estimate probabilities or invent numeric risk scores."
+          ].join(" ")
+        },
+        {
+          role: "user",
+          content: JSON.stringify({
+            name: profile.name,
+            protocol: profile.protocol,
+            category: profile.category,
+            verified: profile.verified,
+            sourceName: profile.sourceName,
+            compilerVersion: profile.compilerVersion,
+            abiAvailable: profile.abiAvailable,
+            sourceCodeAvailable: profile.sourceCodeAvailable
+          })
+        }
+      ],
+      response_format: { type: "json_object" }
+    })
+  });
+
+  const content = response?.choices?.[0]?.message?.content || "{}";
+  let classification;
+  try {
+    classification = JSON.parse(content);
+  } catch {
+    classification = deterministicClassification(profile);
+    classification.rationale = `GLM returned non-JSON output; fallback used. Raw: ${content.slice(0, 160)}`;
+  }
+
+  return sendJson(res, 200, { profile, classification: { ...deterministicClassification(profile), ...classification, source: "GLM" } });
 }
 
 async function handleExplain(req, res) {
@@ -619,7 +868,9 @@ createServer(async (req, res) => {
     if (req.method === "GET" && /^\/api\/contracts\/\d+\/0x[a-fA-F0-9]{40}\/profile$/.test(url.pathname)) {
       return await handleProfile(url, res);
     }
+    if (req.method === "GET" && url.pathname === "/api/market/snapshot") return await handleMarketSnapshot(url, res);
     if (req.method === "POST" && url.pathname === "/api/stress/run") return await handleStress(req, res);
+    if (req.method === "POST" && url.pathname === "/api/agent/classify") return await handleClassify(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/explain") return await handleExplain(req, res);
     if (url.pathname.startsWith("/api/")) return sendJson(res, 404, { error: "API route not found" });
     return serveStatic(url, res);
@@ -630,5 +881,5 @@ createServer(async (req, res) => {
   console.log("DeFi tail-risk dashboard is running:");
   console.log(`  Local:   http://localhost:${port}`);
   for (const ip of localIps()) console.log(`  Phone:   http://${ip}:${port}`);
-  console.log("Optional env: ETHERSCAN_API_KEY, GLM_API_KEY, GLM_MODEL, GLM_BASE_URL");
+  console.log("Optional env: ETHERSCAN_API_KEY, GLM_API_KEY, GLM_MODEL, GLM_BASE_URL, COINGECKO_API_KEY, DUNE_API_KEY, DUNE_QUERY_ID");
 });

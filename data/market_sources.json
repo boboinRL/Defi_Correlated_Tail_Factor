@@ -1,0 +1,32 @@
+{
+  "protocols": {
+    "Aave": {
+      "defillamaSlug": "aave-v3",
+      "coingeckoIds": ["ethereum", "usd-coin", "aave"]
+    },
+    "MakerDAO": {
+      "defillamaSlug": "makerdao",
+      "coingeckoIds": ["ethereum", "dai", "maker"]
+    },
+    "Curve": {
+      "defillamaSlug": "curve-dex",
+      "coingeckoIds": ["ethereum", "curve-dao-token", "crvusd"]
+    },
+    "Circle": {
+      "defillamaSlug": "",
+      "coingeckoIds": ["usd-coin", "ethereum"]
+    },
+    "Unknown protocol": {
+      "defillamaSlug": "",
+      "coingeckoIds": ["ethereum", "usd-coin"]
+    }
+  },
+  "defaults": {
+    "coingeckoIds": ["ethereum", "usd-coin", "dai"],
+    "days": 30
+  },
+  "dune": {
+    "description": "Optional Dune query IDs can be configured through DUNE_QUERY_ID or extended here later.",
+    "queryId": ""
+  }
+}

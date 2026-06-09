@@ -293,7 +293,8 @@ async function runStress() {
         factors: selectedRiskIds(),
         severity,
         useCorrelation: els.correlation.checked,
-        simulateKeeper: els.keeper.checked
+        simulateKeeper: els.keeper.checked,
+        useMarketData: true
       })
     });
     if (requestId !== state.requestId) return;
@@ -395,9 +396,23 @@ function renderDependencies(result) {
       </div>
     `)
     .join("");
+  const market = result.marketSignals;
+  const marketRows = market ? `
+    <div class="dependency-item">
+      <div>
+        <strong>Market data adjustment</strong>
+        <span>${market.coins?.length || 0} CoinGecko asset(s), ${market.protocol ? "DefiLlama TVL" : "no DefiLlama TVL"}, ${market.dune ? "Dune execution queued" : "no Dune query"}</span>
+      </div>
+      <div class="dependency-score">${percent(Math.max(market.stress?.volatility || 0, market.stress?.liquidity || 0, market.stress?.stablecoin || 0), 0)}</div>
+    </div>
+    ${market.warnings?.length ? `
+      <div class="empty">${market.warnings.slice(0, 2).join(" ")}</div>
+    ` : ""}
+  ` : "";
 
   if (!result.dependencies.length) {
     els.dependencyList.innerHTML = `
+      ${marketRows}
       ${factorRows}
       <div class="empty">Select at least two factors to compute pair coupling.</div>
     `;
@@ -417,7 +432,7 @@ function renderDependencies(result) {
     `)
     .join("");
 
-  els.dependencyList.innerHTML = `${factorRows}${pairRows}`;
+  els.dependencyList.innerHTML = `${marketRows}${factorRows}${pairRows}`;
 }
 
 function finding(text, type = "") {
