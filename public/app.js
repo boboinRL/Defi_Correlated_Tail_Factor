@@ -346,9 +346,27 @@ function renderResult(result) {
   els.marketScore.textContent = `${Math.round(clamp(96 - result.expectedBadDebtUsdM * 0.22 - result.jointProbability * 120, 25, 94))}%`;
 
   renderHeatmap(result);
+  updateRiskProbabilities(result);
   renderDependencies(result);
   renderFindings(result);
   renderEvents(result);
+}
+
+function updateRiskProbabilities(result) {
+  const byId = new Map(result.factorProbabilities.map((item) => [item.id, item]));
+  document.querySelectorAll(".risk-option").forEach((option) => {
+    const input = option.querySelector("input");
+    const weight = option.querySelector(".risk-weight");
+    const factor = byId.get(input.value);
+    if (factor) {
+      weight.textContent = percent(factor.marginalProbability, 1);
+      weight.title = `${factor.priorSource}; ${factor.eventCount} event samples`;
+    } else {
+      const fallback = riskFactors.find((risk) => risk.id === input.value);
+      weight.textContent = fallback ? percent(fallback.baseProb, 1) : "";
+      weight.title = "Static model prior";
+    }
+  });
 }
 
 function renderHeatmap(result) {
@@ -366,12 +384,27 @@ function renderHeatmap(result) {
 }
 
 function renderDependencies(result) {
+  const factorRows = result.factorProbabilities
+    .map((item) => `
+      <div class="dependency-item">
+        <div>
+          <strong>${item.name}</strong>
+          <span>Single-factor marginal probability · ${item.eventCount} tail-event sample(s)</span>
+        </div>
+        <div class="dependency-score">${percent(item.marginalProbability, 1)}</div>
+      </div>
+    `)
+    .join("");
+
   if (!result.dependencies.length) {
-    els.dependencyList.innerHTML = `<div class="empty">Select at least two factors to compute pair coupling.</div>`;
+    els.dependencyList.innerHTML = `
+      ${factorRows}
+      <div class="empty">Select at least two factors to compute pair coupling.</div>
+    `;
     return;
   }
 
-  els.dependencyList.innerHTML = result.dependencies
+  const pairRows = result.dependencies
     .slice(0, 6)
     .map((item) => `
       <div class="dependency-item">
@@ -383,6 +416,8 @@ function renderDependencies(result) {
       </div>
     `)
     .join("");
+
+  els.dependencyList.innerHTML = `${factorRows}${pairRows}`;
 }
 
 function finding(text, type = "") {

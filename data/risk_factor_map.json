@@ -1,0 +1,106 @@
+{
+  "default": {
+    "riskFactorIds": ["liquidity", "volatility"],
+    "baseResilience": 62,
+    "liquidityDepth": 0.52,
+    "keeperQuality": 0.52,
+    "governanceExposure": 0.36,
+    "insuranceBuffer": 0.3
+  },
+  "categories": {
+    "Lending pool": {
+      "riskFactorIds": ["oracle", "liquidity", "volatility", "keeper", "gas", "governance"],
+      "baseResilience": 86,
+      "liquidityDepth": 0.82,
+      "keeperQuality": 0.78,
+      "governanceExposure": 0.22,
+      "insuranceBuffer": 0.74
+    },
+    "Lending or liquidity pool": {
+      "riskFactorIds": ["oracle", "liquidity", "volatility", "keeper", "gas", "mev"],
+      "baseResilience": 76,
+      "liquidityDepth": 0.66,
+      "keeperQuality": 0.64,
+      "governanceExposure": 0.28,
+      "insuranceBuffer": 0.44
+    },
+    "CDP accounting core": {
+      "riskFactorIds": ["oracle", "liquidity", "volatility", "keeper", "gas", "governance"],
+      "baseResilience": 89,
+      "liquidityDepth": 0.88,
+      "keeperQuality": 0.84,
+      "governanceExposure": 0.18,
+      "insuranceBuffer": 0.81
+    },
+    "Vault or CDP system": {
+      "riskFactorIds": ["oracle", "liquidity", "volatility", "keeper", "governance"],
+      "baseResilience": 74,
+      "liquidityDepth": 0.62,
+      "keeperQuality": 0.62,
+      "governanceExposure": 0.34,
+      "insuranceBuffer": 0.42
+    },
+    "Soft liquidation controller": {
+      "riskFactorIds": ["oracle", "liquidity", "volatility", "keeper", "mev"],
+      "baseResilience": 78,
+      "liquidityDepth": 0.69,
+      "keeperQuality": 0.71,
+      "governanceExposure": 0.31,
+      "insuranceBuffer": 0.56
+    },
+    "Oracle adapter": {
+      "riskFactorIds": ["oracle", "gas", "governance"],
+      "baseResilience": 70,
+      "liquidityDepth": 0.5,
+      "keeperQuality": 0.56,
+      "governanceExposure": 0.32,
+      "insuranceBuffer": 0.24
+    },
+    "Token contract": {
+      "riskFactorIds": ["stablecoin", "liquidity", "volatility", "governance"],
+      "baseResilience": 68,
+      "liquidityDepth": 0.72,
+      "keeperQuality": 0.48,
+      "governanceExposure": 0.38,
+      "insuranceBuffer": 0.32
+    },
+    "Stablecoin token": {
+      "riskFactorIds": ["stablecoin", "liquidity", "oracle", "volatility", "governance"],
+      "baseResilience": 74,
+      "liquidityDepth": 0.9,
+      "keeperQuality": 0.62,
+      "governanceExposure": 0.42,
+      "insuranceBuffer": 0.42
+    },
+    "Governance or proxy control": {
+      "riskFactorIds": ["governance", "oracle", "gas"],
+      "baseResilience": 64,
+      "liquidityDepth": 0.45,
+      "keeperQuality": 0.5,
+      "governanceExposure": 0.58,
+      "insuranceBuffer": 0.22
+    },
+    "Unverified smart contract": {
+      "riskFactorIds": ["liquidity", "volatility", "governance", "oracle"],
+      "baseResilience": 52,
+      "liquidityDepth": 0.45,
+      "keeperQuality": 0.48,
+      "governanceExposure": 0.48,
+      "insuranceBuffer": 0.25
+    },
+    "General smart contract": {
+      "riskFactorIds": ["liquidity", "volatility", "governance"],
+      "baseResilience": 62,
+      "liquidityDepth": 0.52,
+      "keeperQuality": 0.52,
+      "governanceExposure": 0.36,
+      "insuranceBuffer": 0.3
+    }
+  },
+  "protocolOverrides": {
+    "Aave": ["oracle", "liquidity", "volatility", "keeper", "gas", "governance"],
+    "MakerDAO": ["oracle", "liquidity", "volatility", "keeper", "gas", "governance", "stablecoin"],
+    "Curve": ["oracle", "liquidity", "volatility", "keeper", "mev", "stablecoin"],
+    "Circle": ["stablecoin", "liquidity", "oracle", "governance"]
+  }
+}

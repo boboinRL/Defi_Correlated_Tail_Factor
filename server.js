@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { createReadStream, statSync } from "node:fs";
+import { createReadStream, readFileSync, statSync } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { networkInterfaces } from "node:os";
 
@@ -9,6 +9,8 @@ const etherscanKey = process.env.ETHERSCAN_API_KEY || "";
 const glmApiKey = process.env.GLM_API_KEY || "";
 const glmBaseUrl = process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4/chat/completions";
 const glmModel = process.env.GLM_MODEL || "glm-4.5";
+const dataRoot = join(process.cwd(), "data");
+const DUMMY_EVENT_PRIOR_WEIGHT = 0.62;
 
 const mime = {
   ".html": "text/html; charset=utf-8",
@@ -105,6 +107,10 @@ const riskFactors = [
   { id: "mev", name: "MEV / OEV Capture", baseProb: 0.013, loss: 19, queue: 22, governance: 3 }
 ];
 
+const tailEvents = loadJson("tail_events.json", []);
+const riskFactorMap = loadJson("risk_factor_map.json", { default: { riskFactorIds: ["liquidity", "volatility"] }, categories: {}, protocolOverrides: {} });
+const eventPriors = buildEventPriors(tailEvents);
+
 const tailDependence = {
   "oracle:liquidity": { value: 0.58, source: "Historical prior", label: "Strong" },
   "oracle:volatility": { value: 0.52, source: "Historical prior", label: "Strong" },
@@ -124,6 +130,75 @@ function localIps() {
     .flat()
     .filter((item) => item && item.family === "IPv4" && !item.internal)
     .map((item) => item.address);
+}
+
+function loadJson(fileName, fallback) {
+  try {
+    return JSON.parse(readFileSync(join(dataRoot, fileName), "utf8"));
+  } catch {
+    return fallback;
+  }
+}
+
+function buildEventPriors(events) {
+  const stats = new Map();
+  for (const event of events) {
+    for (const factor of event.factors || []) {
+      const current = stats.get(factor) || { count: 0, severitySum: 0, liquidityDropSum: 0, drawdownSum: 0 };
+      current.count += 1;
+      current.severitySum += Number(event.severity || 0.5);
+      current.liquidityDropSum += Number(event.liquidity_drop || 0);
+      current.drawdownSum += Number(event.price_drawdown || 0);
+      stats.set(factor, current);
+    }
+  }
+
+  const totalEvents = Math.max(events.length, 1);
+  const priors = {};
+  for (const [factor, stat] of stats.entries()) {
+    const frequency = stat.count / totalEvents;
+    const severity = stat.severitySum / stat.count;
+    const liquidityDrop = stat.liquidityDropSum / stat.count;
+    const drawdown = stat.drawdownSum / stat.count;
+    priors[factor] = {
+      count: stat.count,
+      frequency,
+      avgSeverity: severity,
+      avgLiquidityDrop: liquidityDrop,
+      avgDrawdown: drawdown,
+      dummyProbability: clamp(0.006 + frequency * 0.032 + severity * 0.018 + liquidityDrop * 0.006 + drawdown * 0.004, 0.004, 0.085)
+    };
+  }
+  return priors;
+}
+
+function probabilityForFactor(risk) {
+  const prior = eventPriors[risk.id];
+  if (!prior) {
+    return {
+      ...risk,
+      marginalProbability: risk.baseProb,
+      priorSource: "Static model prior",
+      eventCount: 0,
+      avgSeverity: 0
+    };
+  }
+
+  return {
+    ...risk,
+    marginalProbability: clamp(
+      risk.baseProb * (1 - DUMMY_EVENT_PRIOR_WEIGHT) + prior.dummyProbability * DUMMY_EVENT_PRIOR_WEIGHT,
+      0.003,
+      0.095
+    ),
+    priorSource: "tail_events.json dummy prior",
+    eventCount: prior.count,
+    avgSeverity: prior.avgSeverity
+  };
+}
+
+function categoryDefaults(category) {
+  return riskFactorMap.categories?.[category] || riskFactorMap.default || {};
 }
 
 function sendJson(res, status, payload) {
@@ -152,7 +227,9 @@ function knownByAddress(address) {
 
 function inferRiskFactorIds(profile) {
   const text = `${profile.name} ${profile.protocol} ${profile.category} ${profile.sourceName || ""}`.toLowerCase();
-  const factors = new Set(["liquidity", "volatility"]);
+  const defaults = categoryDefaults(profile.category);
+  const override = riskFactorMap.protocolOverrides?.[profile.protocol];
+  const factors = new Set(override || defaults.riskFactorIds || riskFactorMap.default?.riskFactorIds || ["liquidity", "volatility"]);
 
   if (/pool|lending|vault|controller|liquidation|cdp|llamma/.test(text)) {
     factors.add("oracle");
@@ -172,17 +249,25 @@ function inferRiskFactorIds(profile) {
   return [...factors];
 }
 
-function profileFromKnown(contract) {
+function applyRiskMap(profile) {
+  const defaults = categoryDefaults(profile.category);
   return {
+    ...defaults,
+    ...profile,
+    riskFactorIds: inferRiskFactorIds({ ...defaults, ...profile })
+  };
+}
+
+function profileFromKnown(contract) {
+  return applyRiskMap({
     ...contract,
     verified: true,
     sourceName: contract.name,
     implementation: "",
     compilerVersion: "",
     abiAvailable: true,
-    sourceCodeAvailable: true,
-    riskFactorIds: inferRiskFactorIds(contract)
-  };
+    sourceCodeAvailable: true
+  });
 }
 
 async function fetchJson(url, options = {}) {
@@ -207,7 +292,7 @@ async function fetchSourcifyProfile(chainId, address) {
     data?.metadata?.settings?.compilationTarget && Object.values(data.metadata.settings.compilationTarget)[0] ||
     `Contract ${address.slice(0, 6)}...${address.slice(-4)}`;
 
-  const profile = {
+  const profile = applyRiskMap({
     chainId,
     address,
     name,
@@ -230,8 +315,7 @@ async function fetchSourcifyProfile(chainId, address) {
     keeperQuality: 0.58,
     governanceExposure: 0.34,
     insuranceBuffer: 0.38
-  };
-  profile.riskFactorIds = inferRiskFactorIds(profile);
+  });
   return profile;
 }
 
@@ -248,7 +332,7 @@ async function fetchEtherscanProfile(chainId, address) {
   if (!result || data.status === "0") return null;
 
   const name = result.ContractName || `Contract ${address.slice(0, 6)}...${address.slice(-4)}`;
-  const profile = {
+  const profile = applyRiskMap({
     chainId,
     address,
     name,
@@ -271,8 +355,7 @@ async function fetchEtherscanProfile(chainId, address) {
     keeperQuality: 0.58,
     governanceExposure: result.Proxy === "1" ? 0.42 : 0.28,
     insuranceBuffer: 0.36
-  };
-  profile.riskFactorIds = inferRiskFactorIds(profile);
+  });
   return profile;
 }
 
@@ -314,7 +397,7 @@ async function resolveProfile(chainId, address) {
     sources.push(`Etherscan unavailable: ${error.message}`);
   }
 
-  return {
+  return applyRiskMap({
     chainId,
     address,
     name: `Contract ${address.slice(0, 6)}...${address.slice(-4)}`,
@@ -336,14 +419,14 @@ async function resolveProfile(chainId, address) {
     liquidityDepth: 0.45,
     keeperQuality: 0.48,
     governanceExposure: 0.48,
-    insuranceBuffer: 0.25,
-    riskFactorIds: ["liquidity", "volatility", "governance"]
-  };
+    insuranceBuffer: 0.25
+  });
 }
 
 function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true, simulateKeeper = true }) {
-  const selected = riskFactors.filter((risk) => factorIds.includes(risk.id));
-  const risks = selected.length ? selected : riskFactors.filter((risk) => profile.riskFactorIds.includes(risk.id));
+  const probabilityFactors = riskFactors.map(probabilityForFactor);
+  const selected = probabilityFactors.filter((risk) => factorIds.includes(risk.id));
+  const risks = selected.length ? selected : probabilityFactors.filter((risk) => profile.riskFactorIds.includes(risk.id));
   const pairs = [];
   let dependencySum = 0;
 
@@ -365,7 +448,7 @@ function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true,
   const avgDependency = pairs.length ? dependencySum / pairs.length : 0;
   const dependenceBoost = useCorrelation ? 1 + avgDependency * Math.log2(risks.length + 1) : 1;
   const keeperPenalty = simulateKeeper ? 1 + (1 - profile.keeperQuality) * 0.46 : 1;
-  const baseNoEvent = risks.reduce((acc, risk) => acc * (1 - risk.baseProb * (0.72 + severity)), 1);
+  const baseNoEvent = risks.reduce((acc, risk) => acc * (1 - risk.marginalProbability * (0.72 + severity)), 1);
   const jointProbability = clamp((1 - baseNoEvent) * dependenceBoost * keeperPenalty, 0.001, 0.48);
   const lossLoad = risks.reduce((sum, risk) => sum + risk.loss, 0);
   const queueLoad = risks.reduce((sum, risk) => sum + risk.queue, 0);
@@ -384,6 +467,15 @@ function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true,
   return {
     profile,
     risks,
+    factorProbabilities: risks.map((risk) => ({
+      id: risk.id,
+      name: risk.name,
+      baseProbability: risk.baseProb,
+      marginalProbability: risk.marginalProbability,
+      priorSource: risk.priorSource,
+      eventCount: risk.eventCount,
+      avgSeverity: risk.avgSeverity
+    })),
     severity,
     useCorrelation,
     simulateKeeper,
@@ -397,7 +489,8 @@ function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true,
     dependencies: pairs.sort((a, b) => b.tailDependence - a.tailDependence),
     model: {
       name: "Tail dependence matrix v0.1",
-      source: "Historical prior + mechanism prior + expert calibration",
+      source: "tail_events.json dummy prior + risk_factor_map.json + tail-dependence matrix",
+      tailEventCount: tailEvents.length,
       confidence
     }
   };
@@ -434,7 +527,7 @@ async function handleProfile(url, res) {
   const address = parts[3];
   if (!chainId || !isAddress(address)) return sendJson(res, 400, { error: "Expected /api/contracts/:chainId/:address/profile" });
   const profile = await resolveProfile(chainId, address);
-  return sendJson(res, 200, { profile, factors: riskFactors.filter((risk) => profile.riskFactorIds.includes(risk.id)) });
+  return sendJson(res, 200, { profile, factors: riskFactors.map(probabilityForFactor).filter((risk) => profile.riskFactorIds.includes(risk.id)) });
 }
 
 async function handleStress(req, res) {
