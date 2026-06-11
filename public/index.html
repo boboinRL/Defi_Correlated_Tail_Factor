@@ -18,9 +18,18 @@
         <a href="#audit">Audit</a>
         <a href="#monitor">Monitor</a>
       </nav>
-      <div class="contract-picker">
-        <label for="contractSelect">Smart Contract</label>
-        <select id="contractSelect"></select>
+      <div class="header-controls">
+        <div class="contract-picker">
+          <label for="contractSelect">Smart Contract</label>
+          <select id="contractSelect"></select>
+        </div>
+        <label class="language-switcher" for="languageSelect">
+          <span aria-hidden="true">◎</span>
+          <select id="languageSelect" aria-label="Language">
+            <option value="en">EN</option>
+            <option value="zh-CN">中文</option>
+          </select>
+        </label>
       </div>
     </header>
 

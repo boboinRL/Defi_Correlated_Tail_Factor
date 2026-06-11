@@ -3,48 +3,64 @@ const riskFactors = [
     id: "oracle",
     name: "Oracle Depeg / Lag",
     desc: "Price-source deviation, stale rounds, and cross-oracle spread widening",
+    zhName: "预言机脱锚 / 延迟",
+    zhDesc: "价格源偏离、轮次过期以及跨预言机价差扩大",
     baseProb: 0.018
   },
   {
     id: "liquidity",
     name: "DEX Liquidity Drain",
     desc: "Depth contraction, slippage expansion, and arbitrage route failure",
+    zhName: "DEX 流动性枯竭",
+    zhDesc: "市场深度收缩、滑点扩大以及套利路径失效",
     baseProb: 0.026
   },
   {
     id: "volatility",
     name: "Volatility Jump",
     desc: "Collateral gap-downs and correlated deleveraging across risk assets",
+    zhName: "波动率跳升",
+    zhDesc: "抵押品跳空下跌以及风险资产同步去杠杆",
     baseProb: 0.031
   },
   {
     id: "keeper",
     name: "Keeper Congestion",
     desc: "Liquidation bot latency, failed gas bidding, and batch execution stalls",
+    zhName: "Keeper 拥堵",
+    zhDesc: "清算机器人延迟、Gas 竞价失败以及批量执行阻塞",
     baseProb: 0.015
   },
   {
     id: "governance",
     name: "Governance Upgrade Risk",
     desc: "Parameter votes, proxy upgrades, and privileged action windows",
+    zhName: "治理升级风险",
+    zhDesc: "参数投票、代理升级以及特权操作窗口",
     baseProb: 0.009
   },
   {
     id: "stablecoin",
     name: "Stablecoin Depeg",
     desc: "Stablecoin price break, redemption pressure, and liquidity fragmentation",
+    zhName: "稳定币脱锚",
+    zhDesc: "稳定币价格偏离、赎回压力以及流动性碎片化",
     baseProb: 0.014
   },
   {
     id: "gas",
     name: "Gas Spike",
     desc: "Blockspace congestion, delayed liquidations, and failed keeper bids",
+    zhName: "Gas 费用激增",
+    zhDesc: "区块空间拥堵、清算延迟以及 Keeper 竞价失败",
     baseProb: 0.02
   },
   {
     id: "mev",
     name: "MEV / OEV Capture",
     desc: "Liquidation value extraction, adverse ordering, and keeper competition",
+    zhName: "MEV / OEV 价值捕获",
+    zhDesc: "清算价值提取、不利交易排序以及 Keeper 竞争",
     baseProb: 0.013
   }
 ];
@@ -74,6 +90,7 @@ const fallbackProfiles = [
 
 const els = {
   searchForm: document.querySelector("#contractSearchForm"),
+  language: document.querySelector("#languageSelect"),
   searchInput: document.querySelector("#contractSearchInput"),
   searchStatus: document.querySelector("#searchStatus"),
   searchResults: document.querySelector("#searchResults"),
@@ -128,8 +145,92 @@ const state = {
   profiles: [],
   selectedProfile: null,
   latestResult: null,
-  requestId: 0
+  requestId: 0,
+  locale: localStorage.getItem("tail-risk-locale") || "en"
 };
+
+const zh = {
+  "Overview": "概览",
+  "Stress Test": "压力测试",
+  "Audit": "审计",
+  "Monitor": "监控",
+  "Smart Contract": "智能合约",
+  "DeFi Protocol": "DeFi 协议",
+  "Liquidation Resilience": "清算韧性",
+  "Coverage": "覆盖率",
+  "Last Audit": "最近审计",
+  "Formal Verified": "形式化验证",
+  "Bug Bounty": "漏洞赏金",
+  "Oracle Monitor": "预言机监控",
+  "Live Contract Search": "实时合约搜索",
+  "Search Ethereum contracts by name or address": "按名称或地址搜索以太坊智能合约",
+  "The backend can resolve known protocols locally, fetch verified metadata from Sourcify, and use Etherscan when an API key is configured.": "后端可从本地索引识别已知协议、从 Sourcify 获取验证信息，并在配置 API Key 后使用 Etherscan。",
+  "Search": "搜索",
+  "Ready to search Ethereum mainnet.": "可以搜索以太坊主网合约。",
+  "Tail Event Audit": "尾部事件审计",
+  "Multi-factor stress testing for liquidation resilience": "面向清算韧性的多因素压力测试",
+  "Select a contract and combine stress factors to estimate joint tail-event probability, bad-debt exposure, liquidity shock, keeper congestion, and governance upgrade risk.": "选择合约并组合压力因子，以估算联合尾部事件概率、坏账敞口、流动性冲击、Keeper 拥堵和治理升级风险。",
+  "Joint Tail Probability": "联合尾部概率",
+  "Expected Bad Debt": "预期坏账",
+  "Recovery Window": "恢复窗口",
+  "Scenario Builder": "场景构建器",
+  "Linked Risk Factors": "关联风险因子",
+  "Ask GLM-5.1": "询问 GLM-5.1",
+  "Reset": "重置",
+  "GLM factor selection is available when GLM_API_KEY is configured.": "配置 GLM_API_KEY 后可使用 GLM 风险因子选择。",
+  "Shock Severity": "冲击强度",
+  "Apply tail-dependence matrix": "应用尾部依赖矩阵",
+  "Simulate keeper delay": "模拟 Keeper 延迟",
+  "Tail Probability": "尾部概率",
+  "Current Scenario": "当前场景",
+  "Liquidation Coverage": "清算覆盖率",
+  "Capital Gap": "资金缺口",
+  "Queue Congestion": "队列拥堵",
+  "Governance Exposure": "治理敞口",
+  "Event Surface": "事件曲面",
+  "Tail Probability Heatmap": "尾部概率热力图",
+  "Dependency Model": "依赖模型",
+  "Active Factor Pair Coupling": "当前因子对耦合",
+  "Single-factor prior + pair coupling": "单因子先验 + 因子对耦合",
+  "Code Security": "代码安全",
+  "Operational Resilience": "运营韧性",
+  "Market Stability": "市场稳定性",
+  "Static review of proxy contracts, external calls, oracle reads, and liquidation function paths.": "静态检查代理合约、外部调用、预言机读取和清算函数路径。",
+  "Keeper availability, oracle freshness, execution congestion, and insurance-fund absorption capacity.": "评估 Keeper 可用性、预言机时效、执行拥堵和保险基金吸收能力。",
+  "DEX depth, collateral correlation, volatility jumps, liquidation incentives, and slippage spread.": "评估 DEX 深度、抵押品相关性、波动率跳升、清算激励和滑点扩散。",
+  "Liquidation Path": "清算路径",
+  "Stress Event Execution Path": "压力事件执行路径",
+  "Monitoring active": "监控中"
+};
+
+function isZh() {
+  return state.locale === "zh-CN";
+}
+
+function tr(text) {
+  return isZh() ? zh[text] || text : text;
+}
+
+function translateStaticUi() {
+  document.documentElement.lang = state.locale;
+  const selectors = [
+    ".nav-links a", ".contract-picker label", ".identity-card .eyebrow",
+    ".score-card .eyebrow", ".quick-facts span", ".badges span",
+    ".search-card .eyebrow", ".search-card h2", ".search-card > div:first-child > p:last-child",
+    ".search-form button", ".hero-band .eyebrow", ".hero-band h2", ".hero-band > div:first-child > p:last-child",
+    ".hero-metrics span", ".control-panel .panel-head .eyebrow", ".control-panel .panel-head h3",
+    "#glmFactorButton", "#resetButton", ".slider-label span", ".switch-row span",
+    ".probability-orb small", ".risk-summary .eyebrow", ".metric-grid span",
+    ".chart-card .eyebrow", ".chart-card h3", "#dependencySource",
+    ".section-title span", ".audit-card > p", ".timeline-card .eyebrow", ".timeline-card h3"
+  ];
+  document.querySelectorAll(selectors.join(",")).forEach((element) => {
+    if (!element.dataset.en) element.dataset.en = element.textContent.trim().replace(/\s+/g, " ");
+    element.textContent = isZh() ? tr(element.dataset.en) : element.dataset.en;
+  });
+  els.searchInput.placeholder = isZh() ? "输入 Aave V3 Pool 或 0x87870b..." : "Try Aave V3 Pool or 0x87870b...";
+  els.language.value = state.locale;
+}
 
 function percent(value, digits = 2) {
   return `${(value * 100).toFixed(digits)}%`;
@@ -153,10 +254,10 @@ function grade(score) {
 }
 
 function riskLevel(probability) {
-  if (probability >= 0.12) return "High risk";
-  if (probability >= 0.06) return "Elevated risk";
-  if (probability >= 0.025) return "Moderate risk";
-  return "Low risk";
+  if (probability >= 0.12) return isZh() ? "高风险" : "High risk";
+  if (probability >= 0.06) return isZh() ? "较高风险" : "Elevated risk";
+  if (probability >= 0.025) return isZh() ? "中等风险" : "Moderate risk";
+  return isZh() ? "低风险" : "Low risk";
 }
 
 function colorForProbability(probability) {
@@ -219,8 +320,8 @@ function renderRiskGrid(profile = state.selectedProfile) {
       <label class="risk-option">
         <input type="checkbox" value="${risk.id}" ${defaults.has(risk.id) ? "checked" : ""}>
         <span>
-          <span class="risk-name">${risk.name}</span>
-          <span class="risk-desc">${risk.desc}</span>
+          <span class="risk-name">${isZh() ? risk.zhName : risk.name}</span>
+          <span class="risk-desc">${isZh() ? risk.zhDesc : risk.desc}</span>
         </span>
         <strong class="risk-weight">${percent(risk.baseProb, 1)}</strong>
       </label>
@@ -257,7 +358,7 @@ async function loadInitialProfiles() {
   try {
     const data = await api("/api/contracts/search");
     upsertProfiles(data.results || []);
-    setStatus("Loaded local registry. Paste an Ethereum address for live metadata lookup.");
+    setStatus(isZh() ? "已加载本地索引。粘贴以太坊地址可查询实时元数据。" : "Loaded local registry. Paste an Ethereum address for live metadata lookup.");
   } catch (error) {
     upsertProfiles(fallbackProfiles);
     setStatus(`API unavailable, using local fallback: ${error.message}`, "warn");
@@ -268,7 +369,7 @@ async function loadInitialProfiles() {
 }
 
 async function searchContracts(query) {
-  setStatus("Searching contract metadata...");
+  setStatus(isZh() ? "正在搜索合约元数据..." : "Searching contract metadata...");
   els.searchResults.innerHTML = "";
 
   try {
@@ -276,7 +377,7 @@ async function searchContracts(query) {
     const results = data.results || [];
     upsertProfiles(results);
     renderSearchResults(results);
-    setStatus(results.length ? `Found ${results.length} result(s).` : data.message || "No results found.", results.length ? "" : "warn");
+    setStatus(results.length ? (isZh() ? `找到 ${results.length} 个结果。` : `Found ${results.length} result(s).`) : data.message || (isZh() ? "未找到结果。" : "No results found."), results.length ? "" : "warn");
   } catch (error) {
     setStatus(`Search failed: ${error.message}`, "warn");
   }
@@ -317,7 +418,7 @@ async function applyGlmFactors() {
   if (!profile) return;
 
   els.glmFactor.disabled = true;
-  setAgentStatus("Asking GLM-5.1 to classify this contract and select suitable factors...");
+  setAgentStatus(isZh() ? "正在请求 GLM-5.1 分类合约并选择合适的风险因子..." : "Asking GLM-5.1 to classify this contract and select suitable factors...");
 
   try {
     const data = await api("/api/agent/classify", {
@@ -337,8 +438,13 @@ async function applyGlmFactors() {
 
     const source = data.classification?.source || "classification agent";
     const confidence = data.classification?.confidence ? percent(Number(data.classification.confidence), 0) : "n/a";
-    const factorNames = [...ids].map((id) => riskFactors.find((risk) => risk.id === id)?.name || id).join(", ") || "none";
-    setAgentStatus(`${source} selected: ${factorNames}. Confidence: ${confidence}. ${data.classification?.rationale || ""}`, "ok");
+    const factorNames = [...ids].map((id) => {
+      const risk = riskFactors.find((item) => item.id === id);
+      return risk ? (isZh() ? risk.zhName : risk.name) : id;
+    }).join(", ") || (isZh() ? "无" : "none");
+    setAgentStatus(isZh()
+      ? `${source} 选择了：${factorNames}。置信度：${confidence}。`
+      : `${source} selected: ${factorNames}. Confidence: ${confidence}. ${data.classification?.rationale || ""}`, "ok");
     await runStress();
   } catch (error) {
     setAgentStatus(`GLM factor selection failed: ${error.message}`, "warn");
@@ -351,11 +457,14 @@ function renderResult(result) {
   const profile = result.profile;
   const level = riskLevel(result.jointProbability);
   const probabilityColor = colorForProbability(result.jointProbability);
-  const names = result.risks.map((risk) => risk.name.split(" ").slice(0, 2).join(" "));
+  const names = result.risks.map((risk) => {
+    const localRisk = riskFactors.find((item) => item.id === risk.id);
+    return isZh() && localRisk ? localRisk.zhName : risk.name.split(" ").slice(0, 2).join(" ");
+  });
 
   els.icon.textContent = profile.symbol || profile.name.slice(0, 1).toUpperCase();
   els.name.textContent = profile.name;
-  els.meta.textContent = `${profile.category || "Smart contract"} / Ethereum`;
+  els.meta.textContent = `${profile.category || (isZh() ? "智能合约" : "Smart contract")} / Ethereum`;
   els.tvl.textContent = profile.tvl || "Unknown";
   els.oracle.textContent = profile.oracle || "Not detected";
   els.coverage.textContent = profile.coverage || `${Math.round(result.liquidationCoverage)}%`;
@@ -363,21 +472,19 @@ function renderResult(result) {
   els.riskScore.textContent = result.resilienceScore;
   els.riskGrade.textContent = grade(result.resilienceScore);
   els.scoreRing.style.setProperty("--score", `${result.resilienceScore}%`);
-  els.narrative.textContent = `${level}: ${
-    result.resilienceScore >= 80
-      ? "liquidation paths remain broadly resilient"
-      : "liquidation and liquidity buffers need reinforcement"
-  }. Model confidence is ${percent(result.model.confidence, 0)}.`;
+  els.narrative.textContent = isZh()
+    ? `${level}：${result.resilienceScore >= 80 ? "清算路径整体具备韧性" : "需要加强清算与流动性缓冲"}。模型置信度为 ${percent(result.model.confidence, 0)}。`
+    : `${level}: ${result.resilienceScore >= 80 ? "liquidation paths remain broadly resilient" : "liquidation and liquidity buffers need reinforcement"}. Model confidence is ${percent(result.model.confidence, 0)}.`;
   els.jointProbability.textContent = percent(result.jointProbability);
   els.badDebt.textContent = money(result.expectedBadDebtUsdM);
   els.recoveryWindow.textContent = `${result.recoveryWindowMinutes}m`;
   els.orbValue.textContent = percent(result.jointProbability);
   els.orb.style.setProperty("--score", `${clamp(result.jointProbability * 300, 4, 100)}%`);
   els.orb.style.background = `radial-gradient(circle at center, #14233b 0 56%, transparent 57%), conic-gradient(${probabilityColor} var(--score), rgba(255, 255, 255, 0.16) 0)`;
-  els.scenarioTitle.textContent = names.length ? names.join(" + ") : "Baseline liquidation monitor";
+  els.scenarioTitle.textContent = names.length ? names.join(" + ") : (isZh() ? "基准清算监控" : "Baseline liquidation monitor");
   els.scenarioCopy.textContent = names.length
-    ? `${level}: the backend stress engine uses marginal probabilities plus a tail-dependence matrix for the selected factor set.`
-    : "No risk factor is selected, so scenario probability and stress metrics are reset to zero.";
+    ? (isZh() ? `${level}：后端压力引擎使用单因子边际概率与尾部依赖矩阵计算当前因子组合。` : `${level}: the backend stress engine uses marginal probabilities plus a tail-dependence matrix for the selected factor set.`)
+    : (isZh() ? "当前未选择风险因子，因此场景概率和压力指标均重置为零。" : "No risk factor is selected, so scenario probability and stress metrics are reset to zero.");
   els.coverageMetric.textContent = `${Math.round(result.liquidationCoverage)}%`;
   els.gapMetric.textContent = money(result.expectedBadDebtUsdM);
   els.queueMetric.textContent = `${Math.round(result.queueCongestion)}%`;
@@ -408,7 +515,7 @@ function updateRiskProbabilities(result) {
       weight.title = `${factor.priorSource}; ${factor.eventCount} event samples`;
     } else {
       weight.textContent = "0.0%";
-      weight.title = "Not selected in the current scenario";
+      weight.title = isZh() ? "当前场景未选择该因子" : "Not selected in the current scenario";
     }
   });
 }
@@ -581,7 +688,7 @@ function resetScenario() {
   document.querySelectorAll(".risk-option input").forEach((input) => {
     input.checked = false;
   });
-  setAgentStatus("Scenario cleared. No risk factor is selected.", "");
+  setAgentStatus(isZh() ? "场景已清空，当前未选择风险因子。" : "Scenario cleared. No risk factor is selected.", "");
   runStress();
 }
 
@@ -606,8 +713,20 @@ els.searchResults.addEventListener("click", (event) => {
 els.contract.addEventListener("change", () => {
   state.selectedProfile = state.profiles.find((profile) => profileKey(profile) === els.contract.value) || state.profiles[0];
   renderRiskGrid(state.selectedProfile);
-  setAgentStatus("Contract changed. Use Ask GLM-5.1 to classify recommended factors.", "");
+  setAgentStatus(isZh() ? "合约已切换。点击“询问 GLM-5.1”获取推荐风险因子。" : "Contract changed. Use Ask GLM-5.1 to classify recommended factors.", "");
   runStress();
+});
+els.language.addEventListener("change", () => {
+  const selectedIds = new Set(selectedRiskIds());
+  state.locale = els.language.value;
+  localStorage.setItem("tail-risk-locale", state.locale);
+  translateStaticUi();
+  renderRiskGrid(state.selectedProfile);
+  document.querySelectorAll(".risk-option input").forEach((input) => {
+    input.checked = selectedIds.has(input.value);
+  });
+  if (state.latestResult) renderResult(state.latestResult);
+  setAgentStatus(isZh() ? "语言已切换为简体中文。" : "Language switched to English.", "ok");
 });
 els.severity.addEventListener("input", runStress);
 els.correlation.addEventListener("change", runStress);
@@ -616,4 +735,5 @@ els.glmFactor.addEventListener("click", applyGlmFactors);
 els.reset.addEventListener("click", resetScenario);
 els.riskGrid.addEventListener("change", runStress);
 
+translateStaticUi();
 loadInitialProfiles();

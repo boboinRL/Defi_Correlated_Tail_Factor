@@ -127,6 +127,33 @@ h3 {
   gap: 10px;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding-left: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.language-switcher select {
+  min-height: 38px;
+  width: auto;
+  border: 0;
+  padding-left: 2px;
+}
+
 .contract-picker label {
   color: var(--muted);
   font-size: 0.82rem;
@@ -909,6 +936,15 @@ input[type="range"] {
   .contract-picker {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .header-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .language-switcher {
+    justify-content: space-between;
   }
 
   select {
