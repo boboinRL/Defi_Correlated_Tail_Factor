@@ -4,13 +4,28 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const generatedDir = join(root, "data", "generated");
-const featuresPath = join(generatedDir, "coingecko_daily_features.json");
+const coingeckoPath = join(generatedDir, "coingecko_daily_features.json");
+const defillamaPath = join(generatedDir, "defillama_daily_features.json");
 const eventsPath = join(root, "data", "tail_events.json");
 const horizons = { "1d": 1, "7d": 7, "30d": 30 };
 const factorIds = ["oracle", "liquidity", "volatility", "keeper", "governance", "stablecoin", "gas", "mev"];
 
-const features = JSON.parse(await readFile(featuresPath, "utf8"));
+async function readOptionalJson(path) {
+  try {
+    return JSON.parse(await readFile(path, "utf8"));
+  } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+const coingeckoFeatures = await readOptionalJson(coingeckoPath);
+const defillamaFeatures = await readOptionalJson(defillamaPath);
 const rawEvents = JSON.parse(await readFile(eventsPath, "utf8"));
+
+if (!coingeckoFeatures && !defillamaFeatures) {
+  throw new Error("No generated features found. Run a CoinGecko or DefiLlama collector first.");
+}
 
 function utcDay(value) {
   const date = new Date(value);
@@ -59,11 +74,16 @@ function labelsForDate(date, horizonDays) {
   };
 }
 
-const rows = (features.dailyFactors || []).map((featureRow) => ({
-  date: featureRow.date,
-  featureDateKnownAt: `${featureRow.date}T23:59:59Z`,
+const featureDates = [...new Set([
+  ...(coingeckoFeatures?.dailyFactors || []).map((row) => row.date),
+  ...(defillamaFeatures?.dailyFeatures || []).map((row) => row.date)
+])].sort();
+
+const rows = featureDates.map((date) => ({
+  date,
+  featureDateKnownAt: `${date}T23:59:59Z`,
   labels: Object.fromEntries(
-    Object.entries(horizons).map(([name, days]) => [name, labelsForDate(featureRow.date, days)])
+    Object.entries(horizons).map(([name, days]) => [name, labelsForDate(date, days)])
   )
 }));
 
@@ -118,28 +138,99 @@ const labelOutput = {
   rows
 };
 
-function flattenFeatureRow(row) {
+function nullable(value) {
+  return value === undefined || value === null ? null : value;
+}
+
+function flattenCoinGeckoRow(row) {
+  if (!row) {
+    return {
+      hasCoinGecko: 0,
+      observations: null,
+      volatilityScore: null,
+      volatilityActive: null,
+      liquidityScore: null,
+      liquidityActive: null,
+      stablecoinScore: null,
+      stablecoinActive: null,
+      oracleScore: null,
+      oracleActive: null,
+      maxAbsoluteReturn: null,
+      maxRollingVolatility7d: null,
+      worstVolumeChange: null,
+      worstVolumeZScore: null,
+      maxStablecoinPegDeviation: null,
+      worstDrawdown30d: null
+    };
+  }
   return {
+    hasCoinGecko: 1,
     date: row.date,
-    observations: row.observations,
-    volatilityScore: row.factors?.volatility?.score || 0,
+    observations: nullable(row.observations),
+    volatilityScore: nullable(row.factors?.volatility?.score),
     volatilityActive: row.factors?.volatility?.active ? 1 : 0,
-    liquidityScore: row.factors?.liquidity?.score || 0,
+    liquidityScore: nullable(row.factors?.liquidity?.score),
     liquidityActive: row.factors?.liquidity?.active ? 1 : 0,
-    stablecoinScore: row.factors?.stablecoin?.score || 0,
+    stablecoinScore: nullable(row.factors?.stablecoin?.score),
     stablecoinActive: row.factors?.stablecoin?.active ? 1 : 0,
-    oracleScore: row.factors?.oracle?.score || 0,
+    oracleScore: nullable(row.factors?.oracle?.score),
     oracleActive: row.factors?.oracle?.active ? 1 : 0,
-    maxAbsoluteReturn: row.raw?.maxAbsoluteReturn || 0,
-    maxRollingVolatility7d: row.raw?.maxRollingVolatility7d || 0,
-    worstVolumeChange: row.raw?.worstVolumeChange || 0,
-    worstVolumeZScore: row.raw?.worstVolumeZScore || 0,
-    maxStablecoinPegDeviation: row.raw?.maxStablecoinPegDeviation || 0,
-    worstDrawdown30d: row.raw?.worstDrawdown30d || 0
+    maxAbsoluteReturn: nullable(row.raw?.maxAbsoluteReturn),
+    maxRollingVolatility7d: nullable(row.raw?.maxRollingVolatility7d),
+    worstVolumeChange: nullable(row.raw?.worstVolumeChange),
+    worstVolumeZScore: nullable(row.raw?.worstVolumeZScore),
+    maxStablecoinPegDeviation: nullable(row.raw?.maxStablecoinPegDeviation),
+    worstDrawdown30d: nullable(row.raw?.worstDrawdown30d)
   };
 }
 
-const featureByDate = new Map((features.dailyFactors || []).map((row) => [row.date, flattenFeatureRow(row)]));
+function flattenDefiLlamaRow(row) {
+  if (!row) {
+    return {
+      hasDefiLlama: 0,
+      defiLlamaLiquidityScore: null,
+      defiLlamaLiquidityActive: null,
+      chainTvlUsd: null,
+      chainTvlChange1d: null,
+      chainTvlDrawdown30d: null,
+      dexVolumeUsd: null,
+      dexVolumeChange1d: null,
+      dexVolumeDrawdown30d: null,
+      stablecoinSupplyUsd: null,
+      stablecoinSupplyChange1d: null,
+      trackedProtocolTvlUsd: null
+    };
+  }
+  return {
+    hasDefiLlama: 1,
+    defiLlamaLiquidityScore: nullable(row.factors?.liquidity?.score),
+    defiLlamaLiquidityActive: row.factors?.liquidity?.active ? 1 : 0,
+    chainTvlUsd: nullable(row.raw?.chainTvlUsd),
+    chainTvlChange1d: nullable(row.raw?.chainTvlChange1d),
+    chainTvlDrawdown30d: nullable(row.raw?.chainTvlDrawdown30d),
+    dexVolumeUsd: nullable(row.raw?.dexVolumeUsd),
+    dexVolumeChange1d: nullable(row.raw?.dexVolumeChange1d),
+    dexVolumeDrawdown30d: nullable(row.raw?.dexVolumeDrawdown30d),
+    stablecoinSupplyUsd: nullable(row.raw?.stablecoinSupplyUsd),
+    stablecoinSupplyChange1d: nullable(row.raw?.stablecoinSupplyChange1d),
+    trackedProtocolTvlUsd: nullable(row.raw?.trackedProtocolTvlUsd)
+  };
+}
+
+const coingeckoByDate = new Map(
+  (coingeckoFeatures?.dailyFactors || []).map((row) => [row.date, row])
+);
+const defillamaByDate = new Map(
+  (defillamaFeatures?.dailyFeatures || []).map((row) => [row.date, row])
+);
+const featureByDate = new Map(featureDates.map((date) => [
+  date,
+  {
+    date,
+    ...flattenCoinGeckoRow(coingeckoByDate.get(date)),
+    ...flattenDefiLlamaRow(defillamaByDate.get(date))
+  }
+]));
 const trainingRows = [];
 for (const row of rows) {
   const feature = featureByDate.get(row.date);
@@ -159,7 +250,15 @@ for (const row of rows) {
 const trainingOutput = {
   metadata: {
     ...labelOutput.metadata,
-    featureSource: features.metadata,
+    featureSources: {
+      coingecko: coingeckoFeatures?.metadata || null,
+      defillama: defillamaFeatures?.metadata || null
+    },
+    sourceCoverage: {
+      coingeckoDates: coingeckoByDate.size,
+      defillamaDates: defillamaByDate.size,
+      mergedDates: featureDates.length
+    },
     rowCount: trainingRows.length
   },
   rows: trainingRows
@@ -199,6 +298,8 @@ function trainingCsv(training) {
     "date",
     "horizon",
     "horizon_days",
+    "has_coingecko",
+    "has_defillama",
     "observations",
     "volatility_score",
     "volatility_active",
@@ -214,6 +315,17 @@ function trainingCsv(training) {
     "worst_volume_zscore",
     "max_stablecoin_peg_deviation",
     "worst_drawdown_30d",
+    "defillama_liquidity_score",
+    "defillama_liquidity_active",
+    "chain_tvl_usd",
+    "chain_tvl_change_1d",
+    "chain_tvl_drawdown_30d",
+    "dex_volume_usd",
+    "dex_volume_change_1d",
+    "dex_volume_drawdown_30d",
+    "stablecoin_supply_usd",
+    "stablecoin_supply_change_1d",
+    "tracked_protocol_tvl_usd",
     "label_any_tail_event",
     ...factorIds.map((factor) => `label_${factor}`),
     "label_severity",
@@ -223,6 +335,8 @@ function trainingCsv(training) {
     row.date,
     row.horizon,
     row.horizonDays,
+    row.hasCoinGecko,
+    row.hasDefiLlama,
     row.observations,
     row.volatilityScore,
     row.volatilityActive,
@@ -238,6 +352,17 @@ function trainingCsv(training) {
     row.worstVolumeZScore,
     row.maxStablecoinPegDeviation,
     row.worstDrawdown30d,
+    row.defiLlamaLiquidityScore,
+    row.defiLlamaLiquidityActive,
+    row.chainTvlUsd,
+    row.chainTvlChange1d,
+    row.chainTvlDrawdown30d,
+    row.dexVolumeUsd,
+    row.dexVolumeChange1d,
+    row.dexVolumeDrawdown30d,
+    row.stablecoinSupplyUsd,
+    row.stablecoinSupplyChange1d,
+    row.trackedProtocolTvlUsd,
     row.labelAnyTailEvent,
     ...factorIds.map((factor) => row.labels[factor]),
     row.labelSeverity,
