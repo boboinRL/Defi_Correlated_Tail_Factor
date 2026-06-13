@@ -1,7 +1,9 @@
 import { createServer } from "node:http";
 import { createReadStream, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { execFile } from "node:child_process";
 import { extname, join, normalize } from "node:path";
+import { promisify } from "node:util";
 import { networkInterfaces } from "node:os";
 import { simulateJointProbability } from "./lib/tail-model.js";
 
@@ -18,6 +20,7 @@ const duneQueryId = process.env.DUNE_QUERY_ID || "";
 const ethereumRpcUrl = process.env.ETHEREUM_RPC_URL || "https://ethereum-rpc.publicnode.com";
 const dataRoot = join(process.cwd(), "data");
 const auditRoot = join(dataRoot, "generated", "audits");
+const execFileAsync = promisify(execFile);
 const DUMMY_EVENT_PRIOR_WEIGHT = 0.62;
 const MARKET_PRIOR_WEIGHT = 0.18;
 const HORIZONS = {
@@ -1156,6 +1159,23 @@ async function handleReconnaissance(req, res) {
   return sendJson(res, 200, { bundle });
 }
 
+async function handleSlitherAudit(req, res) {
+  const body = await parseBody(req);
+  const chainId = Number(body.chainId || 1);
+  const address = String(body.address || "").toLowerCase();
+  if (!isAddress(address)) return sendJson(res, 400, { error: "A valid contract address is required." });
+
+  const script = join(process.cwd(), "scripts", "run-slither-audit.js");
+  const { stdout } = await execFileAsync(process.execPath, [script, String(chainId), address], {
+    cwd: process.cwd(),
+    timeout: Number(process.env.SLITHER_TIMEOUT_MS || 180000),
+    maxBuffer: 20 * 1024 * 1024,
+    windowsHide: true
+  });
+  const report = JSON.parse(stdout.trim().split(/\r?\n/).at(-1));
+  return sendJson(res, 200, { report });
+}
+
 function deterministicClassification(profile) {
   const factorIds = inferRiskFactorIds(profile);
   return {
@@ -1537,6 +1557,7 @@ createServer(async (req, res) => {
     }
     if (req.method === "POST" && url.pathname === "/api/stress/run") return await handleStress(req, res);
     if (req.method === "POST" && url.pathname === "/api/audit/recon") return await handleReconnaissance(req, res);
+    if (req.method === "POST" && url.pathname === "/api/audit/slither") return await handleSlitherAudit(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/classify") return await handleClassify(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/audit") return await handleAuditMemo(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/explain") return await handleExplain(req, res);

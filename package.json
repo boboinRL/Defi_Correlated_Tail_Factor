@@ -11,6 +11,7 @@
     "calibrate:marginals": "node scripts/calibrate-marginals.js",
     "backtest:model": "node scripts/backtest-model.js",
     "pipeline:model": "node scripts/run-model-pipeline.js",
+    "audit:slither": "node scripts/run-slither-audit.js",
     "test": "node --test"
   }
 }

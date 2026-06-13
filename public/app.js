@@ -101,6 +101,9 @@ const els = {
   recon: document.querySelector("#reconButton"),
   reconStatus: document.querySelector("#reconStatus"),
   reconReport: document.querySelector("#reconReport"),
+  slither: document.querySelector("#slitherButton"),
+  slitherStatus: document.querySelector("#slitherStatus"),
+  slitherReport: document.querySelector("#slitherReport"),
   agentStatus: document.querySelector("#agentStatus"),
   contract: document.querySelector("#contractSelect"),
   icon: document.querySelector("#protocolIcon"),
@@ -606,6 +609,14 @@ function clearReconReport() {
     : "Build a traceable evidence bundle from verified source, ABI, proxy slots, bytecode, and function signatures.";
 }
 
+function clearSlitherReport() {
+  if (!els.slitherReport) return;
+  els.slitherReport.innerHTML = "";
+  els.slitherStatus.textContent = isZh()
+    ? "对已验证源码运行 Slither，并将候选发现映射到尾部风险因子。"
+    : "Run Slither against the verified source evidence, then map candidate findings to tail-risk factors.";
+}
+
 function reconList(items, emptyText) {
   if (!items?.length) return `<div class="empty">${escapeHtml(emptyText)}</div>`;
   return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
@@ -706,6 +717,78 @@ async function runReconnaissance() {
       : `Contract reconnaissance failed: ${error.message}`;
   } finally {
     els.recon.disabled = false;
+  }
+}
+
+function renderSlitherReport(report) {
+  const findings = report.findings || [];
+  const visibleFindings = findings.filter((finding) => ["High", "Medium", "Low"].includes(finding.impact)).slice(0, 30);
+  const factorNames = {
+    oracle: "Oracle",
+    "dex-liquidity": "DEX Liquidity",
+    volatility: "Volatility",
+    keeper: "Keeper",
+    governance: "Governance",
+    gas: "Gas",
+    mev: "MEV"
+  };
+  els.slitherStatus.textContent = isZh()
+    ? `扫描 ${report.status} · ${findings.length} 个候选发现 · ${report.tool?.name || "Slither"} ${report.tool?.version || ""}`
+    : `Scan ${report.status} · ${findings.length} candidate findings · ${report.tool?.name || "Slither"} ${report.tool?.version || ""}`;
+  els.slitherReport.innerHTML = `
+    <div class="recon-metrics">
+      <div><span>High</span><strong>${report.summary?.high || 0}</strong></div>
+      <div><span>Medium</span><strong>${report.summary?.medium || 0}</strong></div>
+      <div><span>Low</span><strong>${report.summary?.low || 0}</strong></div>
+      <div><span>${isZh() ? "总计" : "Total"}</span><strong>${report.summary?.total || 0}</strong></div>
+    </div>
+    <div class="recon-hash">
+      <span>${isZh() ? "证据包" : "Evidence Bundle"}</span>
+      <code>${escapeHtml(report.evidenceBundleId || "Unavailable")}</code>
+    </div>
+    <div class="slither-findings">
+      ${visibleFindings.length ? visibleFindings.map((finding) => `
+        <article class="slither-finding impact-${String(finding.impact).toLowerCase()}">
+          <div class="slither-finding-head">
+            <strong>${escapeHtml(finding.title)}</strong>
+            <span>${escapeHtml(finding.impact)} · ${escapeHtml(finding.confidence)}</span>
+          </div>
+          <p>${escapeHtml(finding.description)}</p>
+          <code>${escapeHtml(finding.location?.file || "Source location unavailable")}${finding.location?.line ? `:${finding.location.line}` : ""}</code>
+          <div class="finding-factors">${(finding.riskFactors || []).map((factor) => `<span>${factorNames[factor] || factor}</span>`).join("")}</div>
+          <small>${escapeHtml(finding.remediation)}</small>
+        </article>
+      `).join("") : `<p>${isZh() ? "当前扫描没有产生需要优先复核的 Slither 候选发现。" : "This scan produced no prioritized Slither candidate findings."}</p>`}
+      ${findings.length > visibleFindings.length ? `<p class="finding-overflow">${isZh() ? `页面显示优先级最高的 ${visibleFindings.length} 条；完整报告包含 ${findings.length} 条。` : `Showing the top ${visibleFindings.length} prioritized findings; the versioned report contains all ${findings.length}.`}</p>` : ""}
+    </div>
+    <div class="recon-warning">
+      <strong>${isZh() ? "重要说明" : "Important"}</strong>
+      <p>${isZh() ? "静态分析结果是待人工验证的候选发现，不等于已确认漏洞或可利用攻击路径。" : "Static-analysis results are candidates for manual validation, not confirmed vulnerabilities or proven exploit paths."}</p>
+    </div>
+  `;
+}
+
+async function runSlitherAudit() {
+  const profile = state.selectedProfile;
+  if (!profile) return;
+  const key = profileKey(profile);
+  els.slither.disabled = true;
+  els.slitherStatus.textContent = isZh()
+    ? "正在导出证据源码、编译合约并运行 Slither..."
+    : "Exporting evidence source, compiling the contract, and running Slither...";
+  try {
+    const data = await api("/api/audit/slither", {
+      method: "POST",
+      body: JSON.stringify({ chainId: profile.chainId, address: profile.address })
+    });
+    if (key !== profileKey(state.selectedProfile)) return clearSlitherReport();
+    renderSlitherReport(data.report);
+  } catch (error) {
+    els.slitherStatus.textContent = isZh()
+      ? `Slither 扫描失败：${error.message}`
+      : `Slither scan failed: ${error.message}`;
+  } finally {
+    els.slither.disabled = false;
   }
 }
 
@@ -1049,6 +1132,7 @@ els.searchResults.addEventListener("click", (event) => {
   renderContracts();
   renderRiskGrid(profile);
   clearReconReport();
+  clearSlitherReport();
   setStatus(`Using ${profile.name}. Stress engine refreshed.`);
   runStress();
 });
@@ -1057,6 +1141,7 @@ els.contract.addEventListener("change", () => {
   state.selectedProfile = state.profiles.find((profile) => profileKey(profile) === els.contract.value) || state.profiles[0];
   renderRiskGrid(state.selectedProfile);
   clearReconReport();
+  clearSlitherReport();
   setAgentStatus(isZh() ? "合约已切换。点击“询问 GLM-5.1”获取推荐风险因子。" : "Contract changed. Use Ask GLM-5.1 to classify recommended factors.", "");
   runStress();
 });
@@ -1086,6 +1171,7 @@ els.keeper.addEventListener("change", runStress);
 els.glmFactor.addEventListener("click", applyGlmFactors);
 els.glmAudit.addEventListener("click", generateGlmAudit);
 els.recon.addEventListener("click", runReconnaissance);
+els.slither.addEventListener("click", runSlitherAudit);
 els.reset.addEventListener("click", resetScenario);
 els.riskGrid.addEventListener("change", runStress);
 

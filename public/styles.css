@@ -1093,6 +1093,80 @@ input[type="range"] {
   font-size: 0.82rem;
 }
 
+.slither-findings {
+  display: grid;
+  gap: 10px;
+}
+
+.slither-finding {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-left: 4px solid #8ba0bc;
+  background: #fbfcfe;
+}
+
+.slither-finding.impact-high {
+  border-left-color: var(--red);
+}
+
+.slither-finding.impact-medium {
+  border-left-color: var(--amber);
+}
+
+.slither-finding.impact-low {
+  border-left-color: var(--blue);
+}
+
+.slither-finding-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.slither-finding-head span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.slither-finding p,
+.slither-finding small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.slither-finding code {
+  display: block;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+  font-size: 0.76rem;
+}
+
+.finding-factors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.finding-factors span {
+  padding: 3px 7px;
+  border: 1px solid #b9cdf8;
+  background: #eef4ff;
+  color: #2257bd;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.finding-overflow {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
 .section-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
