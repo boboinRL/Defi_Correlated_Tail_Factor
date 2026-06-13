@@ -98,6 +98,9 @@ const els = {
   glmAudit: document.querySelector("#glmAuditButton"),
   glmAuditStatus: document.querySelector("#glmAuditStatus"),
   glmAuditMemo: document.querySelector("#glmAuditMemo"),
+  recon: document.querySelector("#reconButton"),
+  reconStatus: document.querySelector("#reconStatus"),
+  reconReport: document.querySelector("#reconReport"),
   agentStatus: document.querySelector("#agentStatus"),
   contract: document.querySelector("#contractSelect"),
   icon: document.querySelector("#protocolIcon"),
@@ -155,6 +158,7 @@ const state = {
   selectedProfile: null,
   latestResult: null,
   auditMemoKey: "",
+  reconKey: "",
   requestId: 0,
   locale: localStorage.getItem("tail-risk-locale") || "en",
   horizon: localStorage.getItem("tail-risk-horizon") || "7d"
@@ -214,6 +218,10 @@ const zh = {
   "GLM Risk Memo": "GLM 风险备忘录",
   "Generate AI Risk Memo": "生成 AI 风险备忘录",
   "Generate a structured explanation, mechanism chain, mitigations, monitoring signals, and limitations for the current scenario.": "为当前场景生成结构化解释、机制链、缓解措施、监控指标和模型限制。",
+  "Audit Agent · Phase 1": "审计 Agent · 第一阶段",
+  "Contract Reconnaissance": "合约侦察",
+  "Run Reconnaissance": "运行合约侦察",
+  "Build a traceable evidence bundle from verified source, ABI, proxy slots, bytecode, and function signatures.": "从验证源码、ABI、代理槽位、字节码和函数签名构建可追溯证据包。",
   "Code Security": "代码安全",
   "Operational Resilience": "运营韧性",
   "Market Stability": "市场稳定性",
@@ -241,7 +249,7 @@ function translateStaticUi() {
     ".search-card .eyebrow", ".search-card h2", ".search-card > div:first-child > p:last-child",
     ".search-form button", "#searchStatus", "#agentStatus", ".hero-band .eyebrow", ".hero-band h2", ".hero-band > div:first-child > p:last-child",
     ".hero-metrics span", ".control-panel .panel-head .eyebrow", ".control-panel .panel-head h3",
-    "#glmFactorButton", "#glmAuditButton", "#glmAuditStatus", "#resetButton", ".horizon-block > span", ".slider-label span", ".switch-row span",
+    "#glmFactorButton", "#glmAuditButton", "#glmAuditStatus", "#reconButton", "#reconStatus", "#resetButton", ".horizon-block > span", ".slider-label span", ".switch-row span",
     ".probability-orb small", ".risk-summary .eyebrow", ".metric-grid span",
     ".chart-card .eyebrow", ".chart-card h3", "#dependencySource", "#validationVersion",
     ".section-title span", ".audit-card > p", ".timeline-card .eyebrow", ".timeline-card h3"
@@ -590,6 +598,117 @@ async function generateGlmAudit() {
   }
 }
 
+function clearReconReport() {
+  state.reconKey = "";
+  els.reconReport.innerHTML = "";
+  els.reconStatus.textContent = isZh()
+    ? "从验证源码、ABI、代理槽位、字节码和函数签名构建可追溯证据包。"
+    : "Build a traceable evidence bundle from verified source, ABI, proxy slots, bytecode, and function signatures.";
+}
+
+function reconList(items, emptyText) {
+  if (!items?.length) return `<div class="empty">${escapeHtml(emptyText)}</div>`;
+  return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+}
+
+function renderReconReport(bundle) {
+  const proxyItems = [
+    bundle.proxy?.implementation && `${isZh() ? "实现合约" : "Implementation"}: ${bundle.proxy.implementation}`,
+    bundle.proxy?.admin && `${isZh() ? "代理管理员" : "Proxy admin"}: ${bundle.proxy.admin}`,
+    bundle.proxy?.beacon && `${isZh() ? "Beacon" : "Beacon"}: ${bundle.proxy.beacon}`,
+    `${isZh() ? "字节码大小" : "Bytecode size"}: ${bundle.proxy?.bytecodeBytes || 0} bytes`
+  ].filter(Boolean);
+  const sourceItems = (bundle.sources || []).map((source) =>
+    `${source.provider} (${source.role}): ${source.verified ? (isZh() ? "已验证" : "verified") : (isZh() ? "未验证" : "unverified")} · ${source.sourceFiles} ${isZh() ? "个源码文件" : "source files"} · ${source.abiEntries} ABI entries`
+  );
+  const privileged = (bundle.attackSurface?.privilegedFunctions || []).map((item) =>
+    `${item.signature} · ${item.stateMutability || "nonpayable"}`
+  );
+  const economic = (bundle.attackSurface?.economicFunctions || []).map((item) =>
+    `${item.signature} · ${item.stateMutability || "nonpayable"}`
+  );
+  const signals = (bundle.sourceSignals || []).map((item) =>
+    `${item.id} · ${item.file}:${item.line} · ${item.description}`
+  );
+
+  els.reconStatus.textContent = isZh()
+    ? `证据包 ${bundle.bundleId}${bundle.cached ? " · 缓存" : ""} · 状态：${bundle.status}`
+    : `Evidence bundle ${bundle.bundleId}${bundle.cached ? " · cached" : ""} · Status: ${bundle.status}`;
+  els.reconReport.innerHTML = `
+    <div class="recon-metrics">
+      <div><span>${isZh() ? "源码文件" : "Source Files"}</span><strong>${bundle.sourceFiles?.length || 0}</strong></div>
+      <div><span>${isZh() ? "函数" : "Functions"}</span><strong>${bundle.attackSurface?.functionCount || 0}</strong></div>
+      <div><span>${isZh() ? "状态修改函数" : "State-Changing"}</span><strong>${bundle.attackSurface?.stateChangingCount || 0}</strong></div>
+      <div><span>${isZh() ? "源码信号" : "Source Signals"}</span><strong>${bundle.sourceSignals?.length || 0}</strong></div>
+    </div>
+    <div class="recon-hash">
+      <span>${isZh() ? "证据哈希" : "Evidence Hash"}</span>
+      <code>${escapeHtml(bundle.evidenceHash || "Unavailable")}</code>
+    </div>
+    <div class="recon-grid">
+      <section>
+        <h4>${isZh() ? "证据来源" : "Evidence Sources"}</h4>
+        ${reconList(sourceItems, isZh() ? "未取得验证源码或 ABI。" : "No verified source or ABI was retrieved.")}
+      </section>
+      <section>
+        <h4>${isZh() ? "代理与字节码" : "Proxy & Bytecode"}</h4>
+        ${reconList(proxyItems, isZh() ? "未检测到标准代理槽位。" : "No standard proxy slots were detected.")}
+      </section>
+      <section>
+        <h4>${isZh() ? "权限候选函数" : "Privileged Function Candidates"}</h4>
+        ${reconList(privileged, isZh() ? "ABI 中未发现名称匹配的权限函数。" : "No name-matched privileged functions were found in the ABI.")}
+      </section>
+      <section>
+        <h4>${isZh() ? "经济关键函数" : "Economic Function Candidates"}</h4>
+        ${reconList(economic, isZh() ? "ABI 中未发现名称匹配的经济函数。" : "No name-matched economic functions were found in the ABI.")}
+      </section>
+    </div>
+    <section class="recon-signals">
+      <h4>${isZh() ? "源码模式证据" : "Source Pattern Evidence"}</h4>
+      ${reconList(signals, isZh() ? "没有可扫描源码，或未命中当前模式。" : "No source was available to scan, or no current pattern matched.")}
+    </section>
+    ${(bundle.warnings || []).length ? `
+      <div class="recon-warning">
+        <strong>${isZh() ? "证据缺口" : "Evidence Gaps"}</strong>
+        ${reconList(bundle.warnings, "")}
+      </div>
+    ` : ""}
+  `;
+}
+
+async function runReconnaissance() {
+  const profile = state.selectedProfile;
+  if (!profile) return;
+  const key = profileKey(profile);
+  els.recon.disabled = true;
+  els.reconStatus.textContent = isZh()
+    ? "Audit Agent 正在收集源码、ABI、代理槽位和字节码证据..."
+    : "Audit Agent is collecting source, ABI, proxy-slot, and bytecode evidence...";
+
+  try {
+    const data = await api("/api/audit/recon", {
+      method: "POST",
+      body: JSON.stringify({
+        chainId: profile.chainId,
+        address: profile.address,
+        profile
+      })
+    });
+    if (key !== profileKey(state.selectedProfile)) {
+      clearReconReport();
+      return;
+    }
+    state.reconKey = key;
+    renderReconReport(data.bundle);
+  } catch (error) {
+    els.reconStatus.textContent = isZh()
+      ? `合约侦察失败：${error.message}`
+      : `Contract reconnaissance failed: ${error.message}`;
+  } finally {
+    els.recon.disabled = false;
+  }
+}
+
 function renderResult(result) {
   const profile = result.profile;
   const level = riskLevel(result.jointProbability);
@@ -929,6 +1048,7 @@ els.searchResults.addEventListener("click", (event) => {
   state.selectedProfile = profile;
   renderContracts();
   renderRiskGrid(profile);
+  clearReconReport();
   setStatus(`Using ${profile.name}. Stress engine refreshed.`);
   runStress();
 });
@@ -936,6 +1056,7 @@ els.searchResults.addEventListener("click", (event) => {
 els.contract.addEventListener("change", () => {
   state.selectedProfile = state.profiles.find((profile) => profileKey(profile) === els.contract.value) || state.profiles[0];
   renderRiskGrid(state.selectedProfile);
+  clearReconReport();
   setAgentStatus(isZh() ? "合约已切换。点击“询问 GLM-5.1”获取推荐风险因子。" : "Contract changed. Use Ask GLM-5.1 to classify recommended factors.", "");
   runStress();
 });
@@ -964,6 +1085,7 @@ els.correlation.addEventListener("change", runStress);
 els.keeper.addEventListener("change", runStress);
 els.glmFactor.addEventListener("click", applyGlmFactors);
 els.glmAudit.addEventListener("click", generateGlmAudit);
+els.recon.addEventListener("click", runReconnaissance);
 els.reset.addEventListener("click", resetScenario);
 els.riskGrid.addEventListener("change", runStress);
 

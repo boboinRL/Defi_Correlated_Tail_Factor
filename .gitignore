@@ -1,5 +1,6 @@
 data/generated/*.json
 data/generated/*.csv
+data/generated/audits/
 !data/generated/.gitkeep
 .env
 *.log

@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
-import { createReadStream, readFileSync, statSync } from "node:fs";
+import { createReadStream, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { extname, join, normalize } from "node:path";
 import { networkInterfaces } from "node:os";
 import { simulateJointProbability } from "./lib/tail-model.js";
@@ -14,7 +15,9 @@ const glmTimeoutMs = Number(process.env.GLM_TIMEOUT_MS || 60000);
 const coingeckoKey = process.env.COINGECKO_API_KEY || "";
 const duneKey = process.env.DUNE_API_KEY || "";
 const duneQueryId = process.env.DUNE_QUERY_ID || "";
+const ethereumRpcUrl = process.env.ETHEREUM_RPC_URL || "https://ethereum-rpc.publicnode.com";
 const dataRoot = join(process.cwd(), "data");
+const auditRoot = join(dataRoot, "generated", "audits");
 const DUMMY_EVENT_PRIOR_WEIGHT = 0.62;
 const MARKET_PRIOR_WEIGHT = 0.18;
 const HORIZONS = {
@@ -124,6 +127,7 @@ const marketSources = loadJson("market_sources.json", { protocols: {}, defaults:
 const eventPriors = buildEventPriors(tailEvents);
 const marketCache = new Map();
 const glmAuditCache = new Map();
+const reconnaissanceCache = new Map();
 
 function localIps() {
   return Object.values(networkInterfaces())
@@ -451,6 +455,338 @@ async function fetchJson(url, options = {}, timeoutMs = 8000) {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function sha256(value) {
+  return createHash("sha256").update(String(value ?? "")).digest("hex");
+}
+
+function utcFileStamp(date = new Date()) {
+  return date.toISOString().replaceAll(":", "").replaceAll("-", "").replace(/\.\d{3}Z$/, "Z");
+}
+
+function abiType(input) {
+  if (!input) return "";
+  if (!String(input.type || "").startsWith("tuple")) return input.type || "";
+  const suffix = String(input.type).slice("tuple".length);
+  return `(${(input.components || []).map(abiType).join(",")})${suffix}`;
+}
+
+function functionSignature(item) {
+  return `${item.name}(${(item.inputs || []).map(abiType).join(",")})`;
+}
+
+function parseAbi(value) {
+  if (Array.isArray(value)) return value;
+  if (!value || typeof value !== "string" || value.startsWith("Contract source code not verified")) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function parseEtherscanSources(sourceCode, contractName) {
+  if (!sourceCode) return {};
+  const trimmed = sourceCode.trim();
+  const candidates = [trimmed];
+  if (trimmed.startsWith("{{") && trimmed.endsWith("}}")) candidates.unshift(trimmed.slice(1, -1));
+  for (const candidate of candidates) {
+    try {
+      const parsed = JSON.parse(candidate);
+      if (parsed?.sources && typeof parsed.sources === "object") {
+        return Object.fromEntries(
+          Object.entries(parsed.sources).map(([path, source]) => [path, source?.content || ""])
+        );
+      }
+    } catch {
+      // Single-file source falls through below.
+    }
+  }
+  return { [`${contractName || "Contract"}.sol`]: sourceCode };
+}
+
+function extractSourcifySources(data) {
+  const sources = data?.sources || data?.compilation?.sources || {};
+  return Object.fromEntries(
+    Object.entries(sources)
+      .map(([path, source]) => [path, typeof source === "string" ? source : source?.content || ""])
+      .filter(([, content]) => content)
+  );
+}
+
+function sourcePatternEvidence(sources) {
+  const patterns = [
+    ["delegatecall", /\bdelegatecall\b/i, "Delegatecall can transfer execution into another implementation."],
+    ["selfdestruct", /\bselfdestruct\b/i, "Selfdestruct semantics or legacy assumptions require review."],
+    ["tx-origin", /\btx\.origin\b/i, "tx.origin authorization can be phished through an intermediate contract."],
+    ["assembly", /\bassembly\s*\{/i, "Inline assembly bypasses several Solidity safety checks."],
+    ["unchecked", /\bunchecked\s*\{/i, "Unchecked arithmetic requires explicit invariant review."],
+    ["oracle-read", /\b(latestRoundData|getRoundData|consult|observe|getPrice|price0CumulativeLast)\b/i, "Price or oracle reads affect economic safety."],
+    ["external-call", /\.(call|staticcall|delegatecall)\s*(\{|\()/i, "Low-level external calls require return-value and reentrancy review."],
+    ["upgrade", /\b(upgradeTo|upgradeToAndCall|_authorizeUpgrade|implementation)\b/i, "Upgrade controls and implementation authorization require review."],
+    ["access-control", /\b(onlyOwner|onlyRole|AccessControl|Ownable|DEFAULT_ADMIN_ROLE)\b/i, "Privileged roles are present in the source."],
+    ["liquidation", /\b(liquidat|healthFactor|collateral|borrow|repay)\w*\b/i, "Liquidation or collateral accounting paths are present."]
+  ];
+  const findings = [];
+  for (const [path, content] of Object.entries(sources)) {
+    const lines = String(content).split(/\r?\n/);
+    for (const [id, regex, description] of patterns) {
+      const lineIndex = lines.findIndex((line) => regex.test(line));
+      if (lineIndex >= 0) {
+        findings.push({
+          id,
+          file: path,
+          line: lineIndex + 1,
+          excerpt: lines[lineIndex].trim().slice(0, 180),
+          description
+        });
+      }
+    }
+  }
+  return findings.slice(0, 40);
+}
+
+function analyzeAbi(abi) {
+  const functionItems = abi.filter((item) => item?.type === "function" && item.name);
+  const eventItems = abi.filter((item) => item?.type === "event" && item.name);
+  const errorItems = abi.filter((item) => item?.type === "error" && item.name);
+  const privilegedPattern = /owner|admin|role|govern|upgrade|pause|guardian|operator|manager|config|parameter|set[A-Z]|grant|revoke/i;
+  const economicPattern = /deposit|withdraw|borrow|repay|liquidat|swap|mint|burn|redeem|claim|flash|oracle|price|collateral/i;
+  const functions = functionItems.map((item) => ({
+    name: item.name,
+    signature: functionSignature(item),
+    stateMutability: item.stateMutability || "",
+    payable: item.stateMutability === "payable",
+    stateChanging: !["view", "pure"].includes(item.stateMutability),
+    privilegedCandidate: privilegedPattern.test(item.name),
+    economicCandidate: economicPattern.test(item.name)
+  }));
+  return {
+    functionCount: functions.length,
+    eventCount: eventItems.length,
+    customErrorCount: errorItems.length,
+    stateChangingCount: functions.filter((item) => item.stateChanging).length,
+    payableCount: functions.filter((item) => item.payable).length,
+    privilegedFunctions: functions.filter((item) => item.privilegedCandidate).slice(0, 30),
+    economicFunctions: functions.filter((item) => item.economicCandidate).slice(0, 40),
+    functions: functions.slice(0, 250),
+    events: eventItems.map((item) => item.name).slice(0, 100)
+  };
+}
+
+async function rpcCall(method, params) {
+  return fetchJson(ethereumRpcUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
+  }, 15000);
+}
+
+function storageAddress(value) {
+  const hex = String(value || "").replace(/^0x/, "").padStart(64, "0");
+  const address = `0x${hex.slice(-40)}`;
+  return /^0x0{40}$/.test(address) ? "" : address;
+}
+
+async function fetchProxyEvidence(address) {
+  const implementationSlot = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
+  const adminSlot = "0xb53127684a568b3173ae13b9f8a6016e0195e8e9e3f13c52a7a8ee7aef0f8f";
+  const beaconSlot = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50";
+  const [implementation, admin, beacon, code] = await Promise.all([
+    rpcCall("eth_getStorageAt", [address, implementationSlot, "latest"]),
+    rpcCall("eth_getStorageAt", [address, adminSlot, "latest"]),
+    rpcCall("eth_getStorageAt", [address, beaconSlot, "latest"]),
+    rpcCall("eth_getCode", [address, "latest"])
+  ]);
+  return {
+    implementation: storageAddress(implementation?.result),
+    admin: storageAddress(admin?.result),
+    beacon: storageAddress(beacon?.result),
+    bytecodeHash: code?.result ? sha256(code.result) : "",
+    bytecodeBytes: code?.result ? Math.max(0, (code.result.length - 2) / 2) : 0,
+    rpcUrl: new URL(ethereumRpcUrl).origin
+  };
+}
+
+async function fetchSourcifyEvidence(chainId, address) {
+  const url = `https://sourcify.dev/server/v2/contract/${chainId}/${address}?fields=all`;
+  const data = await fetchJson(url, {}, 20000);
+  const sources = extractSourcifySources(data);
+  const abi = parseAbi(data?.abi || data?.compilation?.abi);
+  return {
+    provider: "Sourcify",
+    url,
+    verified: Boolean(data?.match || data?.compilation),
+    match: data?.match || "",
+    contractName: data?.compilation?.name || data?.name || "",
+    compilerVersion: data?.compilation?.compilerVersion || "",
+    abi,
+    sources
+  };
+}
+
+async function fetchEtherscanEvidence(chainId, address) {
+  if (!etherscanKey || chainId !== 1) return null;
+  const params = new URLSearchParams({
+    module: "contract",
+    action: "getsourcecode",
+    address,
+    apikey: etherscanKey
+  });
+  const url = `https://api.etherscan.io/api?${params.toString()}`;
+  const data = await fetchJson(url, {}, 20000);
+  const result = Array.isArray(data?.result) ? data.result[0] : null;
+  if (!result || data.status === "0") return null;
+  return {
+    provider: "Etherscan",
+    url: url.replace(etherscanKey, "[redacted]"),
+    verified: Boolean(result.SourceCode),
+    contractName: result.ContractName || "",
+    compilerVersion: result.CompilerVersion || "",
+    proxy: result.Proxy === "1",
+    implementation: result.Implementation || "",
+    abi: parseAbi(result.ABI),
+    sources: parseEtherscanSources(result.SourceCode, result.ContractName)
+  };
+}
+
+function summarizeEvidenceSource(source) {
+  return {
+    provider: source.provider,
+    role: source.role || "contract",
+    targetAddress: source.targetAddress || "",
+    url: source.url,
+    verified: source.verified,
+    match: source.match || "",
+    contractName: source.contractName || "",
+    compilerVersion: source.compilerVersion || "",
+    proxy: source.proxy || false,
+    implementation: source.implementation || "",
+    abiEntries: source.abi.length,
+    sourceFiles: Object.keys(source.sources).length
+  };
+}
+
+async function buildEvidenceBundle(chainId, address, force = false) {
+  const normalizedAddress = address.toLowerCase();
+  const cacheKey = `${chainId}:${normalizedAddress}`;
+  const cached = reconnaissanceCache.get(cacheKey);
+  if (!force && cached && Date.now() - cached.timestamp < 15 * 60 * 1000) {
+    return { ...cached.bundle, cached: true };
+  }
+
+  const generatedAt = new Date();
+  const warnings = [];
+  const sourceResults = await Promise.allSettled([
+    fetchSourcifyEvidence(chainId, normalizedAddress),
+    fetchEtherscanEvidence(chainId, normalizedAddress),
+    fetchProxyEvidence(normalizedAddress)
+  ]);
+  const sourceEvidence = sourceResults
+    .slice(0, 2)
+    .filter((result) => result.status === "fulfilled" && result.value)
+    .map((result) => ({
+      ...result.value,
+      role: "proxy-or-contract",
+      targetAddress: normalizedAddress
+    }));
+  for (const [index, result] of sourceResults.entries()) {
+    if (result.status === "rejected") {
+      warnings.push(`${["Sourcify", "Etherscan", "Ethereum RPC"][index]}: ${result.reason?.message || "unavailable"}`);
+    }
+  }
+  if (!etherscanKey) warnings.push("Etherscan API key is not configured; Etherscan evidence was skipped.");
+
+  const proxy = sourceResults[2].status === "fulfilled"
+    ? sourceResults[2].value
+    : { implementation: "", admin: "", beacon: "", bytecodeHash: "", bytecodeBytes: 0 };
+  if (!proxy.implementation) {
+    proxy.implementation = sourceEvidence.find((item) => item.implementation)?.implementation || "";
+  }
+  if (proxy.implementation && proxy.implementation.toLowerCase() !== normalizedAddress) {
+    const implementationAddress = proxy.implementation.toLowerCase();
+    const implementationResults = await Promise.allSettled([
+      fetchSourcifyEvidence(chainId, implementationAddress),
+      fetchEtherscanEvidence(chainId, implementationAddress)
+    ]);
+    for (const [index, result] of implementationResults.entries()) {
+      if (result.status === "fulfilled" && result.value) {
+        sourceEvidence.push({
+          ...result.value,
+          role: "implementation",
+          targetAddress: implementationAddress
+        });
+      } else if (result.status === "rejected") {
+        warnings.push(
+          `Implementation ${["Sourcify", "Etherscan"][index]}: ${result.reason?.message || "unavailable"}`
+        );
+      }
+    }
+  }
+
+  const primary = sourceEvidence
+    .sort((left, right) =>
+      (Object.keys(right.sources).length + right.abi.length) -
+      (Object.keys(left.sources).length + left.abi.length)
+    )[0] || { abi: [], sources: {}, provider: "none" };
+  const sourceFiles = Object.entries(primary.sources).map(([path, content]) => ({
+    path,
+    bytes: Buffer.byteLength(content, "utf8"),
+    sha256: sha256(content)
+  }));
+  const abiAnalysis = analyzeAbi(primary.abi);
+  const patternEvidence = sourcePatternEvidence(primary.sources);
+  const bundleId = `recon-${chainId}-${normalizedAddress.slice(2, 10)}-${utcFileStamp(generatedAt)}`;
+  const evidenceHash = sha256(JSON.stringify({
+    chainId,
+    address: normalizedAddress,
+    sourceFiles,
+    abi: primary.abi,
+    proxy
+  }));
+  const bundle = {
+    schemaVersion: "contract-evidence-v0.1.0",
+    bundleId,
+    generatedAt: generatedAt.toISOString(),
+    cached: false,
+    chainId,
+    address: normalizedAddress,
+    evidenceHash,
+    status: sourceFiles.length || primary.abi.length ? "evidence-collected" : "limited-evidence",
+    sources: sourceEvidence.map(summarizeEvidenceSource),
+    primarySource: primary.provider,
+    primarySourceRole: primary.role || "contract",
+    primarySourceAddress: primary.targetAddress || normalizedAddress,
+    sourceFiles,
+    abiHash: primary.abi.length ? sha256(JSON.stringify(primary.abi)) : "",
+    proxy,
+    attackSurface: abiAnalysis,
+    sourceSignals: patternEvidence,
+    warnings,
+    limitations: [
+      "Reconnaissance identifies attack-surface evidence; it does not confirm a vulnerability.",
+      "Privileged function detection is name-based until Slither and source-level data flow analysis are connected.",
+      "Proxy slots may not cover custom proxy implementations or diamond storage."
+    ]
+  };
+
+  mkdirSync(auditRoot, { recursive: true });
+  const fullBundle = {
+    ...bundle,
+    rawEvidence: {
+      abi: primary.abi,
+      sources: primary.sources
+    }
+  };
+  writeFileSync(join(auditRoot, `${bundleId}.json`), JSON.stringify(fullBundle, null, 2));
+  writeFileSync(
+    join(auditRoot, `${chainId}-${normalizedAddress}-latest.json`),
+    JSON.stringify(fullBundle, null, 2)
+  );
+  reconnaissanceCache.set(cacheKey, { timestamp: Date.now(), bundle });
+  return bundle;
 }
 
 async function fetchSourcifyProfile(chainId, address) {
@@ -807,6 +1143,17 @@ async function handleMarketSnapshot(url, res) {
   const profile = await resolveProfile(chainId, address);
   const marketSignals = await collectMarketSignals(profile, force);
   return sendJson(res, 200, { profile, marketSignals });
+}
+
+async function handleReconnaissance(req, res) {
+  const body = await parseBody(req);
+  const chainId = Number(body.chainId || 1);
+  const address = body.address || body.profile?.address;
+  if (!chainId || !isAddress(address)) {
+    return sendJson(res, 400, { error: "Expected a valid chainId and contract address." });
+  }
+  const bundle = await buildEvidenceBundle(chainId, address, Boolean(body.force));
+  return sendJson(res, 200, { bundle });
 }
 
 function deterministicClassification(profile) {
@@ -1189,6 +1536,7 @@ createServer(async (req, res) => {
       );
     }
     if (req.method === "POST" && url.pathname === "/api/stress/run") return await handleStress(req, res);
+    if (req.method === "POST" && url.pathname === "/api/audit/recon") return await handleReconnaissance(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/classify") return await handleClassify(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/audit") return await handleAuditMemo(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/explain") return await handleExplain(req, res);
