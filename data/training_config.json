@@ -1,0 +1,21 @@
+{
+  "historyDays": 365,
+  "assets": [
+    { "id": "ethereum", "role": "market" },
+    { "id": "wrapped-bitcoin", "role": "market" },
+    { "id": "aave", "role": "protocol" },
+    { "id": "maker", "role": "protocol" },
+    { "id": "curve-dao-token", "role": "protocol" },
+    { "id": "staked-ether", "role": "collateral" },
+    { "id": "usd-coin", "role": "stablecoin" },
+    { "id": "dai", "role": "stablecoin" },
+    { "id": "tether", "role": "stablecoin" }
+  ],
+  "thresholds": {
+    "volatilityReturn": 0.08,
+    "volatilityRolling7d": 0.06,
+    "liquidityDailyVolumeDrop": 0.35,
+    "liquidityVolumeZScore": -1.5,
+    "stablecoinDepeg": 0.01
+  }
+}
