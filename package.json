@@ -7,6 +7,7 @@
     "start": "node server.js",
     "collect:coingecko": "node scripts/collect-coingecko.js",
     "collect:defillama": "node scripts/collect-defillama.js",
-    "build:labels": "node scripts/build-training-labels.js"
+    "build:labels": "node scripts/build-training-labels.js",
+    "calibrate:marginals": "node scripts/calibrate-marginals.js"
   }
 }

@@ -1,0 +1,2371 @@
+{
+  "modelVersion": "empirical-tail-v0.3.0-20260613",
+  "generatedAt": "2026-06-13T11:22:51.875Z",
+  "status": "early-calibration",
+  "latestFeatureDate": "2026-06-13",
+  "defaultWindow": "full",
+  "probabilityByHorizon": {
+    "1d": {
+      "oracle": {
+        "successes": 13,
+        "observations": 2356,
+        "empiricalProbability": 0.00551783,
+        "posteriorMean": 0.00572762,
+        "confidence95": {
+          "low": 0.00322749,
+          "high": 0.0094181
+        }
+      },
+      "liquidity": {
+        "successes": 22,
+        "observations": 2356,
+        "empiricalProbability": 0.00933786,
+        "posteriorMean": 0.00954603,
+        "confidence95": {
+          "low": 0.00617464,
+          "high": 0.01409858
+        }
+      },
+      "volatility": {
+        "successes": 20,
+        "observations": 2356,
+        "empiricalProbability": 0.00848896,
+        "posteriorMean": 0.0086975,
+        "confidence95": {
+          "low": 0.005502,
+          "high": 0.0130762
+        }
+      },
+      "keeper": {
+        "successes": 11,
+        "observations": 2356,
+        "empiricalProbability": 0.00466893,
+        "posteriorMean": 0.00487908,
+        "confidence95": {
+          "low": 0.00260905,
+          "high": 0.00834152
+        }
+      },
+      "governance": {
+        "successes": 2,
+        "observations": 2356,
+        "empiricalProbability": 0.0008489,
+        "posteriorMean": 0.00106067,
+        "confidence95": {
+          "low": 0.00023282,
+          "high": 0.00309011
+        }
+      },
+      "stablecoin": {
+        "successes": 6,
+        "observations": 2356,
+        "empiricalProbability": 0.00254669,
+        "posteriorMean": 0.00275774,
+        "confidence95": {
+          "low": 0.00116766,
+          "high": 0.00554533
+        }
+      },
+      "gas": {
+        "successes": 4,
+        "observations": 2356,
+        "empiricalProbability": 0.00169779,
+        "posteriorMean": 0.00190921,
+        "confidence95": {
+          "low": 0.00066042,
+          "high": 0.00435754
+        }
+      },
+      "mev": {
+        "successes": 3,
+        "observations": 2356,
+        "empiricalProbability": 0.00127334,
+        "posteriorMean": 0.00148494,
+        "confidence95": {
+          "low": 0.00043314,
+          "high": 0.00373731
+        }
+      }
+    },
+    "7d": {
+      "oracle": {
+        "successes": 86,
+        "observations": 2356,
+        "empiricalProbability": 0.03650255,
+        "posteriorMean": 0.03669919,
+        "confidence95": {
+          "low": 0.02965294,
+          "high": 0.04486122
+        }
+      },
+      "liquidity": {
+        "successes": 140,
+        "observations": 2356,
+        "empiricalProbability": 0.05942275,
+        "posteriorMean": 0.05960967,
+        "confidence95": {
+          "low": 0.05057436,
+          "high": 0.06970557
+        }
+      },
+      "volatility": {
+        "successes": 126,
+        "observations": 2356,
+        "empiricalProbability": 0.05348048,
+        "posteriorMean": 0.05366992,
+        "confidence95": {
+          "low": 0.04510059,
+          "high": 0.06331415
+        }
+      },
+      "keeper": {
+        "successes": 73,
+        "observations": 2356,
+        "empiricalProbability": 0.03098472,
+        "posteriorMean": 0.03118371,
+        "confidence95": {
+          "low": 0.02471543,
+          "high": 0.03878103
+        }
+      },
+      "governance": {
+        "successes": 14,
+        "observations": 2356,
+        "empiricalProbability": 0.00594228,
+        "posteriorMean": 0.00615189,
+        "confidence95": {
+          "low": 0.00354299,
+          "high": 0.00995012
+        }
+      },
+      "stablecoin": {
+        "successes": 42,
+        "observations": 2356,
+        "empiricalProbability": 0.01782683,
+        "posteriorMean": 0.0180314,
+        "confidence95": {
+          "low": 0.01321554,
+          "high": 0.02400798
+        }
+      },
+      "gas": {
+        "successes": 28,
+        "observations": 2356,
+        "empiricalProbability": 0.01188455,
+        "posteriorMean": 0.01209164,
+        "confidence95": {
+          "low": 0.00823524,
+          "high": 0.01712307
+        }
+      },
+      "mev": {
+        "successes": 21,
+        "observations": 2356,
+        "empiricalProbability": 0.00891341,
+        "posteriorMean": 0.00912176,
+        "confidence95": {
+          "low": 0.00583729,
+          "high": 0.01358842
+        }
+      }
+    },
+    "30d": {
+      "oracle": {
+        "successes": 344,
+        "observations": 2356,
+        "empiricalProbability": 0.14601019,
+        "posteriorMean": 0.14616037,
+        "confidence95": {
+          "low": 0.1323275,
+          "high": 0.1608454
+        }
+      },
+      "liquidity": {
+        "successes": 557,
+        "observations": 2356,
+        "empiricalProbability": 0.23641766,
+        "posteriorMean": 0.23652949,
+        "confidence95": {
+          "low": 0.21969854,
+          "high": 0.25399494
+        }
+      },
+      "volatility": {
+        "successes": 497,
+        "observations": 2356,
+        "empiricalProbability": 0.21095076,
+        "posteriorMean": 0.2110734,
+        "confidence95": {
+          "low": 0.19495355,
+          "high": 0.22788907
+        }
+      },
+      "keeper": {
+        "successes": 303,
+        "observations": 2356,
+        "empiricalProbability": 0.12860781,
+        "posteriorMean": 0.12876538,
+        "confidence95": {
+          "low": 0.11569199,
+          "high": 0.14273281
+        }
+      },
+      "governance": {
+        "successes": 60,
+        "observations": 2356,
+        "empiricalProbability": 0.02546689,
+        "posteriorMean": 0.02566822,
+        "confidence95": {
+          "low": 0.01983637,
+          "high": 0.03264241
+        }
+      },
+      "stablecoin": {
+        "successes": 180,
+        "observations": 2356,
+        "empiricalProbability": 0.07640068,
+        "posteriorMean": 0.0765804,
+        "confidence95": {
+          "low": 0.06635031,
+          "high": 0.08783021
+        }
+      },
+      "gas": {
+        "successes": 120,
+        "observations": 2356,
+        "empiricalProbability": 0.05093379,
+        "posteriorMean": 0.05112431,
+        "confidence95": {
+          "low": 0.04276389,
+          "high": 0.06056576
+        }
+      },
+      "mev": {
+        "successes": 90,
+        "observations": 2356,
+        "empiricalProbability": 0.03820034,
+        "posteriorMean": 0.03839627,
+        "confidence95": {
+          "low": 0.0311819,
+          "high": 0.04672232
+        }
+      }
+    }
+  },
+  "dependenceByHorizon": {
+    "1d": [
+      {
+        "factorA": "oracle",
+        "factorB": "liquidity",
+        "counts": {
+          "both": 12,
+          "onlyA": 1,
+          "onlyB": 10,
+          "neither": 2333
+        },
+        "observations": 2356,
+        "jointProbability": 0.00509338,
+        "independentJointProbability": 0.00005152,
+        "lift": 98.85314685,
+        "phiCorrelation": 0.70765445,
+        "conditionalBGivenA": 0.92307692,
+        "conditionalAGivenB": 0.54545455,
+        "jaccard": 0.52173913
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "volatility",
+        "counts": {
+          "both": 10,
+          "onlyA": 3,
+          "onlyB": 10,
+          "neither": 2333
+        },
+        "observations": 2356,
+        "jointProbability": 0.00424448,
+        "independentJointProbability": 0.00004684,
+        "lift": 90.61538462,
+        "phiCorrelation": 0.61765603,
+        "conditionalBGivenA": 0.76923077,
+        "conditionalAGivenB": 0.5,
+        "jaccard": 0.43478261
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "keeper",
+        "counts": {
+          "both": 6,
+          "onlyA": 7,
+          "onlyB": 5,
+          "neither": 2338
+        },
+        "observations": 2356,
+        "jointProbability": 0.00254669,
+        "independentJointProbability": 0.00002576,
+        "lift": 98.85314685,
+        "phiCorrelation": 0.49921227,
+        "conditionalBGivenA": 0.46153846,
+        "conditionalAGivenB": 0.54545455,
+        "jaccard": 0.33333333
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "governance",
+        "counts": {
+          "both": 0,
+          "onlyA": 13,
+          "onlyB": 2,
+          "neither": 2341
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00000468,
+        "lift": 0,
+        "phiCorrelation": -0.00217119,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 4,
+          "onlyA": 9,
+          "onlyB": 2,
+          "neither": 2341
+        },
+        "observations": 2356,
+        "jointProbability": 0.00169779,
+        "independentJointProbability": 0.00001405,
+        "lift": 120.82051282,
+        "phiCorrelation": 0.45098116,
+        "conditionalBGivenA": 0.30769231,
+        "conditionalAGivenB": 0.66666667,
+        "jaccard": 0.26666667
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "gas",
+        "counts": {
+          "both": 1,
+          "onlyA": 12,
+          "onlyB": 3,
+          "neither": 2340
+        },
+        "observations": 2356,
+        "jointProbability": 0.00042445,
+        "independentJointProbability": 0.00000937,
+        "lift": 45.30769231,
+        "phiCorrelation": 0.1361056,
+        "conditionalBGivenA": 0.07692308,
+        "conditionalAGivenB": 0.25,
+        "jaccard": 0.0625
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "mev",
+        "counts": {
+          "both": 1,
+          "onlyA": 12,
+          "onlyB": 2,
+          "neither": 2341
+        },
+        "observations": 2356,
+        "jointProbability": 0.00042445,
+        "independentJointProbability": 0.00000703,
+        "lift": 60.41025641,
+        "phiCorrelation": 0.15801438,
+        "conditionalBGivenA": 0.07692308,
+        "conditionalAGivenB": 0.33333333,
+        "jaccard": 0.06666667
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "volatility",
+        "counts": {
+          "both": 20,
+          "onlyA": 2,
+          "onlyB": 0,
+          "neither": 2334
+        },
+        "observations": 2356,
+        "jointProbability": 0.00848896,
+        "independentJointProbability": 0.00007927,
+        "lift": 107.09090909,
+        "phiCorrelation": 0.95305434,
+        "conditionalBGivenA": 0.90909091,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.90909091
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "keeper",
+        "counts": {
+          "both": 10,
+          "onlyA": 12,
+          "onlyB": 1,
+          "neither": 2333
+        },
+        "observations": 2356,
+        "jointProbability": 0.00424448,
+        "independentJointProbability": 0.0000436,
+        "lift": 97.3553719,
+        "phiCorrelation": 0.64071039,
+        "conditionalBGivenA": 0.45454545,
+        "conditionalAGivenB": 0.90909091,
+        "jaccard": 0.43478261
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "governance",
+        "counts": {
+          "both": 2,
+          "onlyA": 20,
+          "onlyB": 0,
+          "neither": 2334
+        },
+        "observations": 2356,
+        "jointProbability": 0.0008489,
+        "independentJointProbability": 0.00000793,
+        "lift": 107.09090909,
+        "phiCorrelation": 0.30022777,
+        "conditionalBGivenA": 0.09090909,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.09090909
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 6,
+          "onlyA": 16,
+          "onlyB": 0,
+          "neither": 2334
+        },
+        "observations": 2356,
+        "jointProbability": 0.00254669,
+        "independentJointProbability": 0.00002378,
+        "lift": 107.09090909,
+        "phiCorrelation": 0.52045212,
+        "conditionalBGivenA": 0.27272727,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.27272727
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "gas",
+        "counts": {
+          "both": 3,
+          "onlyA": 19,
+          "onlyB": 1,
+          "neither": 2333
+        },
+        "observations": 2356,
+        "jointProbability": 0.00127334,
+        "independentJointProbability": 0.00001585,
+        "lift": 80.31818182,
+        "phiCorrelation": 0.31757405,
+        "conditionalBGivenA": 0.13636364,
+        "conditionalAGivenB": 0.75,
+        "jaccard": 0.13043478
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "mev",
+        "counts": {
+          "both": 3,
+          "onlyA": 19,
+          "onlyB": 0,
+          "neither": 2334
+        },
+        "observations": 2356,
+        "jointProbability": 0.00127334,
+        "independentJointProbability": 0.00001189,
+        "lift": 107.09090909,
+        "phiCorrelation": 0.36778054,
+        "conditionalBGivenA": 0.13636364,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.13636364
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "keeper",
+        "counts": {
+          "both": 9,
+          "onlyA": 11,
+          "onlyB": 2,
+          "neither": 2334
+        },
+        "observations": 2356,
+        "jointProbability": 0.00382003,
+        "independentJointProbability": 0.00003963,
+        "lift": 96.38181818,
+        "phiCorrelation": 0.60446213,
+        "conditionalBGivenA": 0.45,
+        "conditionalAGivenB": 0.81818182,
+        "jaccard": 0.40909091
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "governance",
+        "counts": {
+          "both": 2,
+          "onlyA": 18,
+          "onlyB": 0,
+          "neither": 2336
+        },
+        "observations": 2356,
+        "jointProbability": 0.0008489,
+        "independentJointProbability": 0.00000721,
+        "lift": 117.8,
+        "phiCorrelation": 0.31501642,
+        "conditionalBGivenA": 0.1,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.1
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 5,
+          "onlyA": 15,
+          "onlyB": 1,
+          "neither": 2335
+        },
+        "observations": 2356,
+        "jointProbability": 0.00212224,
+        "independentJointProbability": 0.00002162,
+        "lift": 98.16666667,
+        "phiCorrelation": 0.4542946,
+        "conditionalBGivenA": 0.25,
+        "conditionalAGivenB": 0.83333333,
+        "jaccard": 0.23809524
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "gas",
+        "counts": {
+          "both": 3,
+          "onlyA": 17,
+          "onlyB": 1,
+          "neither": 2335
+        },
+        "observations": 2356,
+        "jointProbability": 0.00127334,
+        "independentJointProbability": 0.00001441,
+        "lift": 88.35,
+        "phiCorrelation": 0.33331344,
+        "conditionalBGivenA": 0.15,
+        "conditionalAGivenB": 0.75,
+        "jaccard": 0.14285714
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "mev",
+        "counts": {
+          "both": 3,
+          "onlyA": 17,
+          "onlyB": 0,
+          "neither": 2336
+        },
+        "observations": 2356,
+        "jointProbability": 0.00127334,
+        "independentJointProbability": 0.00001081,
+        "lift": 117.8,
+        "phiCorrelation": 0.38589672,
+        "conditionalBGivenA": 0.15,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.15
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "governance",
+        "counts": {
+          "both": 0,
+          "onlyA": 11,
+          "onlyB": 2,
+          "neither": 2343
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00000396,
+        "lift": 0,
+        "phiCorrelation": -0.00199635,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 0,
+          "onlyA": 11,
+          "onlyB": 6,
+          "neither": 2339
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00001189,
+        "lift": 0,
+        "phiCorrelation": -0.00346072,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "gas",
+        "counts": {
+          "both": 4,
+          "onlyA": 7,
+          "onlyB": 0,
+          "neither": 2345
+        },
+        "observations": 2356,
+        "jointProbability": 0.00169779,
+        "independentJointProbability": 0.00000793,
+        "lift": 214.18181818,
+        "phiCorrelation": 0.60212467,
+        "conditionalBGivenA": 0.36363636,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.36363636
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "mev",
+        "counts": {
+          "both": 1,
+          "onlyA": 10,
+          "onlyB": 2,
+          "neither": 2343
+        },
+        "observations": 2356,
+        "jointProbability": 0.00042445,
+        "independentJointProbability": 0.00000595,
+        "lift": 71.39393939,
+        "phiCorrelation": 0.17215112,
+        "conditionalBGivenA": 0.09090909,
+        "conditionalAGivenB": 0.33333333,
+        "jaccard": 0.07692308
+      },
+      {
+        "factorA": "governance",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 0,
+          "onlyA": 2,
+          "onlyB": 6,
+          "neither": 2348
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00000216,
+        "lift": 0,
+        "phiCorrelation": -0.00147283,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "governance",
+        "factorB": "gas",
+        "counts": {
+          "both": 0,
+          "onlyA": 2,
+          "onlyB": 4,
+          "neither": 2350
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00000144,
+        "lift": 0,
+        "phiCorrelation": -0.00120205,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "governance",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 2,
+          "onlyB": 3,
+          "neither": 2351
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00000108,
+        "lift": 0,
+        "phiCorrelation": -0.00104079,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "stablecoin",
+        "factorB": "gas",
+        "counts": {
+          "both": 0,
+          "onlyA": 6,
+          "onlyB": 4,
+          "neither": 2346
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00000432,
+        "lift": 0,
+        "phiCorrelation": -0.00208379,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "stablecoin",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 6,
+          "onlyB": 3,
+          "neither": 2347
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00000324,
+        "lift": 0,
+        "phiCorrelation": -0.00180423,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "gas",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 4,
+          "onlyB": 3,
+          "neither": 2349
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00000216,
+        "lift": 0,
+        "phiCorrelation": -0.00147252,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      }
+    ],
+    "7d": [
+      {
+        "factorA": "oracle",
+        "factorB": "liquidity",
+        "counts": {
+          "both": 79,
+          "onlyA": 7,
+          "onlyB": 61,
+          "neither": 2209
+        },
+        "observations": 2356,
+        "jointProbability": 0.03353141,
+        "independentJointProbability": 0.00216908,
+        "lift": 15.45880399,
+        "phiCorrelation": 0.70737191,
+        "conditionalBGivenA": 0.91860465,
+        "conditionalAGivenB": 0.56428571,
+        "jaccard": 0.53741497
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "volatility",
+        "counts": {
+          "both": 65,
+          "onlyA": 21,
+          "onlyB": 61,
+          "neither": 2209
+        },
+        "observations": 2356,
+        "jointProbability": 0.02758913,
+        "independentJointProbability": 0.00195217,
+        "lift": 14.13252123,
+        "phiCorrelation": 0.60759928,
+        "conditionalBGivenA": 0.75581395,
+        "conditionalAGivenB": 0.51587302,
+        "jaccard": 0.44217687
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "keeper",
+        "counts": {
+          "both": 42,
+          "onlyA": 44,
+          "onlyB": 31,
+          "neither": 2239
+        },
+        "observations": 2356,
+        "jointProbability": 0.01782683,
+        "independentJointProbability": 0.00113102,
+        "lift": 15.76170755,
+        "phiCorrelation": 0.51378494,
+        "conditionalBGivenA": 0.48837209,
+        "conditionalAGivenB": 0.57534247,
+        "jaccard": 0.35897436
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "governance",
+        "counts": {
+          "both": 5,
+          "onlyA": 81,
+          "onlyB": 9,
+          "neither": 2261
+        },
+        "observations": 2356,
+        "jointProbability": 0.00212224,
+        "independentJointProbability": 0.00021691,
+        "lift": 9.78405316,
+        "phiCorrelation": 0.13219098,
+        "conditionalBGivenA": 0.05813953,
+        "conditionalAGivenB": 0.35714286,
+        "jaccard": 0.05263158
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 28,
+          "onlyA": 58,
+          "onlyB": 14,
+          "neither": 2256
+        },
+        "observations": 2356,
+        "jointProbability": 0.01188455,
+        "independentJointProbability": 0.00065072,
+        "lift": 18.26356589,
+        "phiCorrelation": 0.45269925,
+        "conditionalBGivenA": 0.3255814,
+        "conditionalAGivenB": 0.66666667,
+        "jaccard": 0.28
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "gas",
+        "counts": {
+          "both": 7,
+          "onlyA": 79,
+          "onlyB": 21,
+          "neither": 2249
+        },
+        "observations": 2356,
+        "jointProbability": 0.00297114,
+        "independentJointProbability": 0.00043382,
+        "lift": 6.84883721,
+        "phiCorrelation": 0.12485138,
+        "conditionalBGivenA": 0.08139535,
+        "conditionalAGivenB": 0.25,
+        "jaccard": 0.06542056
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "mev",
+        "counts": {
+          "both": 7,
+          "onlyA": 79,
+          "onlyB": 14,
+          "neither": 2256
+        },
+        "observations": 2356,
+        "jointProbability": 0.00297114,
+        "independentJointProbability": 0.00032536,
+        "lift": 9.13178295,
+        "phiCorrelation": 0.15010262,
+        "conditionalBGivenA": 0.08139535,
+        "conditionalAGivenB": 0.33333333,
+        "jaccard": 0.07
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "volatility",
+        "counts": {
+          "both": 126,
+          "onlyA": 14,
+          "onlyB": 0,
+          "neither": 2216
+        },
+        "observations": 2356,
+        "jointProbability": 0.05348048,
+        "independentJointProbability": 0.00317796,
+        "lift": 16.82857143,
+        "phiCorrelation": 0.94570068,
+        "conditionalBGivenA": 0.9,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.9
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "keeper",
+        "counts": {
+          "both": 66,
+          "onlyA": 74,
+          "onlyB": 7,
+          "neither": 2209
+        },
+        "observations": 2356,
+        "jointProbability": 0.02801358,
+        "independentJointProbability": 0.0018412,
+        "lift": 15.2148728,
+        "phiCorrelation": 0.63889662,
+        "conditionalBGivenA": 0.47142857,
+        "conditionalAGivenB": 0.90410959,
+        "jaccard": 0.44897959
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "governance",
+        "counts": {
+          "both": 14,
+          "onlyA": 126,
+          "onlyB": 0,
+          "neither": 2216
+        },
+        "observations": 2356,
+        "jointProbability": 0.00594228,
+        "independentJointProbability": 0.00035311,
+        "lift": 16.82857143,
+        "phiCorrelation": 0.30760361,
+        "conditionalBGivenA": 0.1,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.1
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 42,
+          "onlyA": 98,
+          "onlyB": 0,
+          "neither": 2216
+        },
+        "observations": 2356,
+        "jointProbability": 0.01782683,
+        "independentJointProbability": 0.00105932,
+        "lift": 16.82857143,
+        "phiCorrelation": 0.53599881,
+        "conditionalBGivenA": 0.3,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.3
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "gas",
+        "counts": {
+          "both": 21,
+          "onlyA": 119,
+          "onlyB": 7,
+          "neither": 2209
+        },
+        "observations": 2356,
+        "jointProbability": 0.00891341,
+        "independentJointProbability": 0.00070621,
+        "lift": 12.62142857,
+        "phiCorrelation": 0.32035107,
+        "conditionalBGivenA": 0.15,
+        "conditionalAGivenB": 0.75,
+        "jaccard": 0.14285714
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "mev",
+        "counts": {
+          "both": 21,
+          "onlyA": 119,
+          "onlyB": 0,
+          "neither": 2216
+        },
+        "observations": 2356,
+        "jointProbability": 0.00891341,
+        "independentJointProbability": 0.00052966,
+        "lift": 16.82857143,
+        "phiCorrelation": 0.37730023,
+        "conditionalBGivenA": 0.15,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.15
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "keeper",
+        "counts": {
+          "both": 59,
+          "onlyA": 67,
+          "onlyB": 14,
+          "neither": 2216
+        },
+        "observations": 2356,
+        "jointProbability": 0.02504244,
+        "independentJointProbability": 0.00165708,
+        "lift": 15.11241574,
+        "phiCorrelation": 0.59985002,
+        "conditionalBGivenA": 0.46825397,
+        "conditionalAGivenB": 0.80821918,
+        "jaccard": 0.42142857
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "governance",
+        "counts": {
+          "both": 14,
+          "onlyA": 112,
+          "onlyB": 0,
+          "neither": 2230
+        },
+        "observations": 2356,
+        "jointProbability": 0.00594228,
+        "independentJointProbability": 0.0003178,
+        "lift": 18.6984127,
+        "phiCorrelation": 0.3252653,
+        "conditionalBGivenA": 0.11111111,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.11111111
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 35,
+          "onlyA": 91,
+          "onlyB": 7,
+          "neither": 2223
+        },
+        "observations": 2356,
+        "jointProbability": 0.01485569,
+        "independentJointProbability": 0.00095339,
+        "lift": 15.58201058,
+        "phiCorrelation": 0.46697456,
+        "conditionalBGivenA": 0.27777778,
+        "conditionalAGivenB": 0.83333333,
+        "jaccard": 0.26315789
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "gas",
+        "counts": {
+          "both": 21,
+          "onlyA": 105,
+          "onlyB": 7,
+          "neither": 2223
+        },
+        "observations": 2356,
+        "jointProbability": 0.00891341,
+        "independentJointProbability": 0.00063559,
+        "lift": 14.02380952,
+        "phiCorrelation": 0.33951456,
+        "conditionalBGivenA": 0.16666667,
+        "conditionalAGivenB": 0.75,
+        "jaccard": 0.15789474
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "mev",
+        "counts": {
+          "both": 21,
+          "onlyA": 105,
+          "onlyB": 0,
+          "neither": 2230
+        },
+        "observations": 2356,
+        "jointProbability": 0.00891341,
+        "independentJointProbability": 0.00047669,
+        "lift": 18.6984127,
+        "phiCorrelation": 0.39896368,
+        "conditionalBGivenA": 0.16666667,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.16666667
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "governance",
+        "counts": {
+          "both": 0,
+          "onlyA": 73,
+          "onlyB": 14,
+          "neither": 2269
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00018412,
+        "lift": 0,
+        "phiCorrelation": -0.01382544,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 0,
+          "onlyA": 73,
+          "onlyB": 42,
+          "neither": 2241
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00055236,
+        "lift": 0,
+        "phiCorrelation": -0.02409081,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "gas",
+        "counts": {
+          "both": 28,
+          "onlyA": 45,
+          "onlyB": 0,
+          "neither": 2283
+        },
+        "observations": 2356,
+        "jointProbability": 0.01188455,
+        "independentJointProbability": 0.00036824,
+        "lift": 32.2739726,
+        "phiCorrelation": 0.6133086,
+        "conditionalBGivenA": 0.38356164,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.38356164
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "mev",
+        "counts": {
+          "both": 12,
+          "onlyA": 61,
+          "onlyB": 9,
+          "neither": 2274
+        },
+        "observations": 2356,
+        "jointProbability": 0.00509338,
+        "independentJointProbability": 0.00027618,
+        "lift": 18.44227006,
+        "phiCorrelation": 0.29578605,
+        "conditionalBGivenA": 0.16438356,
+        "conditionalAGivenB": 0.57142857,
+        "jaccard": 0.14634146
+      },
+      {
+        "factorA": "governance",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 5,
+          "onlyA": 9,
+          "onlyB": 37,
+          "neither": 2305
+        },
+        "observations": 2356,
+        "jointProbability": 0.00212224,
+        "independentJointProbability": 0.00010593,
+        "lift": 20.03401361,
+        "phiCorrelation": 0.19826402,
+        "conditionalBGivenA": 0.35714286,
+        "conditionalAGivenB": 0.11904762,
+        "jaccard": 0.09803922
+      },
+      {
+        "factorA": "governance",
+        "factorB": "gas",
+        "counts": {
+          "both": 0,
+          "onlyA": 14,
+          "onlyB": 28,
+          "neither": 2314
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00007062,
+        "lift": 0,
+        "phiCorrelation": -0.00847926,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "governance",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 14,
+          "onlyB": 21,
+          "neither": 2321
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00005297,
+        "lift": 0,
+        "phiCorrelation": -0.00733224,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "stablecoin",
+        "factorB": "gas",
+        "counts": {
+          "both": 0,
+          "onlyA": 42,
+          "onlyB": 28,
+          "neither": 2286
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00021186,
+        "lift": 0,
+        "phiCorrelation": -0.0147751,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "stablecoin",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 42,
+          "onlyB": 21,
+          "neither": 2293
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.0001589,
+        "lift": 0,
+        "phiCorrelation": -0.01277642,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "gas",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 28,
+          "onlyB": 21,
+          "neither": 2307
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00010593,
+        "lift": 0,
+        "phiCorrelation": -0.01040049,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      }
+    ],
+    "30d": [
+      {
+        "factorA": "oracle",
+        "factorB": "liquidity",
+        "counts": {
+          "both": 314,
+          "onlyA": 30,
+          "onlyB": 243,
+          "neither": 1769
+        },
+        "observations": 2356,
+        "jointProbability": 0.13327674,
+        "independentJointProbability": 0.03451939,
+        "lift": 3.86092439,
+        "phiCorrelation": 0.65823903,
+        "conditionalBGivenA": 0.9127907,
+        "conditionalAGivenB": 0.56373429,
+        "jaccard": 0.53492334
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "volatility",
+        "counts": {
+          "both": 254,
+          "onlyA": 90,
+          "onlyB": 243,
+          "neither": 1769
+        },
+        "observations": 2356,
+        "jointProbability": 0.10780985,
+        "independentJointProbability": 0.03080096,
+        "lift": 3.50021057,
+        "phiCorrelation": 0.53454013,
+        "conditionalBGivenA": 0.73837209,
+        "conditionalAGivenB": 0.5110664,
+        "jaccard": 0.43270869
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "keeper",
+        "counts": {
+          "both": 180,
+          "onlyA": 164,
+          "onlyB": 123,
+          "neither": 1889
+        },
+        "observations": 2356,
+        "jointProbability": 0.07640068,
+        "independentJointProbability": 0.01877805,
+        "lift": 4.06861616,
+        "phiCorrelation": 0.48745513,
+        "conditionalBGivenA": 0.52325581,
+        "conditionalAGivenB": 0.59405941,
+        "jaccard": 0.38543897
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "governance",
+        "counts": {
+          "both": 28,
+          "onlyA": 316,
+          "onlyB": 32,
+          "neither": 1980
+        },
+        "observations": 2356,
+        "jointProbability": 0.01188455,
+        "independentJointProbability": 0.00371843,
+        "lift": 3.19612403,
+        "phiCorrelation": 0.14679517,
+        "conditionalBGivenA": 0.08139535,
+        "conditionalAGivenB": 0.46666667,
+        "jaccard": 0.07446809
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 120,
+          "onlyA": 224,
+          "onlyB": 60,
+          "neither": 1952
+        },
+        "observations": 2356,
+        "jointProbability": 0.05093379,
+        "independentJointProbability": 0.01115528,
+        "lift": 4.56589147,
+        "phiCorrelation": 0.42407255,
+        "conditionalBGivenA": 0.34883721,
+        "conditionalAGivenB": 0.66666667,
+        "jaccard": 0.2970297
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "gas",
+        "counts": {
+          "both": 30,
+          "onlyA": 314,
+          "onlyB": 90,
+          "neither": 1922
+        },
+        "observations": 2356,
+        "jointProbability": 0.01273345,
+        "independentJointProbability": 0.00743685,
+        "lift": 1.7122093,
+        "phiCorrelation": 0.0682225,
+        "conditionalBGivenA": 0.0872093,
+        "conditionalAGivenB": 0.25,
+        "jaccard": 0.06912442
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "mev",
+        "counts": {
+          "both": 30,
+          "onlyA": 314,
+          "onlyB": 60,
+          "neither": 1952
+        },
+        "observations": 2356,
+        "jointProbability": 0.01273345,
+        "independentJointProbability": 0.00557764,
+        "lift": 2.28294574,
+        "phiCorrelation": 0.10572187,
+        "conditionalBGivenA": 0.0872093,
+        "conditionalAGivenB": 0.33333333,
+        "jaccard": 0.07425743
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "volatility",
+        "counts": {
+          "both": 497,
+          "onlyA": 60,
+          "onlyB": 0,
+          "neither": 1799
+        },
+        "observations": 2356,
+        "jointProbability": 0.21095076,
+        "independentJointProbability": 0.04987249,
+        "lift": 4.22980251,
+        "phiCorrelation": 0.92923698,
+        "conditionalBGivenA": 0.89228007,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.89228007
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "keeper",
+        "counts": {
+          "both": 273,
+          "onlyA": 284,
+          "onlyB": 30,
+          "neither": 1769
+        },
+        "observations": 2356,
+        "jointProbability": 0.11587436,
+        "independentJointProbability": 0.03040516,
+        "lift": 3.81101019,
+        "phiCorrelation": 0.60089871,
+        "conditionalBGivenA": 0.49012567,
+        "conditionalAGivenB": 0.9009901,
+        "jaccard": 0.46507666
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "governance",
+        "counts": {
+          "both": 60,
+          "onlyA": 497,
+          "onlyB": 0,
+          "neither": 1799
+        },
+        "observations": 2356,
+        "jointProbability": 0.02546689,
+        "independentJointProbability": 0.00602082,
+        "lift": 4.22980251,
+        "phiCorrelation": 0.29052109,
+        "conditionalBGivenA": 0.10771993,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.10771993
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 180,
+          "onlyA": 377,
+          "onlyB": 0,
+          "neither": 1799
+        },
+        "observations": 2356,
+        "jointProbability": 0.07640068,
+        "independentJointProbability": 0.01806247,
+        "lift": 4.22980251,
+        "phiCorrelation": 0.51688603,
+        "conditionalBGivenA": 0.32315978,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.32315978
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "gas",
+        "counts": {
+          "both": 90,
+          "onlyA": 467,
+          "onlyB": 30,
+          "neither": 1769
+        },
+        "observations": 2356,
+        "jointProbability": 0.03820034,
+        "independentJointProbability": 0.01204165,
+        "lift": 3.17235189,
+        "phiCorrelation": 0.28002507,
+        "conditionalBGivenA": 0.16157989,
+        "conditionalAGivenB": 0.75,
+        "jaccard": 0.15332198
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "mev",
+        "counts": {
+          "both": 90,
+          "onlyA": 467,
+          "onlyB": 0,
+          "neither": 1799
+        },
+        "observations": 2356,
+        "jointProbability": 0.03820034,
+        "independentJointProbability": 0.00903123,
+        "lift": 4.22980251,
+        "phiCorrelation": 0.35816182,
+        "conditionalBGivenA": 0.16157989,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.16157989
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "keeper",
+        "counts": {
+          "both": 243,
+          "onlyA": 254,
+          "onlyB": 60,
+          "neither": 1799
+        },
+        "observations": 2356,
+        "jointProbability": 0.10314092,
+        "independentJointProbability": 0.02712992,
+        "lift": 3.80174114,
+        "phiCorrelation": 0.55653611,
+        "conditionalBGivenA": 0.4889336,
+        "conditionalAGivenB": 0.8019802,
+        "jaccard": 0.43626571
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "governance",
+        "counts": {
+          "both": 60,
+          "onlyA": 437,
+          "onlyB": 0,
+          "neither": 1859
+        },
+        "observations": 2356,
+        "jointProbability": 0.02546689,
+        "independentJointProbability": 0.00537226,
+        "lift": 4.74044266,
+        "phiCorrelation": 0.31264478,
+        "conditionalBGivenA": 0.12072435,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.12072435
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 150,
+          "onlyA": 347,
+          "onlyB": 30,
+          "neither": 1829
+        },
+        "observations": 2356,
+        "jointProbability": 0.06366723,
+        "independentJointProbability": 0.01611678,
+        "lift": 3.95036888,
+        "phiCorrelation": 0.43875454,
+        "conditionalBGivenA": 0.30181087,
+        "conditionalAGivenB": 0.83333333,
+        "jaccard": 0.28462998
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "gas",
+        "counts": {
+          "both": 90,
+          "onlyA": 407,
+          "onlyB": 30,
+          "neither": 1829
+        },
+        "observations": 2356,
+        "jointProbability": 0.03820034,
+        "independentJointProbability": 0.01074452,
+        "lift": 3.55533199,
+        "phiCorrelation": 0.30608395,
+        "conditionalBGivenA": 0.18108652,
+        "conditionalAGivenB": 0.75,
+        "jaccard": 0.17077799
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "mev",
+        "counts": {
+          "both": 90,
+          "onlyA": 407,
+          "onlyB": 0,
+          "neither": 1859
+        },
+        "observations": 2356,
+        "jointProbability": 0.03820034,
+        "independentJointProbability": 0.00805839,
+        "lift": 4.74044266,
+        "phiCorrelation": 0.38543647,
+        "conditionalBGivenA": 0.18108652,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.18108652
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "governance",
+        "counts": {
+          "both": 0,
+          "onlyA": 303,
+          "onlyB": 60,
+          "neither": 1993
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00327524,
+        "lift": 0,
+        "phiCorrelation": -0.06210356,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 18,
+          "onlyA": 285,
+          "onlyB": 162,
+          "neither": 1891
+        },
+        "observations": 2356,
+        "jointProbability": 0.00764007,
+        "independentJointProbability": 0.00982572,
+        "lift": 0.77755776,
+        "phiCorrelation": -0.02457825,
+        "conditionalBGivenA": 0.05940594,
+        "conditionalAGivenB": 0.1,
+        "jaccard": 0.03870968
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "gas",
+        "counts": {
+          "both": 120,
+          "onlyA": 183,
+          "onlyB": 0,
+          "neither": 2053
+        },
+        "observations": 2356,
+        "jointProbability": 0.05093379,
+        "independentJointProbability": 0.00655048,
+        "lift": 7.77557756,
+        "phiCorrelation": 0.60301468,
+        "conditionalBGivenA": 0.3960396,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.3960396
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "mev",
+        "counts": {
+          "both": 58,
+          "onlyA": 245,
+          "onlyB": 32,
+          "neither": 2021
+        },
+        "observations": 2356,
+        "jointProbability": 0.024618,
+        "independentJointProbability": 0.00491286,
+        "lift": 5.01092776,
+        "phiCorrelation": 0.3070881,
+        "conditionalBGivenA": 0.19141914,
+        "conditionalAGivenB": 0.64444444,
+        "jaccard": 0.17313433
+      },
+      {
+        "factorA": "governance",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 28,
+          "onlyA": 32,
+          "onlyB": 152,
+          "neither": 2144
+        },
+        "observations": 2356,
+        "jointProbability": 0.01188455,
+        "independentJointProbability": 0.00194569,
+        "lift": 6.10814815,
+        "phiCorrelation": 0.23749801,
+        "conditionalBGivenA": 0.46666667,
+        "conditionalAGivenB": 0.15555556,
+        "jaccard": 0.13207547
+      },
+      {
+        "factorA": "governance",
+        "factorB": "gas",
+        "counts": {
+          "both": 0,
+          "onlyA": 60,
+          "onlyB": 120,
+          "neither": 2176
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00129713,
+        "lift": 0,
+        "phiCorrelation": -0.03744936,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "governance",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 60,
+          "onlyB": 90,
+          "neither": 2206
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00097284,
+        "lift": 0,
+        "phiCorrelation": -0.03221669,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "stablecoin",
+        "factorB": "gas",
+        "counts": {
+          "both": 2,
+          "onlyA": 178,
+          "onlyB": 118,
+          "neither": 2058
+        },
+        "observations": 2356,
+        "jointProbability": 0.0008489,
+        "independentJointProbability": 0.00389138,
+        "lift": 0.21814815,
+        "phiCorrelation": -0.0520938,
+        "conditionalBGivenA": 0.01111111,
+        "conditionalAGivenB": 0.01666667,
+        "jaccard": 0.00671141
+      },
+      {
+        "factorA": "stablecoin",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 180,
+          "onlyB": 90,
+          "neither": 2086
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00291853,
+        "lift": 0,
+        "phiCorrelation": -0.05731893,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "gas",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 120,
+          "onlyB": 90,
+          "neither": 2146
+        },
+        "observations": 2356,
+        "jointProbability": 0,
+        "independentJointProbability": 0.00194569,
+        "lift": 0,
+        "phiCorrelation": -0.04616853,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      }
+    ]
+  },
+  "eventLevelDependence": {
+    "eventCount": 24,
+    "factors": {
+      "oracle": {
+        "successes": 13,
+        "observations": 24,
+        "empiricalProbability": 0.54166667,
+        "posteriorMean": 0.54,
+        "confidence95": {
+          "low": 0.35074554,
+          "high": 0.72108942
+        }
+      },
+      "liquidity": {
+        "successes": 23,
+        "observations": 24,
+        "empiricalProbability": 0.95833333,
+        "posteriorMean": 0.94,
+        "confidence95": {
+          "low": 0.79757774,
+          "high": 0.99260673
+        }
+      },
+      "volatility": {
+        "successes": 21,
+        "observations": 24,
+        "empiricalProbability": 0.875,
+        "posteriorMean": 0.86,
+        "confidence95": {
+          "low": 0.68995712,
+          "high": 0.95655745
+        }
+      },
+      "keeper": {
+        "successes": 12,
+        "observations": 24,
+        "empiricalProbability": 0.5,
+        "posteriorMean": 0.5,
+        "confidence95": {
+          "low": 0.31427132,
+          "high": 0.68572868
+        }
+      },
+      "governance": {
+        "successes": 2,
+        "observations": 24,
+        "empiricalProbability": 0.08333333,
+        "posteriorMean": 0.1,
+        "confidence95": {
+          "low": 0.02315833,
+          "high": 0.25849215
+        }
+      },
+      "stablecoin": {
+        "successes": 6,
+        "observations": 24,
+        "empiricalProbability": 0.25,
+        "posteriorMean": 0.26,
+        "confidence95": {
+          "low": 0.11999203,
+          "high": 0.44899825
+        }
+      },
+      "gas": {
+        "successes": 5,
+        "observations": 24,
+        "empiricalProbability": 0.20833333,
+        "posteriorMean": 0.22,
+        "confidence95": {
+          "low": 0.09244689,
+          "high": 0.40470844
+        }
+      },
+      "mev": {
+        "successes": 3,
+        "observations": 24,
+        "empiricalProbability": 0.125,
+        "posteriorMean": 0.14,
+        "confidence95": {
+          "low": 0.04344255,
+          "high": 0.31004288
+        }
+      }
+    },
+    "pairs": [
+      {
+        "factorA": "oracle",
+        "factorB": "liquidity",
+        "counts": {
+          "both": 12,
+          "onlyA": 1,
+          "onlyB": 11,
+          "neither": 0
+        },
+        "observations": 24,
+        "jointProbability": 0.5,
+        "independentJointProbability": 0.51909722,
+        "lift": 0.9632107,
+        "phiCorrelation": -0.19180536,
+        "conditionalBGivenA": 0.92307692,
+        "conditionalAGivenB": 0.52173913,
+        "jaccard": 0.5
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "volatility",
+        "counts": {
+          "both": 10,
+          "onlyA": 3,
+          "onlyB": 11,
+          "neither": 0
+        },
+        "observations": 24,
+        "jointProbability": 0.41666667,
+        "independentJointProbability": 0.47395833,
+        "lift": 0.87912088,
+        "phiCorrelation": -0.34767675,
+        "conditionalBGivenA": 0.76923077,
+        "conditionalAGivenB": 0.47619048,
+        "jaccard": 0.41666667
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "keeper",
+        "counts": {
+          "both": 6,
+          "onlyA": 7,
+          "onlyB": 6,
+          "neither": 5
+        },
+        "observations": 24,
+        "jointProbability": 0.25,
+        "independentJointProbability": 0.27083333,
+        "lift": 0.92307692,
+        "phiCorrelation": -0.0836242,
+        "conditionalBGivenA": 0.46153846,
+        "conditionalAGivenB": 0.5,
+        "jaccard": 0.31578947
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "governance",
+        "counts": {
+          "both": 0,
+          "onlyA": 13,
+          "onlyB": 2,
+          "neither": 9
+        },
+        "observations": 24,
+        "jointProbability": 0,
+        "independentJointProbability": 0.04513889,
+        "lift": 0,
+        "phiCorrelation": -0.32777739,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 4,
+          "onlyA": 9,
+          "onlyB": 2,
+          "neither": 9
+        },
+        "observations": 24,
+        "jointProbability": 0.16666667,
+        "independentJointProbability": 0.13541667,
+        "lift": 1.23076923,
+        "phiCorrelation": 0.14484136,
+        "conditionalBGivenA": 0.30769231,
+        "conditionalAGivenB": 0.66666667,
+        "jaccard": 0.26666667
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "gas",
+        "counts": {
+          "both": 1,
+          "onlyA": 12,
+          "onlyB": 4,
+          "neither": 7
+        },
+        "observations": 24,
+        "jointProbability": 0.04166667,
+        "independentJointProbability": 0.11284722,
+        "lift": 0.36923077,
+        "phiCorrelation": -0.35176614,
+        "conditionalBGivenA": 0.07692308,
+        "conditionalAGivenB": 0.2,
+        "jaccard": 0.05882353
+      },
+      {
+        "factorA": "oracle",
+        "factorB": "mev",
+        "counts": {
+          "both": 1,
+          "onlyA": 12,
+          "onlyB": 2,
+          "neither": 9
+        },
+        "observations": 24,
+        "jointProbability": 0.04166667,
+        "independentJointProbability": 0.06770833,
+        "lift": 0.61538462,
+        "phiCorrelation": -0.15803489,
+        "conditionalBGivenA": 0.07692308,
+        "conditionalAGivenB": 0.33333333,
+        "jaccard": 0.06666667
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "volatility",
+        "counts": {
+          "both": 21,
+          "onlyA": 2,
+          "onlyB": 0,
+          "neither": 1
+        },
+        "observations": 24,
+        "jointProbability": 0.875,
+        "independentJointProbability": 0.83854167,
+        "lift": 1.04347826,
+        "phiCorrelation": 0.55167728,
+        "conditionalBGivenA": 0.91304348,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.91304348
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "keeper",
+        "counts": {
+          "both": 11,
+          "onlyA": 12,
+          "onlyB": 1,
+          "neither": 0
+        },
+        "observations": 24,
+        "jointProbability": 0.45833333,
+        "independentJointProbability": 0.47916667,
+        "lift": 0.95652174,
+        "phiCorrelation": -0.20851441,
+        "conditionalBGivenA": 0.47826087,
+        "conditionalAGivenB": 0.91666667,
+        "jaccard": 0.45833333
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "governance",
+        "counts": {
+          "both": 2,
+          "onlyA": 21,
+          "onlyB": 0,
+          "neither": 1
+        },
+        "observations": 24,
+        "jointProbability": 0.08333333,
+        "independentJointProbability": 0.07986111,
+        "lift": 1.04347826,
+        "phiCorrelation": 0.06286946,
+        "conditionalBGivenA": 0.08695652,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.08695652
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 6,
+          "onlyA": 17,
+          "onlyB": 0,
+          "neither": 1
+        },
+        "observations": 24,
+        "jointProbability": 0.25,
+        "independentJointProbability": 0.23958333,
+        "lift": 1.04347826,
+        "phiCorrelation": 0.12038585,
+        "conditionalBGivenA": 0.26086957,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.26086957
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "gas",
+        "counts": {
+          "both": 4,
+          "onlyA": 19,
+          "onlyB": 1,
+          "neither": 0
+        },
+        "observations": 24,
+        "jointProbability": 0.16666667,
+        "independentJointProbability": 0.19965278,
+        "lift": 0.83478261,
+        "phiCorrelation": -0.40646942,
+        "conditionalBGivenA": 0.17391304,
+        "conditionalAGivenB": 0.8,
+        "jaccard": 0.16666667
+      },
+      {
+        "factorA": "liquidity",
+        "factorB": "mev",
+        "counts": {
+          "both": 3,
+          "onlyA": 20,
+          "onlyB": 0,
+          "neither": 1
+        },
+        "observations": 24,
+        "jointProbability": 0.125,
+        "independentJointProbability": 0.11979167,
+        "lift": 1.04347826,
+        "phiCorrelation": 0.07881104,
+        "conditionalBGivenA": 0.13043478,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.13043478
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "keeper",
+        "counts": {
+          "both": 10,
+          "onlyA": 11,
+          "onlyB": 2,
+          "neither": 1
+        },
+        "observations": 24,
+        "jointProbability": 0.41666667,
+        "independentJointProbability": 0.4375,
+        "lift": 0.95238095,
+        "phiCorrelation": -0.12598816,
+        "conditionalBGivenA": 0.47619048,
+        "conditionalAGivenB": 0.83333333,
+        "jaccard": 0.43478261
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "governance",
+        "counts": {
+          "both": 2,
+          "onlyA": 19,
+          "onlyB": 0,
+          "neither": 3
+        },
+        "observations": 24,
+        "jointProbability": 0.08333333,
+        "independentJointProbability": 0.07291667,
+        "lift": 1.14285714,
+        "phiCorrelation": 0.11396058,
+        "conditionalBGivenA": 0.0952381,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.0952381
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 5,
+          "onlyA": 16,
+          "onlyB": 1,
+          "neither": 2
+        },
+        "observations": 24,
+        "jointProbability": 0.20833333,
+        "independentJointProbability": 0.21875,
+        "lift": 0.95238095,
+        "phiCorrelation": -0.0727393,
+        "conditionalBGivenA": 0.23809524,
+        "conditionalAGivenB": 0.83333333,
+        "jaccard": 0.22727273
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "gas",
+        "counts": {
+          "both": 4,
+          "onlyA": 17,
+          "onlyB": 1,
+          "neither": 2
+        },
+        "observations": 24,
+        "jointProbability": 0.16666667,
+        "independentJointProbability": 0.18229167,
+        "lift": 0.91428571,
+        "phiCorrelation": -0.11633501,
+        "conditionalBGivenA": 0.19047619,
+        "conditionalAGivenB": 0.8,
+        "jaccard": 0.18181818
+      },
+      {
+        "factorA": "volatility",
+        "factorB": "mev",
+        "counts": {
+          "both": 3,
+          "onlyA": 18,
+          "onlyB": 0,
+          "neither": 3
+        },
+        "observations": 24,
+        "jointProbability": 0.125,
+        "independentJointProbability": 0.109375,
+        "lift": 1.14285714,
+        "phiCorrelation": 0.14285714,
+        "conditionalBGivenA": 0.14285714,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.14285714
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "governance",
+        "counts": {
+          "both": 0,
+          "onlyA": 12,
+          "onlyB": 2,
+          "neither": 10
+        },
+        "observations": 24,
+        "jointProbability": 0,
+        "independentJointProbability": 0.04166667,
+        "lift": 0,
+        "phiCorrelation": -0.30151134,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 0,
+          "onlyA": 12,
+          "onlyB": 6,
+          "neither": 6
+        },
+        "observations": 24,
+        "jointProbability": 0,
+        "independentJointProbability": 0.125,
+        "lift": 0,
+        "phiCorrelation": -0.57735027,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "gas",
+        "counts": {
+          "both": 5,
+          "onlyA": 7,
+          "onlyB": 0,
+          "neither": 12
+        },
+        "observations": 24,
+        "jointProbability": 0.20833333,
+        "independentJointProbability": 0.10416667,
+        "lift": 2,
+        "phiCorrelation": 0.51298918,
+        "conditionalBGivenA": 0.41666667,
+        "conditionalAGivenB": 1,
+        "jaccard": 0.41666667
+      },
+      {
+        "factorA": "keeper",
+        "factorB": "mev",
+        "counts": {
+          "both": 1,
+          "onlyA": 11,
+          "onlyB": 2,
+          "neither": 10
+        },
+        "observations": 24,
+        "jointProbability": 0.04166667,
+        "independentJointProbability": 0.0625,
+        "lift": 0.66666667,
+        "phiCorrelation": -0.12598816,
+        "conditionalBGivenA": 0.08333333,
+        "conditionalAGivenB": 0.33333333,
+        "jaccard": 0.07142857
+      },
+      {
+        "factorA": "governance",
+        "factorB": "stablecoin",
+        "counts": {
+          "both": 0,
+          "onlyA": 2,
+          "onlyB": 6,
+          "neither": 16
+        },
+        "observations": 24,
+        "jointProbability": 0,
+        "independentJointProbability": 0.02083333,
+        "lift": 0,
+        "phiCorrelation": -0.17407766,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "governance",
+        "factorB": "gas",
+        "counts": {
+          "both": 0,
+          "onlyA": 2,
+          "onlyB": 5,
+          "neither": 17
+        },
+        "observations": 24,
+        "jointProbability": 0,
+        "independentJointProbability": 0.01736111,
+        "lift": 0,
+        "phiCorrelation": -0.15467206,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "governance",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 2,
+          "onlyB": 3,
+          "neither": 19
+        },
+        "observations": 24,
+        "jointProbability": 0,
+        "independentJointProbability": 0.01041667,
+        "lift": 0,
+        "phiCorrelation": -0.11396058,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "stablecoin",
+        "factorB": "gas",
+        "counts": {
+          "both": 0,
+          "onlyA": 6,
+          "onlyB": 5,
+          "neither": 13
+        },
+        "observations": 24,
+        "jointProbability": 0,
+        "independentJointProbability": 0.05208333,
+        "lift": 0,
+        "phiCorrelation": -0.29617444,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "stablecoin",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 6,
+          "onlyB": 3,
+          "neither": 15
+        },
+        "observations": 24,
+        "jointProbability": 0,
+        "independentJointProbability": 0.03125,
+        "lift": 0,
+        "phiCorrelation": -0.21821789,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      },
+      {
+        "factorA": "gas",
+        "factorB": "mev",
+        "counts": {
+          "both": 0,
+          "onlyA": 5,
+          "onlyB": 3,
+          "neither": 16
+        },
+        "observations": 24,
+        "jointProbability": 0,
+        "independentJointProbability": 0.02604167,
+        "lift": 0,
+        "phiCorrelation": -0.19389168,
+        "conditionalBGivenA": 0,
+        "conditionalAGivenB": 0,
+        "jaccard": 0
+      }
+    ],
+    "note": "Event-level statistics count each catalog event once and are not annualized probabilities."
+  },
+  "warnings": [
+    "Only 24 independent catalog events are available; pair estimates are exploratory and confidence intervals are wide.",
+    "19 of 28 event-level pairs have fewer than five joint observations."
+  ]
+}
