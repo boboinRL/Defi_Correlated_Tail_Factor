@@ -217,7 +217,7 @@ function translateStaticUi() {
     ".nav-links a", ".contract-picker label", ".identity-card .eyebrow",
     ".score-card .eyebrow", ".quick-facts span", ".badges span",
     ".search-card .eyebrow", ".search-card h2", ".search-card > div:first-child > p:last-child",
-    ".search-form button", ".hero-band .eyebrow", ".hero-band h2", ".hero-band > div:first-child > p:last-child",
+    ".search-form button", "#searchStatus", "#agentStatus", ".hero-band .eyebrow", ".hero-band h2", ".hero-band > div:first-child > p:last-child",
     ".hero-metrics span", ".control-panel .panel-head .eyebrow", ".control-panel .panel-head h3",
     "#glmFactorButton", "#resetButton", ".slider-label span", ".switch-row span",
     ".probability-orb small", ".risk-summary .eyebrow", ".metric-grid span",
@@ -344,11 +344,11 @@ function renderSearchResults(results) {
           <div class="result-meta">
             <span>${profile.protocol || "Unknown protocol"}</span>
             <span>${profile.category || "Smart contract"}</span>
-            <span>${profile.verified ? "Verified" : "Unverified"}</span>
+            <span>${profile.verified ? (isZh() ? "已验证" : "Verified") : (isZh() ? "未验证" : "Unverified")}</span>
             <span>${profile.source || "Indexed"}</span>
           </div>
         </div>
-        <button class="ghost-button" type="button" data-profile="${profileKey(profile)}">Use Contract</button>
+        <button class="ghost-button" type="button" data-profile="${profileKey(profile)}">${isZh() ? "使用此合约" : "Use Contract"}</button>
       </article>
     `)
     .join("");
@@ -536,22 +536,27 @@ function renderHeatmap(result) {
 
 function renderDependencies(result) {
   const factorRows = result.factorProbabilities
-    .map((item) => `
+    .map((item) => {
+      const localRisk = riskFactors.find((risk) => risk.id === item.id);
+      return `
       <div class="dependency-item">
         <div>
-          <strong>${item.name}</strong>
-          <span>Single-factor marginal probability · ${item.eventCount} tail-event sample(s)</span>
+          <strong>${isZh() && localRisk ? localRisk.zhName : item.name}</strong>
+          <span>${isZh() ? `单因子边际概率 · ${item.eventCount} 个尾部事件样本` : `Single-factor marginal probability · ${item.eventCount} tail-event sample(s)`}</span>
         </div>
         <div class="dependency-score">${percent(item.marginalProbability, 1)}</div>
       </div>
-    `)
+    `;
+    })
     .join("");
   const market = result.marketSignals;
   const marketRows = market ? `
     <div class="dependency-item">
       <div>
-        <strong>Market data adjustment</strong>
-        <span>${market.coins?.length || 0} CoinGecko asset(s), ${market.protocol ? "DefiLlama TVL" : "no DefiLlama TVL"}, ${market.dune ? "Dune execution queued" : "no Dune query"}</span>
+        <strong>${isZh() ? "市场数据调整" : "Market data adjustment"}</strong>
+        <span>${isZh()
+          ? `${market.coins?.length || 0} 个 CoinGecko 资产，${market.protocol ? "已获取 DefiLlama TVL" : "无 DefiLlama TVL"}，${market.dune ? "Dune 查询已排队" : "无 Dune 查询"}`
+          : `${market.coins?.length || 0} CoinGecko asset(s), ${market.protocol ? "DefiLlama TVL" : "no DefiLlama TVL"}, ${market.dune ? "Dune execution queued" : "no Dune query"}`}</span>
       </div>
       <div class="dependency-score">${percent(Math.max(market.stress?.volatility || 0, market.stress?.liquidity || 0, market.stress?.stablecoin || 0), 0)}</div>
     </div>
@@ -564,7 +569,7 @@ function renderDependencies(result) {
     els.dependencyList.innerHTML = `
       ${marketRows}
       ${factorRows}
-      <div class="empty">Select at least two factors to compute pair coupling.</div>
+      <div class="empty">${isZh() ? "至少选择两个因子才能计算因子对耦合。" : "Select at least two factors to compute pair coupling."}</div>
     `;
     return;
   }
@@ -575,7 +580,7 @@ function renderDependencies(result) {
       <div class="dependency-item">
         <div>
           <strong>${item.factors.join(" x ")}</strong>
-          <span>${item.label} tail coupling · ${item.source}</span>
+          <span>${isZh() ? `${item.label} 尾部耦合` : `${item.label} tail coupling`} · ${item.source}</span>
         </div>
         <div class="dependency-score">${percent(item.tailDependence, 0)}</div>
       </div>
@@ -596,61 +601,63 @@ function renderFindings(result) {
 
   els.codeFindings.innerHTML = [
     finding(
-      unverified
-        ? "Source metadata is incomplete; verification should be resolved before production scoring."
-        : "Verified metadata is available for contract classification and ABI-aware review.",
+      isZh()
+        ? (unverified ? "源码元数据不完整；在用于生产评分前应先完成验证。" : "已获得验证元数据，可用于合约分类和 ABI 感知审查。")
+        : (unverified ? "Source metadata is incomplete; verification should be resolved before production scoring." : "Verified metadata is available for contract classification and ABI-aware review."),
       unverified ? "danger" : ""
     ),
     finding(
-      ids.has("oracle")
-        ? "Price-source reads should be monitored for stale rounds, fallback latency, and update cadence."
-        : "No direct oracle dependency was inferred from the current factor set.",
+      isZh()
+        ? (ids.has("oracle") ? "应监控价格源的过期轮次、备用源延迟和更新频率。" : "当前因子组合未推断出直接预言机依赖。")
+        : (ids.has("oracle") ? "Price-source reads should be monitored for stale rounds, fallback latency, and update cadence." : "No direct oracle dependency was inferred from the current factor set."),
       ids.has("oracle") ? "warn" : ""
     ),
     finding(
-      result.governanceExposure > 55
-        ? "Proxy upgrade and parameter permissions create material governance exposure during the stress window."
-        : "Governance exposure remains inside the current model threshold.",
+      isZh()
+        ? (result.governanceExposure > 55 ? "代理升级和参数权限在压力窗口内形成显著治理敞口。" : "治理敞口处于当前模型阈值内。")
+        : (result.governanceExposure > 55 ? "Proxy upgrade and parameter permissions create material governance exposure during the stress window." : "Governance exposure remains inside the current model threshold."),
       result.governanceExposure > 55 ? "danger" : ""
     )
   ].join("");
 
   els.opsFindings.innerHTML = [
     finding(
-      ids.has("keeper") || ids.has("gas")
-        ? "Keeper delay and blockspace pressure materially increase peak liquidation queue depth."
-        : "Keeper execution pressure is not dominant in this scenario.",
+      isZh()
+        ? (ids.has("keeper") || ids.has("gas") ? "Keeper 延迟和区块空间压力会显著提高清算队列峰值。" : "Keeper 执行压力并非当前场景的主要驱动因素。")
+        : (ids.has("keeper") || ids.has("gas") ? "Keeper delay and blockspace pressure materially increase peak liquidation queue depth." : "Keeper execution pressure is not dominant in this scenario."),
       ids.has("keeper") || ids.has("gas") ? "warn" : ""
     ),
     finding(
-      result.liquidationCoverage < 62
-        ? "Insurance-fund absorption falls below the upper simulated bad-debt band."
-        : "Insurance-fund capacity covers the primary simulated bad-debt band.",
+      isZh()
+        ? (result.liquidationCoverage < 62 ? "保险基金吸收能力低于模拟坏账区间上沿。" : "保险基金能够覆盖主要模拟坏账区间。")
+        : (result.liquidationCoverage < 62 ? "Insurance-fund absorption falls below the upper simulated bad-debt band." : "Insurance-fund capacity covers the primary simulated bad-debt band."),
       result.liquidationCoverage < 62 ? "danger" : ""
     ),
     finding(
-      `Estimated recovery window is ${result.recoveryWindowMinutes} minutes; gas pressure and execution batches should be monitored.`,
+      isZh()
+        ? `预计恢复窗口为 ${result.recoveryWindowMinutes} 分钟；应持续监控 Gas 压力和执行批次。`
+        : `Estimated recovery window is ${result.recoveryWindowMinutes} minutes; gas pressure and execution batches should be monitored.`,
       result.recoveryWindowMinutes > 32 ? "warn" : ""
     )
   ].join("");
 
   els.marketFindings.innerHTML = [
     finding(
-      ids.has("liquidity")
-        ? "DEX depth withdrawal amplifies slippage and weakens liquidation incentives."
-        : "Primary trading-route depth is not the main modeled driver.",
+      isZh()
+        ? (ids.has("liquidity") ? "DEX 深度流失会放大滑点并削弱清算激励。" : "主要交易路径深度并非当前模型的主要驱动因素。")
+        : (ids.has("liquidity") ? "DEX depth withdrawal amplifies slippage and weakens liquidation incentives." : "Primary trading-route depth is not the main modeled driver."),
       ids.has("liquidity") ? "warn" : ""
     ),
     finding(
-      highProb
-        ? "Tail dependence lifts joint probability above linear single-factor aggregation."
-        : "Joint probability remains inside the standard monitoring threshold.",
+      isZh()
+        ? (highProb ? "尾部依赖使联合概率高于单因子线性聚合结果。" : "联合概率仍处于标准监控阈值内。")
+        : (highProb ? "Tail dependence lifts joint probability above linear single-factor aggregation." : "Joint probability remains inside the standard monitoring threshold."),
       highProb ? "warn" : ""
     ),
     finding(
-      result.queueCongestion > 70
-        ? "Liquidation incentives or batch auction limits should be increased."
-        : "Current liquidation throughput satisfies the modeled stress load.",
+      isZh()
+        ? (result.queueCongestion > 70 ? "应提高清算激励或批量拍卖上限。" : "当前清算吞吐量能够满足模拟压力负载。")
+        : (result.queueCongestion > 70 ? "Liquidation incentives or batch auction limits should be increased." : "Current liquidation throughput satisfies the modeled stress load."),
       result.queueCongestion > 70 ? "danger" : ""
     )
   ].join("");
@@ -660,15 +667,27 @@ function renderEvents(result) {
   const severe = result.jointProbability >= 0.08 || result.queueCongestion > 70;
   const warning = result.jointProbability >= 0.035 || result.queueCongestion > 45;
   const status = severe ? "danger" : warning ? "warn" : "";
-  const drivers = result.risks.map((risk) => risk.name.split(" ")[0]).join(" + ") || "Baseline";
-  const rows = [
-    ["T+00m", "Stress window opens", `${drivers} becomes active for ${result.profile.name}.`, warning ? "Watch" : "Stable"],
-    ["T+03m", "Health factor reprice", `Collateral haircuts widen; joint tail probability reaches ${percent(result.jointProbability)}.`, warning ? "Elevated" : "Normal"],
-    ["T+08m", "Liquidation execution", `Queue congestion is ${Math.round(result.queueCongestion)}% with expected bad debt of ${money(result.expectedBadDebtUsdM)}.`, severe ? "Critical" : warning ? "Slow" : "Clear"],
-    [`T+${result.recoveryWindowMinutes}m`, "Recovery and rebalance", `Coverage recovers to ${Math.round(result.liquidationCoverage)}% after modeled absorption and execution.`, severe ? "Review" : "Recovered"]
-  ];
+  const drivers = result.risks.map((risk) => {
+    const localRisk = riskFactors.find((item) => item.id === risk.id);
+    return isZh() && localRisk ? localRisk.zhName : risk.name.split(" ")[0];
+  }).join(" + ") || (isZh() ? "基准场景" : "Baseline");
+  const rows = isZh()
+    ? [
+        ["T+00m", "压力窗口开启", `${drivers} 已在 ${result.profile.name} 场景中激活。`, warning ? "关注" : "稳定"],
+        ["T+03m", "健康因子重估", `抵押品折扣扩大；联合尾部概率达到 ${percent(result.jointProbability)}。`, warning ? "升高" : "正常"],
+        ["T+08m", "清算执行", `队列拥堵率为 ${Math.round(result.queueCongestion)}%，预期坏账为 ${money(result.expectedBadDebtUsdM)}。`, severe ? "严重" : warning ? "缓慢" : "畅通"],
+        [`T+${result.recoveryWindowMinutes}m`, "恢复与再平衡", `经过模型吸收和执行后，覆盖率恢复至 ${Math.round(result.liquidationCoverage)}%。`, severe ? "复核" : "已恢复"]
+      ]
+    : [
+        ["T+00m", "Stress window opens", `${drivers} becomes active for ${result.profile.name}.`, warning ? "Watch" : "Stable"],
+        ["T+03m", "Health factor reprice", `Collateral haircuts widen; joint tail probability reaches ${percent(result.jointProbability)}.`, warning ? "Elevated" : "Normal"],
+        ["T+08m", "Liquidation execution", `Queue congestion is ${Math.round(result.queueCongestion)}% with expected bad debt of ${money(result.expectedBadDebtUsdM)}.`, severe ? "Critical" : warning ? "Slow" : "Clear"],
+        [`T+${result.recoveryWindowMinutes}m`, "Recovery and rebalance", `Coverage recovers to ${Math.round(result.liquidationCoverage)}% after modeled absorption and execution.`, severe ? "Review" : "Recovered"]
+      ];
 
-  els.pathStatus.textContent = severe ? "Escalation required" : warning ? "Monitoring elevated" : "Monitoring active";
+  els.pathStatus.textContent = isZh()
+    ? (severe ? "需要升级处置" : warning ? "监控级别升高" : "监控中")
+    : (severe ? "Escalation required" : warning ? "Monitoring elevated" : "Monitoring active");
   els.eventTable.innerHTML = rows
     .map(([time, title, copy, pill]) => `
       <div class="event-row">
