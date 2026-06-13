@@ -10,6 +10,7 @@
     "build:labels": "node scripts/build-training-labels.js",
     "calibrate:marginals": "node scripts/calibrate-marginals.js",
     "backtest:model": "node scripts/backtest-model.js",
+    "pipeline:model": "node scripts/run-model-pipeline.js",
     "test": "node --test"
   }
 }

@@ -120,8 +120,6 @@ const riskFactors = [
 const tailEvents = loadJson("tail_events.json", []);
 const riskFactorMap = loadJson("risk_factor_map.json", { default: { riskFactorIds: ["liquidity", "volatility"] }, categories: {}, protocolOverrides: {} });
 const marketSources = loadJson("market_sources.json", { protocols: {}, defaults: { coingeckoIds: ["ethereum"], days: 30 }, dune: {} });
-const modelParameters = loadJson("model_parameters.json", null);
-const modelValidation = loadJson("model_validation.json", null);
 const eventPriors = buildEventPriors(tailEvents);
 const marketCache = new Map();
 
@@ -172,9 +170,9 @@ function buildEventPriors(events) {
   return priors;
 }
 
-function probabilityForFactor(risk, horizonDays = 7) {
+function probabilityForFactor(risk, horizonDays = 7, activeModelParameters = loadJson("model_parameters.json", null)) {
   const horizon = Object.entries(HORIZONS).find(([, days]) => days === horizonDays)?.[0] || "7d";
-  const calibrated = modelParameters?.probabilityByHorizon?.[horizon]?.[risk.id];
+  const calibrated = activeModelParameters?.probabilityByHorizon?.[horizon]?.[risk.id];
   const prior = eventPriors[risk.id];
   let thirtyDayProbability;
   if (!prior) {
@@ -194,7 +192,7 @@ function probabilityForFactor(risk, horizonDays = 7) {
       clamp(1 - Math.pow(1 - thirtyDayProbability, horizonDays / 30), 0, 0.35),
     confidence95: calibrated?.confidence95 || null,
     priorSource: calibrated
-      ? `${modelParameters.modelVersion} calibrated posterior`
+      ? `${activeModelParameters.modelVersion} calibrated posterior`
       : prior
         ? "tail_events.json 30d fallback prior"
         : "Static 30d fallback prior",
@@ -589,10 +587,12 @@ async function resolveProfile(chainId, address) {
 }
 
 function runStress({ profile, factorIds, horizon = "7d", severity = 0.65, useCorrelation = true, simulateKeeper = true, marketSignals = null }) {
+  const activeModelParameters = loadJson("model_parameters.json", null);
+  const activeModelValidation = loadJson("model_validation.json", null);
   const predictionHorizon = HORIZONS[horizon] ? horizon : "7d";
   const horizonDays = HORIZONS[predictionHorizon];
   const probabilityFactors = riskFactors
-    .map((risk) => probabilityForFactor(risk, horizonDays))
+    .map((risk) => probabilityForFactor(risk, horizonDays, activeModelParameters))
     .map((risk) => applyMarketSignalToFactor(risk, marketSignals));
   const selected = probabilityFactors.filter((risk) => factorIds.includes(risk.id));
   const risks = selected;
@@ -607,7 +607,7 @@ function runStress({ profile, factorIds, horizon = "7d", severity = 0.65, useCor
   const simulation = simulateJointProbability({
     factors: risks,
     horizon: predictionHorizon,
-    modelParameters,
+    modelParameters: activeModelParameters,
     useCorrelation,
     severity,
     marketMultipliers,
@@ -621,7 +621,7 @@ function runStress({ profile, factorIds, horizon = "7d", severity = 0.65, useCor
         : simulateJointProbability({
             factors: risks,
             horizon: surfaceHorizon,
-            modelParameters,
+            modelParameters: activeModelParameters,
             useCorrelation,
             severity,
             marketMultipliers,
@@ -712,18 +712,18 @@ function runStress({ profile, factorIds, horizon = "7d", severity = 0.65, useCor
     marketSignals,
     model: {
       name: "Calibrated empirical marginals + Gaussian copula",
-      version: modelParameters?.modelVersion || "fallback-prior-v0",
-      calibrationStatus: modelParameters?.status || "fallback",
+      version: activeModelParameters?.modelVersion || "fallback-prior-v0",
+      calibrationStatus: activeModelParameters?.status || "fallback",
       source: "CoinGecko + DefiLlama features, curated event labels, sparse-sample-shrunk event phi matrix",
       jointDefinition: "All selected factor labels occur within the forecast horizon; they are not guaranteed to belong to one incident.",
       dependenceLimit: "Binary event-level Phi is used as a shrunk Gaussian-copula correlation proxy; it is not a fitted tetrachoric correlation.",
       tailEventCount: tailEvents.length,
-      latestFeatureDate: modelParameters?.latestFeatureDate || null,
-      labelObservedThrough: modelParameters?.labelObservedThrough || null,
-      warnings: modelParameters?.warnings || ["Versioned model parameters were not found; fallback priors are active."],
-      validation: modelValidation ? {
-        ...modelValidation.horizons?.[predictionHorizon]?.any,
-        metadata: modelValidation.metadata
+      latestFeatureDate: activeModelParameters?.latestFeatureDate || null,
+      labelObservedThrough: activeModelParameters?.labelObservedThrough || null,
+      warnings: activeModelParameters?.warnings || ["Versioned model parameters were not found; fallback priors are active."],
+      validation: activeModelValidation ? {
+        ...activeModelValidation.horizons?.[predictionHorizon]?.any,
+        metadata: activeModelValidation.metadata
       } : null,
       confidenceType: "contract metadata and evidence coverage",
       confidence
@@ -762,7 +762,13 @@ async function handleProfile(url, res) {
   const address = parts[3];
   if (!chainId || !isAddress(address)) return sendJson(res, 400, { error: "Expected /api/contracts/:chainId/:address/profile" });
   const profile = await resolveProfile(chainId, address);
-  return sendJson(res, 200, { profile, factors: riskFactors.map(probabilityForFactor).filter((risk) => profile.riskFactorIds.includes(risk.id)) });
+  const activeModelParameters = loadJson("model_parameters.json", null);
+  return sendJson(res, 200, {
+    profile,
+    factors: riskFactors
+      .map((risk) => probabilityForFactor(risk, 7, activeModelParameters))
+      .filter((risk) => profile.riskFactorIds.includes(risk.id))
+  });
 }
 
 async function handleStress(req, res) {
@@ -953,7 +959,11 @@ createServer(async (req, res) => {
     }
     if (req.method === "GET" && url.pathname === "/api/market/snapshot") return await handleMarketSnapshot(url, res);
     if (req.method === "GET" && url.pathname === "/api/model/validation") {
-      return sendJson(res, 200, modelValidation || { error: "Model validation has not been generated." });
+      return sendJson(
+        res,
+        200,
+        loadJson("model_validation.json", null) || { error: "Model validation has not been generated." }
+      );
     }
     if (req.method === "POST" && url.pathname === "/api/stress/run") return await handleStress(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/classify") return await handleClassify(req, res);
