@@ -608,6 +608,41 @@ h3 {
   font-weight: 880;
 }
 
+.horizon-block {
+  display: grid;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+.horizon-block > span {
+  font-weight: 800;
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #edf2f8;
+}
+
+.segmented-control button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.segmented-control button.active {
+  background: #fff;
+  color: var(--blue);
+  box-shadow: 0 1px 4px rgba(30, 47, 75, 0.14);
+}
+
 .slider-block {
   padding: 0 16px 16px;
 }

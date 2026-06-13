@@ -112,6 +112,8 @@ const els = {
   badDebt: document.querySelector("#badDebt"),
   recoveryWindow: document.querySelector("#recoveryWindow"),
   riskGrid: document.querySelector("#riskGrid"),
+  horizonControl: document.querySelector("#horizonControl"),
+  horizonButtons: document.querySelectorAll("#horizonControl button"),
   severity: document.querySelector("#severityRange"),
   severityLabel: document.querySelector("#severityLabel"),
   correlation: document.querySelector("#correlationToggle"),
@@ -130,6 +132,7 @@ const els = {
   queueBar: document.querySelector("#queueBar"),
   governanceBar: document.querySelector("#governanceBar"),
   heatmap: document.querySelector("#heatmap"),
+  dependencySource: document.querySelector("#dependencySource"),
   dependencyList: document.querySelector("#dependencyList"),
   codeScore: document.querySelector("#codeScore"),
   opsScore: document.querySelector("#opsScore"),
@@ -146,8 +149,11 @@ const state = {
   selectedProfile: null,
   latestResult: null,
   requestId: 0,
-  locale: localStorage.getItem("tail-risk-locale") || "en"
+  locale: localStorage.getItem("tail-risk-locale") || "en",
+  horizon: localStorage.getItem("tail-risk-horizon") || "7d"
 };
+
+if (!["1d", "7d", "30d"].includes(state.horizon)) state.horizon = "7d";
 
 const zh = {
   "Overview": "概览",
@@ -178,6 +184,7 @@ const zh = {
   "Ask GLM-5.1": "询问 GLM-5.1",
   "Reset": "重置",
   "GLM factor selection is available when GLM_API_KEY is configured.": "配置 GLM_API_KEY 后可使用 GLM 风险因子选择。",
+  "Prediction Horizon": "预测周期",
   "Shock Severity": "冲击强度",
   "Apply tail-dependence matrix": "应用尾部依赖矩阵",
   "Simulate keeper delay": "模拟 Keeper 延迟",
@@ -219,7 +226,7 @@ function translateStaticUi() {
     ".search-card .eyebrow", ".search-card h2", ".search-card > div:first-child > p:last-child",
     ".search-form button", "#searchStatus", "#agentStatus", ".hero-band .eyebrow", ".hero-band h2", ".hero-band > div:first-child > p:last-child",
     ".hero-metrics span", ".control-panel .panel-head .eyebrow", ".control-panel .panel-head h3",
-    "#glmFactorButton", "#resetButton", ".slider-label span", ".switch-row span",
+    "#glmFactorButton", "#resetButton", ".horizon-block > span", ".slider-label span", ".switch-row span",
     ".probability-orb small", ".risk-summary .eyebrow", ".metric-grid span",
     ".chart-card .eyebrow", ".chart-card h3", "#dependencySource",
     ".section-title span", ".audit-card > p", ".timeline-card .eyebrow", ".timeline-card h3"
@@ -230,6 +237,9 @@ function translateStaticUi() {
   });
   els.searchInput.placeholder = isZh() ? "输入 Aave V3 Pool 或 0x87870b..." : "Try Aave V3 Pool or 0x87870b...";
   els.language.value = state.locale;
+  els.horizonButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.horizon === state.horizon);
+  });
 }
 
 function percent(value, digits = 2) {
@@ -399,6 +409,7 @@ async function runStress() {
         address: profile.address,
         profile,
         factors: selectedRiskIds(),
+        horizon: state.horizon,
         severity,
         useCorrelation: els.correlation.checked,
         simulateKeeper: els.keeper.checked,
@@ -483,7 +494,9 @@ function renderResult(result) {
   els.orb.style.background = `radial-gradient(circle at center, #14233b 0 56%, transparent 57%), conic-gradient(${probabilityColor} var(--score), rgba(255, 255, 255, 0.16) 0)`;
   els.scenarioTitle.textContent = names.length ? names.join(" + ") : (isZh() ? "基准清算监控" : "Baseline liquidation monitor");
   els.scenarioCopy.textContent = names.length
-    ? (isZh() ? `${level}：后端压力引擎使用单因子边际概率与尾部依赖矩阵计算当前因子组合。` : `${level}: the backend stress engine uses marginal probabilities plus a tail-dependence matrix for the selected factor set.`)
+    ? (isZh()
+        ? `${level}：这是 ${result.predictionHorizon} 预测，后端使用单因子边际概率与尾部依赖矩阵计算当前因子组合。`
+        : `${level}: this is a ${result.predictionHorizon} forecast using marginal probabilities plus a tail-dependence matrix.`)
     : (isZh() ? "当前未选择风险因子，因此场景概率和压力指标均重置为零。" : "No risk factor is selected, so scenario probability and stress metrics are reset to zero.");
   els.coverageMetric.textContent = `${Math.round(result.liquidationCoverage)}%`;
   els.gapMetric.textContent = money(result.expectedBadDebtUsdM);
@@ -496,6 +509,9 @@ function renderResult(result) {
   els.codeScore.textContent = `${Math.round(clamp(result.resilienceScore + 8 - result.governanceExposure * 0.08, 38, 97))}%`;
   els.opsScore.textContent = `${Math.round(clamp(result.liquidationCoverage - result.queueCongestion * 0.12, 28, 95))}%`;
   els.marketScore.textContent = `${Math.round(clamp(96 - result.expectedBadDebtUsdM * 0.22 - result.jointProbability * 120, 25, 94))}%`;
+  els.dependencySource.textContent = isZh()
+    ? `${result.model.version} · 未校准`
+    : `${result.model.version} · Uncalibrated`;
 
   renderHeatmap(result);
   updateRiskProbabilities(result);
@@ -702,6 +718,11 @@ function renderEvents(result) {
 
 function resetScenario() {
   els.severity.value = 65;
+  state.horizon = "7d";
+  localStorage.setItem("tail-risk-horizon", state.horizon);
+  els.horizonButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.horizon === state.horizon);
+  });
   els.correlation.checked = true;
   els.keeper.checked = true;
   document.querySelectorAll(".risk-option input").forEach((input) => {
@@ -748,6 +769,14 @@ els.language.addEventListener("change", () => {
   setAgentStatus(isZh() ? "语言已切换为简体中文。" : "Language switched to English.", "ok");
 });
 els.severity.addEventListener("input", runStress);
+els.horizonControl.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-horizon]");
+  if (!button) return;
+  state.horizon = button.dataset.horizon;
+  localStorage.setItem("tail-risk-horizon", state.horizon);
+  els.horizonButtons.forEach((item) => item.classList.toggle("active", item === button));
+  runStress();
+});
 els.correlation.addEventListener("change", runStress);
 els.keeper.addEventListener("change", runStress);
 els.glmFactor.addEventListener("click", applyGlmFactors);

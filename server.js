@@ -15,6 +15,12 @@ const duneQueryId = process.env.DUNE_QUERY_ID || "";
 const dataRoot = join(process.cwd(), "data");
 const DUMMY_EVENT_PRIOR_WEIGHT = 0.62;
 const MARKET_PRIOR_WEIGHT = 0.18;
+const MODEL_VERSION = "horizon-prior-v0.2.0";
+const HORIZONS = {
+  "1d": 1,
+  "7d": 7,
+  "30d": 30
+};
 
 const mime = {
   ".html": "text/html; charset=utf-8",
@@ -178,28 +184,26 @@ function buildEventPriors(events) {
   return priors;
 }
 
-function probabilityForFactor(risk) {
+function probabilityForFactor(risk, horizonDays = 7) {
   const prior = eventPriors[risk.id];
+  let thirtyDayProbability;
   if (!prior) {
-    return {
-      ...risk,
-      marginalProbability: risk.baseProb,
-      priorSource: "Static model prior",
-      eventCount: 0,
-      avgSeverity: 0
-    };
+    thirtyDayProbability = risk.baseProb;
+  } else {
+    thirtyDayProbability = clamp(
+      risk.baseProb * (1 - DUMMY_EVENT_PRIOR_WEIGHT) + prior.dummyProbability * DUMMY_EVENT_PRIOR_WEIGHT,
+      0.003,
+      0.095
+    );
   }
 
   return {
     ...risk,
-    marginalProbability: clamp(
-      risk.baseProb * (1 - DUMMY_EVENT_PRIOR_WEIGHT) + prior.dummyProbability * DUMMY_EVENT_PRIOR_WEIGHT,
-      0.003,
-      0.095
-    ),
-    priorSource: "tail_events.json dummy prior",
-    eventCount: prior.count,
-    avgSeverity: prior.avgSeverity
+    thirtyDayProbability,
+    marginalProbability: clamp(1 - Math.pow(1 - thirtyDayProbability, horizonDays / 30), 0, 0.35),
+    priorSource: prior ? "tail_events.json 30d dummy prior" : "Static 30d model prior",
+    eventCount: prior?.count || 0,
+    avgSeverity: prior?.avgSeverity || 0
   };
 }
 
@@ -591,9 +595,11 @@ async function resolveProfile(chainId, address) {
   });
 }
 
-function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true, simulateKeeper = true, marketSignals = null }) {
+function runStress({ profile, factorIds, horizon = "7d", severity = 0.65, useCorrelation = true, simulateKeeper = true, marketSignals = null }) {
+  const predictionHorizon = HORIZONS[horizon] ? horizon : "7d";
+  const horizonDays = HORIZONS[predictionHorizon];
   const probabilityFactors = riskFactors
-    .map(probabilityForFactor)
+    .map((risk) => probabilityForFactor(risk, horizonDays))
     .map((risk) => applyMarketSignalToFactor(risk, marketSignals));
   const selected = probabilityFactors.filter((risk) => factorIds.includes(risk.id));
   const risks = selected;
@@ -641,12 +647,15 @@ function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true,
       id: risk.id,
       name: risk.name,
       baseProbability: risk.baseProb,
+      thirtyDayProbability: risk.thirtyDayProbability,
       marginalProbability: risk.marginalProbability,
       priorSource: risk.priorSource,
       eventCount: risk.eventCount,
       avgSeverity: risk.avgSeverity
     })),
     severity,
+    predictionHorizon,
+    horizonDays,
     useCorrelation,
     simulateKeeper,
     jointProbability,
@@ -659,7 +668,9 @@ function runStress({ profile, factorIds, severity = 0.65, useCorrelation = true,
     dependencies: pairs.sort((a, b) => b.tailDependence - a.tailDependence),
     marketSignals,
     model: {
-      name: "Tail dependence matrix v0.1",
+      name: "Horizon-aware tail dependence prior",
+      version: MODEL_VERSION,
+      calibrationStatus: "uncalibrated",
       source: "tail_events.json dummy prior + risk_factor_map.json + market collectors + tail-dependence matrix",
       tailEventCount: tailEvents.length,
       confidence
@@ -712,6 +723,7 @@ async function handleStress(req, res) {
   const result = runStress({
     profile,
     factorIds: Array.isArray(body.factors) ? body.factors : profile.riskFactorIds,
+    horizon: body.horizon,
     severity: Number(body.severity || 0.65),
     useCorrelation: body.useCorrelation !== false,
     simulateKeeper: body.simulateKeeper !== false,
