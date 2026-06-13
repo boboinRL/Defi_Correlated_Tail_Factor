@@ -826,6 +826,80 @@ input[type="range"] {
   text-align: right;
 }
 
+.validation-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  border-bottom: 1px solid var(--line);
+  background: var(--line);
+}
+
+.validation-summary > div {
+  min-width: 0;
+  padding: 12px 14px;
+  background: #fbfdff;
+}
+
+.validation-summary span,
+.validation-summary strong {
+  display: block;
+}
+
+.validation-summary span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 760;
+}
+
+.validation-summary strong {
+  margin-top: 5px;
+  font-size: 1.08rem;
+}
+
+.calibration-chart {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(36px, 1fr));
+  gap: 12px;
+  min-height: 154px;
+  padding: 16px;
+  align-items: end;
+}
+
+.calibration-bin {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+  text-align: center;
+}
+
+.calibration-bars {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 5px;
+  height: 100px;
+  padding: 6px;
+  border-bottom: 1px solid var(--line);
+  background: #f6f9fd;
+}
+
+.calibration-bars i {
+  width: min(18px, 34%);
+  min-height: 3px;
+  border-radius: 3px 3px 0 0;
+}
+
+.calibration-bars .predicted {
+  background: var(--blue);
+}
+
+.calibration-bars .observed {
+  background: var(--red);
+}
+
 .section-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1024,6 +1098,15 @@ input[type="range"] {
 
   .dependency-score {
     text-align: left;
+  }
+
+  .validation-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .calibration-chart {
+    gap: 6px;
+    padding: 12px;
   }
 
   .status-pill {

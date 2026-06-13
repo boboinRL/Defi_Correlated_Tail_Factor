@@ -1,0 +1,1352 @@
+{
+  "metadata": {
+    "generatedAt": "2026-06-13T11:41:20.205Z",
+    "validationVersion": "walk-forward-v0.1.0-20260613",
+    "modelVersion": "empirical-tail-v0.3.0-20260613",
+    "status": "exploratory",
+    "method": "Walk-forward historical probability backtest",
+    "rollingWindowDays": 730,
+    "minimumTrainingRows": 180,
+    "betaPrior": {
+      "alpha": 0.5,
+      "beta": 0.5
+    },
+    "labelObservedThrough": "2025-05-10",
+    "warnings": [
+      "The event catalog contains few independent events, so metrics have high sampling uncertainty.",
+      "Overlapping horizon labels are serially dependent; observation counts are not independent incident counts.",
+      "This backtest validates rolling marginal probabilities, not the full contract-specific loss model."
+    ]
+  },
+  "horizons": {
+    "1d": {
+      "any": {
+        "observations": 1776,
+        "positives": 22,
+        "prevalence": 0.01238739,
+        "brierScore": 0.01225817,
+        "logLoss": 0.0677761,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 355,
+            "meanPredicted": 0.00605285,
+            "observedRate": 0.01126761,
+            "minPredicted": 0.00454545,
+            "maxPredicted": 0.00724638
+          },
+          {
+            "bin": 2,
+            "observations": 355,
+            "meanPredicted": 0.00797073,
+            "observedRate": 0.0056338,
+            "minPredicted": 0.00724638,
+            "maxPredicted": 0.00887978
+          },
+          {
+            "bin": 3,
+            "observations": 355,
+            "meanPredicted": 0.01211229,
+            "observedRate": 0.02253521,
+            "minPredicted": 0.00887978,
+            "maxPredicted": 0.01434426
+          },
+          {
+            "bin": 4,
+            "observations": 355,
+            "meanPredicted": 0.01546025,
+            "observedRate": 0.01971831,
+            "minPredicted": 0.01434426,
+            "maxPredicted": 0.0170765
+          },
+          {
+            "bin": 5,
+            "observations": 356,
+            "meanPredicted": 0.01798213,
+            "observedRate": 0.00280899,
+            "minPredicted": 0.0170765,
+            "maxPredicted": 0.01844262
+          }
+        ]
+      },
+      "oracle": {
+        "observations": 1776,
+        "positives": 13,
+        "prevalence": 0.00731982,
+        "brierScore": 0.00727764,
+        "logLoss": 0.04428011,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 355,
+            "meanPredicted": 0.00240782,
+            "observedRate": 0.0056338,
+            "minPredicted": 0.00151515,
+            "maxPredicted": 0.0032538
+          },
+          {
+            "bin": 2,
+            "observations": 355,
+            "meanPredicted": 0.00372414,
+            "observedRate": 0.0028169,
+            "minPredicted": 0.00326087,
+            "maxPredicted": 0.00478142
+          },
+          {
+            "bin": 3,
+            "observations": 355,
+            "meanPredicted": 0.00693643,
+            "observedRate": 0.01408451,
+            "minPredicted": 0.00478142,
+            "maxPredicted": 0.00887978
+          },
+          {
+            "bin": 4,
+            "observations": 355,
+            "meanPredicted": 0.00978796,
+            "observedRate": 0.0084507,
+            "minPredicted": 0.00887978,
+            "maxPredicted": 0.0102459
+          },
+          {
+            "bin": 5,
+            "observations": 356,
+            "meanPredicted": 0.0118461,
+            "observedRate": 0.00561798,
+            "minPredicted": 0.0102459,
+            "maxPredicted": 0.01297814
+          }
+        ]
+      },
+      "liquidity": {
+        "observations": 1776,
+        "positives": 21,
+        "prevalence": 0.01182432,
+        "brierScore": 0.01170663,
+        "logLoss": 0.0652018,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 355,
+            "meanPredicted": 0.00605285,
+            "observedRate": 0.01126761,
+            "minPredicted": 0.00454545,
+            "maxPredicted": 0.00724638
+          },
+          {
+            "bin": 2,
+            "observations": 355,
+            "meanPredicted": 0.00797073,
+            "observedRate": 0.0056338,
+            "minPredicted": 0.00724638,
+            "maxPredicted": 0.00887978
+          },
+          {
+            "bin": 3,
+            "observations": 355,
+            "meanPredicted": 0.01210844,
+            "observedRate": 0.01971831,
+            "minPredicted": 0.00887978,
+            "maxPredicted": 0.01434426
+          },
+          {
+            "bin": 4,
+            "observations": 355,
+            "meanPredicted": 0.01546025,
+            "observedRate": 0.01971831,
+            "minPredicted": 0.01434426,
+            "maxPredicted": 0.0170765
+          },
+          {
+            "bin": 5,
+            "observations": 356,
+            "meanPredicted": 0.01798213,
+            "observedRate": 0.00280899,
+            "minPredicted": 0.0170765,
+            "maxPredicted": 0.01844262
+          }
+        ]
+      },
+      "volatility": {
+        "observations": 1776,
+        "positives": 19,
+        "prevalence": 0.0106982,
+        "brierScore": 0.01060666,
+        "logLoss": 0.06021481,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 355,
+            "meanPredicted": 0.00448384,
+            "observedRate": 0.0084507,
+            "minPredicted": 0.00297619,
+            "maxPredicted": 0.00592885
+          },
+          {
+            "bin": 2,
+            "observations": 355,
+            "meanPredicted": 0.00668769,
+            "observedRate": 0.0084507,
+            "minPredicted": 0.0059322,
+            "maxPredicted": 0.00824176
+          },
+          {
+            "bin": 3,
+            "observations": 355,
+            "meanPredicted": 0.01084071,
+            "observedRate": 0.01690141,
+            "minPredicted": 0.00828729,
+            "maxPredicted": 0.01297814
+          },
+          {
+            "bin": 4,
+            "observations": 355,
+            "meanPredicted": 0.01534095,
+            "observedRate": 0.01690141,
+            "minPredicted": 0.01297814,
+            "maxPredicted": 0.0170765
+          },
+          {
+            "bin": 5,
+            "observations": 356,
+            "meanPredicted": 0.01798213,
+            "observedRate": 0.00280899,
+            "minPredicted": 0.0170765,
+            "maxPredicted": 0.01844262
+          }
+        ]
+      },
+      "keeper": {
+        "observations": 1776,
+        "positives": 10,
+        "prevalence": 0.00563063,
+        "brierScore": 0.00560789,
+        "logLoss": 0.03561851,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 355,
+            "meanPredicted": 0.00443309,
+            "observedRate": 0.01408451,
+            "minPredicted": 0.0034153,
+            "maxPredicted": 0.00478142
+          },
+          {
+            "bin": 2,
+            "observations": 355,
+            "meanPredicted": 0.00539738,
+            "observedRate": 0.0056338,
+            "minPredicted": 0.00478142,
+            "maxPredicted": 0.00614754
+          },
+          {
+            "bin": 3,
+            "observations": 355,
+            "meanPredicted": 0.00614754,
+            "observedRate": 0.0028169,
+            "minPredicted": 0.00614754,
+            "maxPredicted": 0.00614754
+          },
+          {
+            "bin": 4,
+            "observations": 355,
+            "meanPredicted": 0.00614754,
+            "observedRate": 0.0028169,
+            "minPredicted": 0.00614754,
+            "maxPredicted": 0.00614754
+          },
+          {
+            "bin": 5,
+            "observations": 356,
+            "meanPredicted": 0.00673461,
+            "observedRate": 0.00280899,
+            "minPredicted": 0.00614754,
+            "maxPredicted": 0.00828729
+          }
+        ]
+      },
+      "governance": {
+        "observations": 1776,
+        "positives": 2,
+        "prevalence": 0.00112613,
+        "brierScore": 0.0011281,
+        "logLoss": 0.00958035,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 355,
+            "meanPredicted": 0.00069349,
+            "observedRate": 0.0028169,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.0007728
+          },
+          {
+            "bin": 2,
+            "observations": 355,
+            "meanPredicted": 0.00112188,
+            "observedRate": 0,
+            "minPredicted": 0.00077399,
+            "maxPredicted": 0.00171233
+          },
+          {
+            "bin": 3,
+            "observations": 355,
+            "meanPredicted": 0.00202552,
+            "observedRate": 0.0028169,
+            "minPredicted": 0.00171821,
+            "maxPredicted": 0.00204918
+          },
+          {
+            "bin": 4,
+            "observations": 355,
+            "meanPredicted": 0.00268827,
+            "observedRate": 0,
+            "minPredicted": 0.00204918,
+            "maxPredicted": 0.0034153
+          },
+          {
+            "bin": 5,
+            "observations": 356,
+            "meanPredicted": 0.0034153,
+            "observedRate": 0,
+            "minPredicted": 0.0034153,
+            "maxPredicted": 0.0034153
+          }
+        ]
+      },
+      "stablecoin": {
+        "observations": 1776,
+        "positives": 6,
+        "prevalence": 0.00337838,
+        "brierScore": 0.00337329,
+        "logLoss": 0.0235271,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 355,
+            "meanPredicted": 0.00148304,
+            "observedRate": 0.0056338,
+            "minPredicted": 0.00093985,
+            "maxPredicted": 0.00204918
+          },
+          {
+            "bin": 2,
+            "observations": 355,
+            "meanPredicted": 0.00258103,
+            "observedRate": 0,
+            "minPredicted": 0.00204918,
+            "maxPredicted": 0.0034153
+          },
+          {
+            "bin": 3,
+            "observations": 355,
+            "meanPredicted": 0.0035192,
+            "observedRate": 0.0056338,
+            "minPredicted": 0.0034153,
+            "maxPredicted": 0.00478142
+          },
+          {
+            "bin": 4,
+            "observations": 355,
+            "meanPredicted": 0.00512776,
+            "observedRate": 0.0028169,
+            "minPredicted": 0.00478142,
+            "maxPredicted": 0.00614754
+          },
+          {
+            "bin": 5,
+            "observations": 356,
+            "meanPredicted": 0.00652361,
+            "observedRate": 0.00280899,
+            "minPredicted": 0.00614754,
+            "maxPredicted": 0.00751366
+          }
+        ]
+      },
+      "gas": {
+        "observations": 1776,
+        "positives": 3,
+        "prevalence": 0.00168919,
+        "brierScore": 0.0016917,
+        "logLoss": 0.01338547,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 355,
+            "meanPredicted": 0.00068306,
+            "observedRate": 0,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00068306
+          },
+          {
+            "bin": 2,
+            "observations": 355,
+            "meanPredicted": 0.00171054,
+            "observedRate": 0.0028169,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00204918
+          },
+          {
+            "bin": 3,
+            "observations": 355,
+            "meanPredicted": 0.00204918,
+            "observedRate": 0,
+            "minPredicted": 0.00204918,
+            "maxPredicted": 0.00204918
+          },
+          {
+            "bin": 4,
+            "observations": 355,
+            "meanPredicted": 0.00310938,
+            "observedRate": 0.0056338,
+            "minPredicted": 0.00204918,
+            "maxPredicted": 0.00384025
+          },
+          {
+            "bin": 5,
+            "observations": 356,
+            "meanPredicted": 0.00503645,
+            "observedRate": 0,
+            "minPredicted": 0.00384615,
+            "maxPredicted": 0.00828729
+          }
+        ]
+      },
+      "mev": {
+        "observations": 1776,
+        "positives": 3,
+        "prevalence": 0.00168919,
+        "brierScore": 0.0016874,
+        "logLoss": 0.01263715,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 355,
+            "meanPredicted": 0.00068306,
+            "observedRate": 0,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00068306
+          },
+          {
+            "bin": 2,
+            "observations": 355,
+            "meanPredicted": 0.00071065,
+            "observedRate": 0.0028169,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00083752
+          },
+          {
+            "bin": 3,
+            "observations": 355,
+            "meanPredicted": 0.00127346,
+            "observedRate": 0,
+            "minPredicted": 0.00083893,
+            "maxPredicted": 0.00204918
+          },
+          {
+            "bin": 4,
+            "observations": 355,
+            "meanPredicted": 0.00279603,
+            "observedRate": 0.0028169,
+            "minPredicted": 0.00204918,
+            "maxPredicted": 0.0034153
+          },
+          {
+            "bin": 5,
+            "observations": 356,
+            "meanPredicted": 0.00378369,
+            "observedRate": 0.00280899,
+            "minPredicted": 0.0034153,
+            "maxPredicted": 0.00478142
+          }
+        ]
+      }
+    },
+    "7d": {
+      "any": {
+        "observations": 1764,
+        "positives": 135,
+        "prevalence": 0.07653061,
+        "brierScore": 0.07163299,
+        "logLoss": 0.27836144,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 352,
+            "meanPredicted": 0.03395537,
+            "observedRate": 0.07954545,
+            "minPredicted": 0.02314815,
+            "maxPredicted": 0.04364472
+          },
+          {
+            "bin": 2,
+            "observations": 353,
+            "meanPredicted": 0.05088378,
+            "observedRate": 0.05949008,
+            "minPredicted": 0.0436747,
+            "maxPredicted": 0.05806011
+          },
+          {
+            "bin": 3,
+            "observations": 353,
+            "meanPredicted": 0.0714001,
+            "observedRate": 0.10481586,
+            "minPredicted": 0.05942623,
+            "maxPredicted": 0.08265027
+          },
+          {
+            "bin": 4,
+            "observations": 353,
+            "meanPredicted": 0.09239501,
+            "observedRate": 0.11331445,
+            "minPredicted": 0.08265027,
+            "maxPredicted": 0.10040984
+          },
+          {
+            "bin": 5,
+            "observations": 353,
+            "meanPredicted": 0.10560728,
+            "observedRate": 0.02549575,
+            "minPredicted": 0.10040984,
+            "maxPredicted": 0.11270492
+          }
+        ]
+      },
+      "oracle": {
+        "observations": 1764,
+        "positives": 81,
+        "prevalence": 0.04591837,
+        "brierScore": 0.04436424,
+        "logLoss": 0.20063435,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 352,
+            "meanPredicted": 0.00880542,
+            "observedRate": 0.03977273,
+            "minPredicted": 0.00154321,
+            "maxPredicted": 0.01633987
+          },
+          {
+            "bin": 2,
+            "observations": 353,
+            "meanPredicted": 0.02058394,
+            "observedRate": 0.03966006,
+            "minPredicted": 0.01637555,
+            "maxPredicted": 0.02937158
+          },
+          {
+            "bin": 3,
+            "observations": 353,
+            "meanPredicted": 0.04097006,
+            "observedRate": 0.06515581,
+            "minPredicted": 0.0307377,
+            "maxPredicted": 0.05669399
+          },
+          {
+            "bin": 4,
+            "observations": 353,
+            "meanPredicted": 0.06197271,
+            "observedRate": 0.03966006,
+            "minPredicted": 0.05669399,
+            "maxPredicted": 0.06762295
+          },
+          {
+            "bin": 5,
+            "observations": 353,
+            "meanPredicted": 0.07280492,
+            "observedRate": 0.04532578,
+            "minPredicted": 0.06762295,
+            "maxPredicted": 0.07991803
+          }
+        ]
+      },
+      "liquidity": {
+        "observations": 1764,
+        "positives": 133,
+        "prevalence": 0.07539683,
+        "brierScore": 0.07063705,
+        "logLoss": 0.27525761,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 352,
+            "meanPredicted": 0.03395537,
+            "observedRate": 0.07954545,
+            "minPredicted": 0.02314815,
+            "maxPredicted": 0.04364472
+          },
+          {
+            "bin": 2,
+            "observations": 353,
+            "meanPredicted": 0.05088378,
+            "observedRate": 0.05949008,
+            "minPredicted": 0.0436747,
+            "maxPredicted": 0.05806011
+          },
+          {
+            "bin": 3,
+            "observations": 353,
+            "meanPredicted": 0.0714001,
+            "observedRate": 0.09915014,
+            "minPredicted": 0.05942623,
+            "maxPredicted": 0.08265027
+          },
+          {
+            "bin": 4,
+            "observations": 353,
+            "meanPredicted": 0.09239501,
+            "observedRate": 0.11331445,
+            "minPredicted": 0.08265027,
+            "maxPredicted": 0.10040984
+          },
+          {
+            "bin": 5,
+            "observations": 353,
+            "meanPredicted": 0.10560728,
+            "observedRate": 0.02549575,
+            "minPredicted": 0.10040984,
+            "maxPredicted": 0.11270492
+          }
+        ]
+      },
+      "volatility": {
+        "observations": 1764,
+        "positives": 119,
+        "prevalence": 0.06746032,
+        "brierScore": 0.06384445,
+        "logLoss": 0.25521811,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 352,
+            "meanPredicted": 0.0238901,
+            "observedRate": 0.05965909,
+            "minPredicted": 0.01506024,
+            "maxPredicted": 0.03456592
+          },
+          {
+            "bin": 2,
+            "observations": 353,
+            "meanPredicted": 0.04081269,
+            "observedRate": 0.05949008,
+            "minPredicted": 0.03462158,
+            "maxPredicted": 0.04849727
+          },
+          {
+            "bin": 3,
+            "observations": 353,
+            "meanPredicted": 0.06302536,
+            "observedRate": 0.07648725,
+            "minPredicted": 0.04986339,
+            "maxPredicted": 0.08128415
+          },
+          {
+            "bin": 4,
+            "observations": 353,
+            "meanPredicted": 0.09131527,
+            "observedRate": 0.11614731,
+            "minPredicted": 0.08128415,
+            "maxPredicted": 0.10040984
+          },
+          {
+            "bin": 5,
+            "observations": 353,
+            "meanPredicted": 0.10547183,
+            "observedRate": 0.02549575,
+            "minPredicted": 0.10040984,
+            "maxPredicted": 0.11270492
+          }
+        ]
+      },
+      "keeper": {
+        "observations": 1764,
+        "positives": 61,
+        "prevalence": 0.0345805,
+        "brierScore": 0.03376963,
+        "logLoss": 0.15697713,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 352,
+            "meanPredicted": 0.02519144,
+            "observedRate": 0.08238636,
+            "minPredicted": 0.01980874,
+            "maxPredicted": 0.02937158
+          },
+          {
+            "bin": 2,
+            "observations": 353,
+            "meanPredicted": 0.03142506,
+            "observedRate": 0.04532578,
+            "minPredicted": 0.02937158,
+            "maxPredicted": 0.03346995
+          },
+          {
+            "bin": 3,
+            "observations": 353,
+            "meanPredicted": 0.03346995,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.03346995,
+            "maxPredicted": 0.03346995
+          },
+          {
+            "bin": 4,
+            "observations": 353,
+            "meanPredicted": 0.03486545,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.03346995,
+            "maxPredicted": 0.03859964
+          },
+          {
+            "bin": 5,
+            "observations": 353,
+            "meanPredicted": 0.04001799,
+            "observedRate": 0.00566572,
+            "minPredicted": 0.03865979,
+            "maxPredicted": 0.04380665
+          }
+        ]
+      },
+      "governance": {
+        "observations": 1764,
+        "positives": 14,
+        "prevalence": 0.00793651,
+        "brierScore": 0.00798963,
+        "logLoss": 0.05592161,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 352,
+            "meanPredicted": 0.00069781,
+            "observedRate": 0.01988636,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00079114
+          },
+          {
+            "bin": 2,
+            "observations": 353,
+            "meanPredicted": 0.0011596,
+            "observedRate": 0,
+            "minPredicted": 0.00079239,
+            "maxPredicted": 0.00179211
+          },
+          {
+            "bin": 3,
+            "observations": 353,
+            "meanPredicted": 0.00785318,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.00179856,
+            "maxPredicted": 0.0102459
+          },
+          {
+            "bin": 4,
+            "observations": 353,
+            "meanPredicted": 0.01441779,
+            "observedRate": 0,
+            "minPredicted": 0.0102459,
+            "maxPredicted": 0.01980874
+          },
+          {
+            "bin": 5,
+            "observations": 353,
+            "meanPredicted": 0.01980874,
+            "observedRate": 0,
+            "minPredicted": 0.01980874,
+            "maxPredicted": 0.01980874
+          }
+        ]
+      },
+      "stablecoin": {
+        "observations": 1764,
+        "positives": 42,
+        "prevalence": 0.02380952,
+        "brierScore": 0.02354665,
+        "logLoss": 0.12549101,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 352,
+            "meanPredicted": 0.00164329,
+            "observedRate": 0.01988636,
+            "minPredicted": 0.00095057,
+            "maxPredicted": 0.0102459
+          },
+          {
+            "bin": 2,
+            "observations": 353,
+            "meanPredicted": 0.01338906,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.0102459,
+            "maxPredicted": 0.01980874
+          },
+          {
+            "bin": 3,
+            "observations": 353,
+            "meanPredicted": 0.02067563,
+            "observedRate": 0.03966006,
+            "minPredicted": 0.01980874,
+            "maxPredicted": 0.02937158
+          },
+          {
+            "bin": 4,
+            "observations": 353,
+            "meanPredicted": 0.03189097,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.02937158,
+            "maxPredicted": 0.03893443
+          },
+          {
+            "bin": 5,
+            "observations": 353,
+            "meanPredicted": 0.04158927,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.03893443,
+            "maxPredicted": 0.04849727
+          }
+        ]
+      },
+      "gas": {
+        "observations": 1764,
+        "positives": 16,
+        "prevalence": 0.00907029,
+        "brierScore": 0.00916591,
+        "logLoss": 0.06325317,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 352,
+            "meanPredicted": 0.00068306,
+            "observedRate": 0,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00068306
+          },
+          {
+            "bin": 2,
+            "observations": 353,
+            "meanPredicted": 0.00778069,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.0102459
+          },
+          {
+            "bin": 3,
+            "observations": 353,
+            "meanPredicted": 0.0102459,
+            "observedRate": 0,
+            "minPredicted": 0.0102459,
+            "maxPredicted": 0.0102459
+          },
+          {
+            "bin": 4,
+            "observations": 353,
+            "meanPredicted": 0.01671354,
+            "observedRate": 0.02549575,
+            "minPredicted": 0.0102459,
+            "maxPredicted": 0.02124646
+          },
+          {
+            "bin": 5,
+            "observations": 353,
+            "meanPredicted": 0.02684493,
+            "observedRate": 0,
+            "minPredicted": 0.021261,
+            "maxPredicted": 0.04143646
+          }
+        ]
+      },
+      "mev": {
+        "observations": 1764,
+        "positives": 21,
+        "prevalence": 0.01190476,
+        "brierScore": 0.01180842,
+        "logLoss": 0.07028078,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 352,
+            "meanPredicted": 0.00068306,
+            "observedRate": 0,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00068306
+          },
+          {
+            "bin": 2,
+            "observations": 353,
+            "meanPredicted": 0.00071125,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00083893
+          },
+          {
+            "bin": 3,
+            "observations": 353,
+            "meanPredicted": 0.0012725,
+            "observedRate": 0,
+            "minPredicted": 0.00084034,
+            "maxPredicted": 0.00204918
+          },
+          {
+            "bin": 4,
+            "observations": 353,
+            "meanPredicted": 0.01346993,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.00205761,
+            "maxPredicted": 0.01980874
+          },
+          {
+            "bin": 5,
+            "observations": 353,
+            "meanPredicted": 0.02216559,
+            "observedRate": 0.01983003,
+            "minPredicted": 0.01980874,
+            "maxPredicted": 0.02937158
+          }
+        ]
+      }
+    },
+    "30d": {
+      "any": {
+        "observations": 1718,
+        "positives": 529,
+        "prevalence": 0.30791618,
+        "brierScore": 0.22858847,
+        "logLoss": 0.66024983,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 343,
+            "meanPredicted": 0.14523575,
+            "observedRate": 0.28571429,
+            "minPredicted": 0.1013289,
+            "maxPredicted": 0.18899522
+          },
+          {
+            "bin": 2,
+            "observations": 344,
+            "meanPredicted": 0.21411113,
+            "observedRate": 0.32848837,
+            "minPredicted": 0.18929712,
+            "maxPredicted": 0.25068306
+          },
+          {
+            "bin": 3,
+            "observations": 343,
+            "meanPredicted": 0.28408729,
+            "observedRate": 0.34985423,
+            "minPredicted": 0.25068306,
+            "maxPredicted": 0.31489071
+          },
+          {
+            "bin": 4,
+            "observations": 344,
+            "meanPredicted": 0.35537394,
+            "observedRate": 0.43895349,
+            "minPredicted": 0.31625683,
+            "maxPredicted": 0.38456284
+          },
+          {
+            "bin": 5,
+            "observations": 344,
+            "meanPredicted": 0.39927246,
+            "observedRate": 0.13662791,
+            "minPredicted": 0.38456284,
+            "maxPredicted": 0.43101093
+          }
+        ]
+      },
+      "oracle": {
+        "observations": 1718,
+        "positives": 316,
+        "prevalence": 0.18393481,
+        "brierScore": 0.1603091,
+        "logLoss": 0.57100662,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 343,
+            "meanPredicted": 0.03632067,
+            "observedRate": 0.17492711,
+            "minPredicted": 0.00166113,
+            "maxPredicted": 0.06792873
+          },
+          {
+            "bin": 2,
+            "observations": 344,
+            "meanPredicted": 0.08486066,
+            "observedRate": 0.18023256,
+            "minPredicted": 0.06808036,
+            "maxPredicted": 0.12773224
+          },
+          {
+            "bin": 3,
+            "observations": 343,
+            "meanPredicted": 0.17261905,
+            "observedRate": 0.26530612,
+            "minPredicted": 0.12773224,
+            "maxPredicted": 0.22199454
+          },
+          {
+            "bin": 4,
+            "observations": 344,
+            "meanPredicted": 0.2370298,
+            "observedRate": 0.13081395,
+            "minPredicted": 0.22199454,
+            "maxPredicted": 0.26297814
+          },
+          {
+            "bin": 5,
+            "observations": 344,
+            "meanPredicted": 0.27752097,
+            "observedRate": 0.16860465,
+            "minPredicted": 0.26297814,
+            "maxPredicted": 0.30669399
+          }
+        ]
+      },
+      "liquidity": {
+        "observations": 1718,
+        "positives": 527,
+        "prevalence": 0.30675204,
+        "brierScore": 0.22800958,
+        "logLoss": 0.65897935,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 343,
+            "meanPredicted": 0.14523575,
+            "observedRate": 0.28571429,
+            "minPredicted": 0.1013289,
+            "maxPredicted": 0.18899522
+          },
+          {
+            "bin": 2,
+            "observations": 344,
+            "meanPredicted": 0.21411113,
+            "observedRate": 0.32848837,
+            "minPredicted": 0.18929712,
+            "maxPredicted": 0.25068306
+          },
+          {
+            "bin": 3,
+            "observations": 343,
+            "meanPredicted": 0.28408729,
+            "observedRate": 0.34402332,
+            "minPredicted": 0.25068306,
+            "maxPredicted": 0.31489071
+          },
+          {
+            "bin": 4,
+            "observations": 344,
+            "meanPredicted": 0.35537394,
+            "observedRate": 0.43895349,
+            "minPredicted": 0.31625683,
+            "maxPredicted": 0.38456284
+          },
+          {
+            "bin": 5,
+            "observations": 344,
+            "meanPredicted": 0.39927246,
+            "observedRate": 0.13662791,
+            "minPredicted": 0.38456284,
+            "maxPredicted": 0.43101093
+          }
+        ]
+      },
+      "volatility": {
+        "observations": 1718,
+        "positives": 467,
+        "prevalence": 0.27182771,
+        "brierScore": 0.21403601,
+        "logLoss": 0.63375976,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 343,
+            "meanPredicted": 0.10016778,
+            "observedRate": 0.25072886,
+            "minPredicted": 0.06421053,
+            "maxPredicted": 0.1453202
+          },
+          {
+            "bin": 2,
+            "observations": 344,
+            "meanPredicted": 0.169613,
+            "observedRate": 0.27616279,
+            "minPredicted": 0.14555921,
+            "maxPredicted": 0.20969945
+          },
+          {
+            "bin": 3,
+            "observations": 343,
+            "meanPredicted": 0.25492879,
+            "observedRate": 0.3090379,
+            "minPredicted": 0.20969945,
+            "maxPredicted": 0.30669399
+          },
+          {
+            "bin": 4,
+            "observations": 344,
+            "meanPredicted": 0.34678009,
+            "observedRate": 0.37790698,
+            "minPredicted": 0.30806011,
+            "maxPredicted": 0.37773224
+          },
+          {
+            "bin": 5,
+            "observations": 344,
+            "meanPredicted": 0.39810093,
+            "observedRate": 0.14534884,
+            "minPredicted": 0.37773224,
+            "maxPredicted": 0.43101093
+          }
+        ]
+      },
+      "keeper": {
+        "observations": 1718,
+        "positives": 245,
+        "prevalence": 0.14260768,
+        "brierScore": 0.12840869,
+        "logLoss": 0.43820035,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 343,
+            "meanPredicted": 0.10334136,
+            "observedRate": 0.33527697,
+            "minPredicted": 0.08265027,
+            "maxPredicted": 0.12363388
+          },
+          {
+            "bin": 2,
+            "observations": 344,
+            "meanPredicted": 0.12690861,
+            "observedRate": 0.19186047,
+            "minPredicted": 0.12363388,
+            "maxPredicted": 0.12773224
+          },
+          {
+            "bin": 3,
+            "observations": 343,
+            "meanPredicted": 0.12823528,
+            "observedRate": 0.14577259,
+            "minPredicted": 0.12773224,
+            "maxPredicted": 0.13211679
+          },
+          {
+            "bin": 4,
+            "observations": 344,
+            "meanPredicted": 0.14291006,
+            "observedRate": 0.03488372,
+            "minPredicted": 0.13230994,
+            "maxPredicted": 0.15580448
+          },
+          {
+            "bin": 5,
+            "observations": 344,
+            "meanPredicted": 0.16580482,
+            "observedRate": 0.00581395,
+            "minPredicted": 0.15592784,
+            "maxPredicted": 0.18277946
+          }
+        ]
+      },
+      "governance": {
+        "observations": 1718,
+        "positives": 60,
+        "prevalence": 0.03492433,
+        "brierScore": 0.03589507,
+        "logLoss": 0.21905864,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 343,
+            "meanPredicted": 0.00072425,
+            "observedRate": 0.08746356,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00087413
+          },
+          {
+            "bin": 2,
+            "observations": 344,
+            "meanPredicted": 0.00133802,
+            "observedRate": 0,
+            "minPredicted": 0.00087566,
+            "maxPredicted": 0.00217391
+          },
+          {
+            "bin": 3,
+            "observations": 343,
+            "meanPredicted": 0.03283031,
+            "observedRate": 0.08746356,
+            "minPredicted": 0.00218341,
+            "maxPredicted": 0.04166667
+          },
+          {
+            "bin": 4,
+            "observations": 344,
+            "meanPredicted": 0.06108622,
+            "observedRate": 0,
+            "minPredicted": 0.04166667,
+            "maxPredicted": 0.08265027
+          },
+          {
+            "bin": 5,
+            "observations": 344,
+            "meanPredicted": 0.08265027,
+            "observedRate": 0,
+            "minPredicted": 0.08265027,
+            "maxPredicted": 0.08265027
+          }
+        ]
+      },
+      "stablecoin": {
+        "observations": 1718,
+        "positives": 180,
+        "prevalence": 0.10477299,
+        "brierScore": 0.09977704,
+        "logLoss": 0.42048578,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 343,
+            "meanPredicted": 0.00273729,
+            "observedRate": 0.08746356,
+            "minPredicted": 0.00099404,
+            "maxPredicted": 0.03919694
+          },
+          {
+            "bin": 2,
+            "observations": 344,
+            "meanPredicted": 0.05875452,
+            "observedRate": 0.1744186,
+            "minPredicted": 0.04103053,
+            "maxPredicted": 0.08265027
+          },
+          {
+            "bin": 3,
+            "observations": 343,
+            "meanPredicted": 0.08862456,
+            "observedRate": 0.08746356,
+            "minPredicted": 0.08265027,
+            "maxPredicted": 0.12363388
+          },
+          {
+            "bin": 4,
+            "observations": 344,
+            "meanPredicted": 0.135786,
+            "observedRate": 0.11337209,
+            "minPredicted": 0.12363388,
+            "maxPredicted": 0.16461749
+          },
+          {
+            "bin": 5,
+            "observations": 344,
+            "meanPredicted": 0.17629305,
+            "observedRate": 0.06104651,
+            "minPredicted": 0.16461749,
+            "maxPredicted": 0.20560109
+          }
+        ]
+      },
+      "gas": {
+        "observations": 1718,
+        "positives": 62,
+        "prevalence": 0.03608847,
+        "brierScore": 0.0378587,
+        "logLoss": 0.23029839,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 343,
+            "meanPredicted": 0.00068306,
+            "observedRate": 0,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00068306
+          },
+          {
+            "bin": 2,
+            "observations": 344,
+            "meanPredicted": 0.02975283,
+            "observedRate": 0.0872093,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.04166667
+          },
+          {
+            "bin": 3,
+            "observations": 343,
+            "meanPredicted": 0.04166667,
+            "observedRate": 0,
+            "minPredicted": 0.04166667,
+            "maxPredicted": 0.04166667
+          },
+          {
+            "bin": 4,
+            "observations": 344,
+            "meanPredicted": 0.07066187,
+            "observedRate": 0.09302326,
+            "minPredicted": 0.04166667,
+            "maxPredicted": 0.08976261
+          },
+          {
+            "bin": 5,
+            "observations": 344,
+            "meanPredicted": 0.11169273,
+            "observedRate": 0,
+            "minPredicted": 0.08989599,
+            "maxPredicted": 0.16850829
+          }
+        ]
+      },
+      "mev": {
+        "observations": 1718,
+        "positives": 90,
+        "prevalence": 0.0523865,
+        "brierScore": 0.05033592,
+        "logLoss": 0.25359776,
+        "calibrationCurve": [
+          {
+            "bin": 1,
+            "observations": 343,
+            "meanPredicted": 0.00068306,
+            "observedRate": 0,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00068306
+          },
+          {
+            "bin": 2,
+            "observations": 344,
+            "meanPredicted": 0.00071432,
+            "observedRate": 0.0872093,
+            "minPredicted": 0.00068306,
+            "maxPredicted": 0.00084602
+          },
+          {
+            "bin": 3,
+            "observations": 343,
+            "meanPredicted": 0.00126758,
+            "observedRate": 0,
+            "minPredicted": 0.00084746,
+            "maxPredicted": 0.00201613
+          },
+          {
+            "bin": 4,
+            "observations": 344,
+            "meanPredicted": 0.0498556,
+            "observedRate": 0.0872093,
+            "minPredicted": 0.00202429,
+            "maxPredicted": 0.08265027
+          },
+          {
+            "bin": 5,
+            "observations": 344,
+            "meanPredicted": 0.08890504,
+            "observedRate": 0.0872093,
+            "minPredicted": 0.08265027,
+            "maxPredicted": 0.12363388
+          }
+        ]
+      }
+    }
+  }
+}

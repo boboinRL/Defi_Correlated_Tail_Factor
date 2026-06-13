@@ -157,7 +157,7 @@ const forecastCalibration = {};
 const flatRows = [];
 
 for (const horizon of horizons) {
-  const horizonRows = rows.filter((row) => row.horizon === horizon);
+  const horizonRows = rows.filter((row) => row.horizon === horizon && row.labelObserved !== false);
   forecastCalibration[horizon] = {};
   for (const windowName of requestedWindows) {
     const windowRows = filterWindow(horizonRows, windowName);
@@ -215,6 +215,7 @@ const output = {
     modelVersion,
     status: "early-calibration",
     latestFeatureDate: latestDate,
+    labelObservedThrough: training.metadata?.labelObservedThrough || null,
     factorIds,
     horizons,
     windows: requestedWindows,
@@ -266,6 +267,7 @@ const modelParameters = {
   generatedAt,
   status: "early-calibration",
   latestFeatureDate: latestDate,
+  labelObservedThrough: training.metadata?.labelObservedThrough || null,
   defaultWindow: "full",
   probabilityByHorizon: Object.fromEntries(
     horizons.map((horizon) => [

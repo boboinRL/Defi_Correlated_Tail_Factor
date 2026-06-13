@@ -1,253 +1,254 @@
 {
   "modelVersion": "empirical-tail-v0.3.0-20260613",
-  "generatedAt": "2026-06-13T11:22:51.875Z",
+  "generatedAt": "2026-06-13T11:41:14.266Z",
   "status": "early-calibration",
   "latestFeatureDate": "2026-06-13",
+  "labelObservedThrough": "2025-05-10",
   "defaultWindow": "full",
   "probabilityByHorizon": {
     "1d": {
       "oracle": {
         "successes": 13,
-        "observations": 2356,
-        "empiricalProbability": 0.00551783,
-        "posteriorMean": 0.00572762,
+        "observations": 1956,
+        "empiricalProbability": 0.00664622,
+        "posteriorMean": 0.00689831,
         "confidence95": {
-          "low": 0.00322749,
-          "high": 0.0094181
+          "low": 0.00388819,
+          "high": 0.01133835
         }
       },
       "liquidity": {
         "successes": 22,
-        "observations": 2356,
-        "empiricalProbability": 0.00933786,
-        "posteriorMean": 0.00954603,
+        "observations": 1956,
+        "empiricalProbability": 0.01124744,
+        "posteriorMean": 0.01149719,
         "confidence95": {
-          "low": 0.00617464,
-          "high": 0.01409858
+          "low": 0.00743928,
+          "high": 0.01697167
         }
       },
       "volatility": {
         "successes": 20,
-        "observations": 2356,
-        "empiricalProbability": 0.00848896,
-        "posteriorMean": 0.0086975,
+        "observations": 1956,
+        "empiricalProbability": 0.01022495,
+        "posteriorMean": 0.01047522,
         "confidence95": {
-          "low": 0.005502,
-          "high": 0.0130762
+          "low": 0.00662875,
+          "high": 0.01574122
         }
       },
       "keeper": {
         "successes": 11,
-        "observations": 2356,
-        "empiricalProbability": 0.00466893,
-        "posteriorMean": 0.00487908,
+        "observations": 1956,
+        "empiricalProbability": 0.00562372,
+        "posteriorMean": 0.00587634,
         "confidence95": {
-          "low": 0.00260905,
-          "high": 0.00834152
+          "low": 0.00314307,
+          "high": 0.01004248
         }
       },
       "governance": {
         "successes": 2,
-        "observations": 2356,
-        "empiricalProbability": 0.0008489,
-        "posteriorMean": 0.00106067,
+        "observations": 1956,
+        "empiricalProbability": 0.00102249,
+        "posteriorMean": 0.00127747,
         "confidence95": {
-          "low": 0.00023282,
-          "high": 0.00309011
+          "low": 0.00028044,
+          "high": 0.0037207
         }
       },
       "stablecoin": {
         "successes": 6,
-        "observations": 2356,
-        "empiricalProbability": 0.00254669,
-        "posteriorMean": 0.00275774,
+        "observations": 1956,
+        "empiricalProbability": 0.00306748,
+        "posteriorMean": 0.00332141,
         "confidence95": {
-          "low": 0.00116766,
-          "high": 0.00554533
+          "low": 0.00140657,
+          "high": 0.00667653
         }
       },
       "gas": {
         "successes": 4,
-        "observations": 2356,
-        "empiricalProbability": 0.00169779,
-        "posteriorMean": 0.00190921,
+        "observations": 1956,
+        "empiricalProbability": 0.00204499,
+        "posteriorMean": 0.00229944,
         "confidence95": {
-          "low": 0.00066042,
-          "high": 0.00435754
+          "low": 0.00079552,
+          "high": 0.0052466
         }
       },
       "mev": {
         "successes": 3,
-        "observations": 2356,
-        "empiricalProbability": 0.00127334,
-        "posteriorMean": 0.00148494,
+        "observations": 1956,
+        "empiricalProbability": 0.00153374,
+        "posteriorMean": 0.00178845,
         "confidence95": {
-          "low": 0.00043314,
-          "high": 0.00373731
+          "low": 0.00052174,
+          "high": 0.00449989
         }
       }
     },
     "7d": {
       "oracle": {
-        "successes": 86,
-        "observations": 2356,
-        "empiricalProbability": 0.03650255,
-        "posteriorMean": 0.03669919,
+        "successes": 81,
+        "observations": 1950,
+        "empiricalProbability": 0.04153846,
+        "posteriorMean": 0.04177345,
         "confidence95": {
-          "low": 0.02965294,
-          "high": 0.04486122
+          "low": 0.03354651,
+          "high": 0.05133325
         }
       },
       "liquidity": {
         "successes": 140,
-        "observations": 2356,
-        "empiricalProbability": 0.05942275,
-        "posteriorMean": 0.05960967,
+        "observations": 1950,
+        "empiricalProbability": 0.07179487,
+        "posteriorMean": 0.07201435,
         "confidence95": {
-          "low": 0.05057436,
-          "high": 0.06970557
+          "low": 0.06115918,
+          "high": 0.08411441
         }
       },
       "volatility": {
         "successes": 126,
-        "observations": 2356,
-        "empiricalProbability": 0.05348048,
-        "posteriorMean": 0.05366992,
+        "observations": 1950,
+        "empiricalProbability": 0.06461538,
+        "posteriorMean": 0.06483854,
         "confidence95": {
-          "low": 0.04510059,
-          "high": 0.06331415
+          "low": 0.05453666,
+          "high": 0.07640619
         }
       },
       "keeper": {
-        "successes": 73,
-        "observations": 2356,
-        "empiricalProbability": 0.03098472,
-        "posteriorMean": 0.03118371,
+        "successes": 68,
+        "observations": 1950,
+        "empiricalProbability": 0.03487179,
+        "posteriorMean": 0.0351102,
         "confidence95": {
-          "low": 0.02471543,
-          "high": 0.03878103
+          "low": 0.02760038,
+          "high": 0.04397226
         }
       },
       "governance": {
         "successes": 14,
-        "observations": 2356,
-        "empiricalProbability": 0.00594228,
-        "posteriorMean": 0.00615189,
+        "observations": 1950,
+        "empiricalProbability": 0.00717949,
+        "posteriorMean": 0.00743209,
         "confidence95": {
-          "low": 0.00354299,
-          "high": 0.00995012
+          "low": 0.00428146,
+          "high": 0.01201546
         }
       },
       "stablecoin": {
         "successes": 42,
-        "observations": 2356,
-        "empiricalProbability": 0.01782683,
-        "posteriorMean": 0.0180314,
+        "observations": 1950,
+        "empiricalProbability": 0.02153846,
+        "posteriorMean": 0.0217837,
         "confidence95": {
-          "low": 0.01321554,
-          "high": 0.02400798
+          "low": 0.01597372,
+          "high": 0.02898469
         }
       },
       "gas": {
-        "successes": 28,
-        "observations": 2356,
-        "empiricalProbability": 0.01188455,
-        "posteriorMean": 0.01209164,
+        "successes": 23,
+        "observations": 1950,
+        "empiricalProbability": 0.01179487,
+        "posteriorMean": 0.01204511,
         "confidence95": {
-          "low": 0.00823524,
-          "high": 0.01712307
+          "low": 0.00787228,
+          "high": 0.01763726
         }
       },
       "mev": {
         "successes": 21,
-        "observations": 2356,
-        "empiricalProbability": 0.00891341,
-        "posteriorMean": 0.00912176,
+        "observations": 1950,
+        "empiricalProbability": 0.01076923,
+        "posteriorMean": 0.01101999,
         "confidence95": {
-          "low": 0.00583729,
-          "high": 0.01358842
+          "low": 0.00705445,
+          "high": 0.01640784
         }
       }
     },
     "30d": {
       "oracle": {
-        "successes": 344,
-        "observations": 2356,
-        "empiricalProbability": 0.14601019,
-        "posteriorMean": 0.14616037,
+        "successes": 316,
+        "observations": 1927,
+        "empiricalProbability": 0.16398547,
+        "posteriorMean": 0.16415975,
         "confidence95": {
-          "low": 0.1323275,
-          "high": 0.1608454
+          "low": 0.14812495,
+          "high": 0.18118305
         }
       },
       "liquidity": {
         "successes": 557,
-        "observations": 2356,
-        "empiricalProbability": 0.23641766,
-        "posteriorMean": 0.23652949,
+        "observations": 1927,
+        "empiricalProbability": 0.28905034,
+        "posteriorMean": 0.28915975,
         "confidence95": {
-          "low": 0.21969854,
-          "high": 0.25399494
+          "low": 0.26924533,
+          "high": 0.30969476
         }
       },
       "volatility": {
         "successes": 497,
-        "observations": 2356,
-        "empiricalProbability": 0.21095076,
-        "posteriorMean": 0.2110734,
+        "observations": 1927,
+        "empiricalProbability": 0.25791386,
+        "posteriorMean": 0.25803942,
         "confidence95": {
-          "low": 0.19495355,
-          "high": 0.22788907
+          "low": 0.23887552,
+          "high": 0.2779155
         }
       },
       "keeper": {
-        "successes": 303,
-        "observations": 2356,
-        "empiricalProbability": 0.12860781,
-        "posteriorMean": 0.12876538,
+        "successes": 275,
+        "observations": 1927,
+        "empiricalProbability": 0.14270887,
+        "posteriorMean": 0.14289419,
         "confidence95": {
-          "low": 0.11569199,
-          "high": 0.14273281
+          "low": 0.12780184,
+          "high": 0.15903764
         }
       },
       "governance": {
         "successes": 60,
-        "observations": 2356,
-        "empiricalProbability": 0.02546689,
-        "posteriorMean": 0.02566822,
+        "observations": 1927,
+        "empiricalProbability": 0.03113648,
+        "posteriorMean": 0.03137967,
         "confidence95": {
-          "low": 0.01983637,
-          "high": 0.03264241
+          "low": 0.0242661,
+          "high": 0.03987256
         }
       },
       "stablecoin": {
         "successes": 180,
-        "observations": 2356,
-        "empiricalProbability": 0.07640068,
-        "posteriorMean": 0.0765804,
+        "observations": 1927,
+        "empiricalProbability": 0.09340944,
+        "posteriorMean": 0.09362033,
         "confidence95": {
-          "low": 0.06635031,
-          "high": 0.08783021
+          "low": 0.08121294,
+          "high": 0.10722385
         }
       },
       "gas": {
-        "successes": 120,
-        "observations": 2356,
-        "empiricalProbability": 0.05093379,
-        "posteriorMean": 0.05112431,
+        "successes": 92,
+        "observations": 1927,
+        "empiricalProbability": 0.04774261,
+        "posteriorMean": 0.04797718,
         "confidence95": {
-          "low": 0.04276389,
-          "high": 0.06056576
+          "low": 0.03908923,
+          "high": 0.0581956
         }
       },
       "mev": {
         "successes": 90,
-        "observations": 2356,
-        "empiricalProbability": 0.03820034,
-        "posteriorMean": 0.03839627,
+        "observations": 1927,
+        "empiricalProbability": 0.04670472,
+        "posteriorMean": 0.04693983,
         "confidence95": {
-          "low": 0.0311819,
-          "high": 0.04672232
+          "low": 0.0381516,
+          "high": 0.0570616
         }
       }
     }
@@ -261,13 +262,13 @@
           "both": 12,
           "onlyA": 1,
           "onlyB": 10,
-          "neither": 2333
+          "neither": 1933
         },
-        "observations": 2356,
-        "jointProbability": 0.00509338,
-        "independentJointProbability": 0.00005152,
-        "lift": 98.85314685,
-        "phiCorrelation": 0.70765445,
+        "observations": 1956,
+        "jointProbability": 0.00613497,
+        "independentJointProbability": 0.00007475,
+        "lift": 82.06993007,
+        "phiCorrelation": 0.70725851,
         "conditionalBGivenA": 0.92307692,
         "conditionalAGivenB": 0.54545455,
         "jaccard": 0.52173913
@@ -279,13 +280,13 @@
           "both": 10,
           "onlyA": 3,
           "onlyB": 10,
-          "neither": 2333
+          "neither": 1933
         },
-        "observations": 2356,
-        "jointProbability": 0.00424448,
-        "independentJointProbability": 0.00004684,
-        "lift": 90.61538462,
-        "phiCorrelation": 0.61765603,
+        "observations": 1956,
+        "jointProbability": 0.00511247,
+        "independentJointProbability": 0.00006796,
+        "lift": 75.23076923,
+        "phiCorrelation": 0.61713696,
         "conditionalBGivenA": 0.76923077,
         "conditionalAGivenB": 0.5,
         "jaccard": 0.43478261
@@ -297,13 +298,13 @@
           "both": 6,
           "onlyA": 7,
           "onlyB": 5,
-          "neither": 2338
+          "neither": 1938
         },
-        "observations": 2356,
-        "jointProbability": 0.00254669,
-        "independentJointProbability": 0.00002576,
-        "lift": 98.85314685,
-        "phiCorrelation": 0.49921227,
+        "observations": 1956,
+        "jointProbability": 0.00306748,
+        "independentJointProbability": 0.00003738,
+        "lift": 82.06993007,
+        "phiCorrelation": 0.4986911,
         "conditionalBGivenA": 0.46153846,
         "conditionalAGivenB": 0.54545455,
         "jaccard": 0.33333333
@@ -315,13 +316,13 @@
           "both": 0,
           "onlyA": 13,
           "onlyB": 2,
-          "neither": 2341
+          "neither": 1941
         },
-        "observations": 2356,
+        "observations": 1956,
         "jointProbability": 0,
-        "independentJointProbability": 0.00000468,
+        "independentJointProbability": 0.0000068,
         "lift": 0,
-        "phiCorrelation": -0.00217119,
+        "phiCorrelation": -0.00261691,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -333,13 +334,13 @@
           "both": 4,
           "onlyA": 9,
           "onlyB": 2,
-          "neither": 2341
+          "neither": 1941
         },
-        "observations": 2356,
-        "jointProbability": 0.00169779,
-        "independentJointProbability": 0.00001405,
-        "lift": 120.82051282,
-        "phiCorrelation": 0.45098116,
+        "observations": 1956,
+        "jointProbability": 0.00204499,
+        "independentJointProbability": 0.00002039,
+        "lift": 100.30769231,
+        "phiCorrelation": 0.45058475,
         "conditionalBGivenA": 0.30769231,
         "conditionalAGivenB": 0.66666667,
         "jaccard": 0.26666667
@@ -351,13 +352,13 @@
           "both": 1,
           "onlyA": 12,
           "onlyB": 3,
-          "neither": 2340
+          "neither": 1940
         },
-        "observations": 2356,
-        "jointProbability": 0.00042445,
-        "independentJointProbability": 0.00000937,
-        "lift": 45.30769231,
-        "phiCorrelation": 0.1361056,
+        "observations": 1956,
+        "jointProbability": 0.00051125,
+        "independentJointProbability": 0.00001359,
+        "lift": 37.61538462,
+        "phiCorrelation": 0.13557792,
         "conditionalBGivenA": 0.07692308,
         "conditionalAGivenB": 0.25,
         "jaccard": 0.0625
@@ -369,13 +370,13 @@
           "both": 1,
           "onlyA": 12,
           "onlyB": 2,
-          "neither": 2341
+          "neither": 1941
         },
-        "observations": 2356,
-        "jointProbability": 0.00042445,
-        "independentJointProbability": 0.00000703,
-        "lift": 60.41025641,
-        "phiCorrelation": 0.15801438,
+        "observations": 1956,
+        "jointProbability": 0.00051125,
+        "independentJointProbability": 0.00001019,
+        "lift": 50.15384615,
+        "phiCorrelation": 0.15758043,
         "conditionalBGivenA": 0.07692308,
         "conditionalAGivenB": 0.33333333,
         "jaccard": 0.06666667
@@ -387,13 +388,13 @@
           "both": 20,
           "onlyA": 2,
           "onlyB": 0,
-          "neither": 2334
+          "neither": 1934
         },
-        "observations": 2356,
-        "jointProbability": 0.00848896,
-        "independentJointProbability": 0.00007927,
-        "lift": 107.09090909,
-        "phiCorrelation": 0.95305434,
+        "observations": 1956,
+        "jointProbability": 0.01022495,
+        "independentJointProbability": 0.000115,
+        "lift": 88.90909091,
+        "phiCorrelation": 0.95296997,
         "conditionalBGivenA": 0.90909091,
         "conditionalAGivenB": 1,
         "jaccard": 0.90909091
@@ -405,13 +406,13 @@
           "both": 10,
           "onlyA": 12,
           "onlyB": 1,
-          "neither": 2333
+          "neither": 1933
         },
-        "observations": 2356,
-        "jointProbability": 0.00424448,
-        "independentJointProbability": 0.0000436,
-        "lift": 97.3553719,
-        "phiCorrelation": 0.64071039,
+        "observations": 1956,
+        "jointProbability": 0.00511247,
+        "independentJointProbability": 0.00006325,
+        "lift": 80.82644628,
+        "phiCorrelation": 0.64027485,
         "conditionalBGivenA": 0.45454545,
         "conditionalAGivenB": 0.90909091,
         "jaccard": 0.43478261
@@ -423,13 +424,13 @@
           "both": 2,
           "onlyA": 20,
           "onlyB": 0,
-          "neither": 2334
+          "neither": 1934
         },
-        "observations": 2356,
-        "jointProbability": 0.0008489,
-        "independentJointProbability": 0.00000793,
-        "lift": 107.09090909,
-        "phiCorrelation": 0.30022777,
+        "observations": 1956,
+        "jointProbability": 0.00102249,
+        "independentJointProbability": 0.0000115,
+        "lift": 88.90909091,
+        "phiCorrelation": 0.29996433,
         "conditionalBGivenA": 0.09090909,
         "conditionalAGivenB": 1,
         "jaccard": 0.09090909
@@ -441,13 +442,13 @@
           "both": 6,
           "onlyA": 16,
           "onlyB": 0,
-          "neither": 2334
+          "neither": 1934
         },
-        "observations": 2356,
-        "jointProbability": 0.00254669,
-        "independentJointProbability": 0.00002378,
-        "lift": 107.09090909,
-        "phiCorrelation": 0.52045212,
+        "observations": 1956,
+        "jointProbability": 0.00306748,
+        "independentJointProbability": 0.0000345,
+        "lift": 88.90909091,
+        "phiCorrelation": 0.52008606,
         "conditionalBGivenA": 0.27272727,
         "conditionalAGivenB": 1,
         "jaccard": 0.27272727
@@ -459,13 +460,13 @@
           "both": 3,
           "onlyA": 19,
           "onlyB": 1,
-          "neither": 2333
+          "neither": 1933
         },
-        "observations": 2356,
-        "jointProbability": 0.00127334,
-        "independentJointProbability": 0.00001585,
-        "lift": 80.31818182,
-        "phiCorrelation": 0.31757405,
+        "observations": 1956,
+        "jointProbability": 0.00153374,
+        "independentJointProbability": 0.000023,
+        "lift": 66.68181818,
+        "phiCorrelation": 0.31711615,
         "conditionalBGivenA": 0.13636364,
         "conditionalAGivenB": 0.75,
         "jaccard": 0.13043478
@@ -477,13 +478,13 @@
           "both": 3,
           "onlyA": 19,
           "onlyB": 0,
-          "neither": 2334
+          "neither": 1934
         },
-        "observations": 2356,
-        "jointProbability": 0.00127334,
-        "independentJointProbability": 0.00001189,
-        "lift": 107.09090909,
-        "phiCorrelation": 0.36778054,
+        "observations": 1956,
+        "jointProbability": 0.00153374,
+        "independentJointProbability": 0.00001725,
+        "lift": 88.90909091,
+        "phiCorrelation": 0.36747382,
         "conditionalBGivenA": 0.13636364,
         "conditionalAGivenB": 1,
         "jaccard": 0.13636364
@@ -495,13 +496,13 @@
           "both": 9,
           "onlyA": 11,
           "onlyB": 2,
-          "neither": 2334
+          "neither": 1934
         },
-        "observations": 2356,
-        "jointProbability": 0.00382003,
-        "independentJointProbability": 0.00003963,
-        "lift": 96.38181818,
-        "phiCorrelation": 0.60446213,
+        "observations": 1956,
+        "jointProbability": 0.00460123,
+        "independentJointProbability": 0.0000575,
+        "lift": 80.01818182,
+        "phiCorrelation": 0.60398464,
         "conditionalBGivenA": 0.45,
         "conditionalAGivenB": 0.81818182,
         "jaccard": 0.40909091
@@ -513,13 +514,13 @@
           "both": 2,
           "onlyA": 18,
           "onlyB": 0,
-          "neither": 2336
+          "neither": 1936
         },
-        "observations": 2356,
-        "jointProbability": 0.0008489,
-        "independentJointProbability": 0.00000721,
-        "lift": 117.8,
-        "phiCorrelation": 0.31501642,
+        "observations": 1956,
+        "jointProbability": 0.00102249,
+        "independentJointProbability": 0.00001045,
+        "lift": 97.8,
+        "phiCorrelation": 0.31476787,
         "conditionalBGivenA": 0.1,
         "conditionalAGivenB": 1,
         "jaccard": 0.1
@@ -531,13 +532,13 @@
           "both": 5,
           "onlyA": 15,
           "onlyB": 1,
-          "neither": 2335
+          "neither": 1935
         },
-        "observations": 2356,
-        "jointProbability": 0.00212224,
-        "independentJointProbability": 0.00002162,
-        "lift": 98.16666667,
-        "phiCorrelation": 0.4542946,
+        "observations": 1956,
+        "jointProbability": 0.00255624,
+        "independentJointProbability": 0.00003136,
+        "lift": 81.5,
+        "phiCorrelation": 0.45385437,
         "conditionalBGivenA": 0.25,
         "conditionalAGivenB": 0.83333333,
         "jaccard": 0.23809524
@@ -549,13 +550,13 @@
           "both": 3,
           "onlyA": 17,
           "onlyB": 1,
-          "neither": 2335
+          "neither": 1935
         },
-        "observations": 2356,
-        "jointProbability": 0.00127334,
-        "independentJointProbability": 0.00001441,
-        "lift": 88.35,
-        "phiCorrelation": 0.33331344,
+        "observations": 1956,
+        "jointProbability": 0.00153374,
+        "independentJointProbability": 0.00002091,
+        "lift": 73.35,
+        "phiCorrelation": 0.33288249,
         "conditionalBGivenA": 0.15,
         "conditionalAGivenB": 0.75,
         "jaccard": 0.14285714
@@ -567,13 +568,13 @@
           "both": 3,
           "onlyA": 17,
           "onlyB": 0,
-          "neither": 2336
+          "neither": 1936
         },
-        "observations": 2356,
-        "jointProbability": 0.00127334,
-        "independentJointProbability": 0.00001081,
-        "lift": 117.8,
-        "phiCorrelation": 0.38589672,
+        "observations": 1956,
+        "jointProbability": 0.00153374,
+        "independentJointProbability": 0.00001568,
+        "lift": 97.8,
+        "phiCorrelation": 0.38560902,
         "conditionalBGivenA": 0.15,
         "conditionalAGivenB": 1,
         "jaccard": 0.15
@@ -585,13 +586,13 @@
           "both": 0,
           "onlyA": 11,
           "onlyB": 2,
-          "neither": 2343
+          "neither": 1943
         },
-        "observations": 2356,
+        "observations": 1956,
         "jointProbability": 0,
-        "independentJointProbability": 0.00000396,
+        "independentJointProbability": 0.00000575,
         "lift": 0,
-        "phiCorrelation": -0.00199635,
+        "phiCorrelation": -0.00240596,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -603,13 +604,13 @@
           "both": 0,
           "onlyA": 11,
           "onlyB": 6,
-          "neither": 2339
+          "neither": 1939
         },
-        "observations": 2356,
+        "observations": 1956,
         "jointProbability": 0,
-        "independentJointProbability": 0.00001189,
+        "independentJointProbability": 0.00001725,
         "lift": 0,
-        "phiCorrelation": -0.00346072,
+        "phiCorrelation": -0.00417153,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -621,13 +622,13 @@
           "both": 4,
           "onlyA": 7,
           "onlyB": 0,
-          "neither": 2345
+          "neither": 1945
         },
-        "observations": 2356,
-        "jointProbability": 0.00169779,
-        "independentJointProbability": 0.00000793,
-        "lift": 214.18181818,
-        "phiCorrelation": 0.60212467,
+        "observations": 1956,
+        "jointProbability": 0.00204499,
+        "independentJointProbability": 0.0000115,
+        "lift": 177.81818182,
+        "phiCorrelation": 0.60194048,
         "conditionalBGivenA": 0.36363636,
         "conditionalAGivenB": 1,
         "jaccard": 0.36363636
@@ -639,13 +640,13 @@
           "both": 1,
           "onlyA": 10,
           "onlyB": 2,
-          "neither": 2343
+          "neither": 1943
         },
-        "observations": 2356,
-        "jointProbability": 0.00042445,
-        "independentJointProbability": 0.00000595,
-        "lift": 71.39393939,
-        "phiCorrelation": 0.17215112,
+        "observations": 1956,
+        "jointProbability": 0.00051125,
+        "independentJointProbability": 0.00000863,
+        "lift": 59.27272727,
+        "phiCorrelation": 0.17175579,
         "conditionalBGivenA": 0.09090909,
         "conditionalAGivenB": 0.33333333,
         "jaccard": 0.07692308
@@ -657,13 +658,13 @@
           "both": 0,
           "onlyA": 2,
           "onlyB": 6,
-          "neither": 2348
+          "neither": 1948
         },
-        "observations": 2356,
+        "observations": 1956,
         "jointProbability": 0,
-        "independentJointProbability": 0.00000216,
+        "independentJointProbability": 0.00000314,
         "lift": 0,
-        "phiCorrelation": -0.00147283,
+        "phiCorrelation": -0.00177464,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -675,13 +676,13 @@
           "both": 0,
           "onlyA": 2,
           "onlyB": 4,
-          "neither": 2350
+          "neither": 1950
         },
-        "observations": 2356,
+        "observations": 1956,
         "jointProbability": 0,
-        "independentJointProbability": 0.00000144,
+        "independentJointProbability": 0.00000209,
         "lift": 0,
-        "phiCorrelation": -0.00120205,
+        "phiCorrelation": -0.00144825,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -693,13 +694,13 @@
           "both": 0,
           "onlyA": 2,
           "onlyB": 3,
-          "neither": 2351
+          "neither": 1951
         },
-        "observations": 2356,
+        "observations": 1956,
         "jointProbability": 0,
-        "independentJointProbability": 0.00000108,
+        "independentJointProbability": 0.00000157,
         "lift": 0,
-        "phiCorrelation": -0.00104079,
+        "phiCorrelation": -0.0012539,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -711,13 +712,13 @@
           "both": 0,
           "onlyA": 6,
           "onlyB": 4,
-          "neither": 2346
+          "neither": 1946
         },
-        "observations": 2356,
+        "observations": 1956,
         "jointProbability": 0,
-        "independentJointProbability": 0.00000432,
+        "independentJointProbability": 0.00000627,
         "lift": 0,
-        "phiCorrelation": -0.00208379,
+        "phiCorrelation": -0.00251101,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -729,13 +730,13 @@
           "both": 0,
           "onlyA": 6,
           "onlyB": 3,
-          "neither": 2347
+          "neither": 1947
         },
-        "observations": 2356,
+        "observations": 1956,
         "jointProbability": 0,
-        "independentJointProbability": 0.00000324,
+        "independentJointProbability": 0.0000047,
         "lift": 0,
-        "phiCorrelation": -0.00180423,
+        "phiCorrelation": -0.00217404,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -747,13 +748,13 @@
           "both": 0,
           "onlyA": 4,
           "onlyB": 3,
-          "neither": 2349
+          "neither": 1949
         },
-        "observations": 2356,
+        "observations": 1956,
         "jointProbability": 0,
-        "independentJointProbability": 0.00000216,
+        "independentJointProbability": 0.00000314,
         "lift": 0,
-        "phiCorrelation": -0.00147252,
+        "phiCorrelation": -0.00177419,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -765,126 +766,126 @@
         "factorB": "liquidity",
         "counts": {
           "both": 79,
-          "onlyA": 7,
+          "onlyA": 2,
           "onlyB": 61,
-          "neither": 2209
+          "neither": 1808
         },
-        "observations": 2356,
-        "jointProbability": 0.03353141,
-        "independentJointProbability": 0.00216908,
-        "lift": 15.45880399,
-        "phiCorrelation": 0.70737191,
-        "conditionalBGivenA": 0.91860465,
+        "observations": 1950,
+        "jointProbability": 0.04051282,
+        "independentJointProbability": 0.00298225,
+        "lift": 13.58465608,
+        "phiCorrelation": 0.72862479,
+        "conditionalBGivenA": 0.97530864,
         "conditionalAGivenB": 0.56428571,
-        "jaccard": 0.53741497
+        "jaccard": 0.55633803
       },
       {
         "factorA": "oracle",
         "factorB": "volatility",
         "counts": {
           "both": 65,
-          "onlyA": 21,
+          "onlyA": 16,
           "onlyB": 61,
-          "neither": 2209
+          "neither": 1808
         },
-        "observations": 2356,
-        "jointProbability": 0.02758913,
-        "independentJointProbability": 0.00195217,
-        "lift": 14.13252123,
-        "phiCorrelation": 0.60759928,
-        "conditionalBGivenA": 0.75581395,
+        "observations": 1950,
+        "jointProbability": 0.03333333,
+        "independentJointProbability": 0.00268402,
+        "lift": 12.4191652,
+        "phiCorrelation": 0.62480583,
+        "conditionalBGivenA": 0.80246914,
         "conditionalAGivenB": 0.51587302,
-        "jaccard": 0.44217687
+        "jaccard": 0.45774648
       },
       {
         "factorA": "oracle",
         "factorB": "keeper",
         "counts": {
-          "both": 42,
+          "both": 37,
           "onlyA": 44,
           "onlyB": 31,
-          "neither": 2239
+          "neither": 1838
         },
-        "observations": 2356,
-        "jointProbability": 0.01782683,
-        "independentJointProbability": 0.00113102,
-        "lift": 15.76170755,
-        "phiCorrelation": 0.51378494,
-        "conditionalBGivenA": 0.48837209,
-        "conditionalAGivenB": 0.57534247,
-        "jaccard": 0.35897436
+        "observations": 1950,
+        "jointProbability": 0.01897436,
+        "independentJointProbability": 0.00144852,
+        "lift": 13.09912854,
+        "phiCorrelation": 0.47878066,
+        "conditionalBGivenA": 0.45679012,
+        "conditionalAGivenB": 0.54411765,
+        "jaccard": 0.33035714
       },
       {
         "factorA": "oracle",
         "factorB": "governance",
         "counts": {
           "both": 5,
-          "onlyA": 81,
+          "onlyA": 76,
           "onlyB": 9,
-          "neither": 2261
+          "neither": 1860
         },
-        "observations": 2356,
-        "jointProbability": 0.00212224,
-        "independentJointProbability": 0.00021691,
-        "lift": 9.78405316,
-        "phiCorrelation": 0.13219098,
-        "conditionalBGivenA": 0.05813953,
+        "observations": 1950,
+        "jointProbability": 0.0025641,
+        "independentJointProbability": 0.00029822,
+        "lift": 8.5978836,
+        "phiCorrelation": 0.13450606,
+        "conditionalBGivenA": 0.0617284,
         "conditionalAGivenB": 0.35714286,
-        "jaccard": 0.05263158
+        "jaccard": 0.05555556
       },
       {
         "factorA": "oracle",
         "factorB": "stablecoin",
         "counts": {
           "both": 28,
-          "onlyA": 58,
+          "onlyA": 53,
           "onlyB": 14,
-          "neither": 2256
+          "neither": 1855
         },
-        "observations": 2356,
-        "jointProbability": 0.01188455,
-        "independentJointProbability": 0.00065072,
-        "lift": 18.26356589,
-        "phiCorrelation": 0.45269925,
-        "conditionalBGivenA": 0.3255814,
+        "observations": 1950,
+        "jointProbability": 0.01435897,
+        "independentJointProbability": 0.00089467,
+        "lift": 16.04938272,
+        "phiCorrelation": 0.46482771,
+        "conditionalBGivenA": 0.34567901,
         "conditionalAGivenB": 0.66666667,
-        "jaccard": 0.28
+        "jaccard": 0.29473684
       },
       {
         "factorA": "oracle",
         "factorB": "gas",
         "counts": {
-          "both": 7,
+          "both": 2,
           "onlyA": 79,
           "onlyB": 21,
-          "neither": 2249
+          "neither": 1848
         },
-        "observations": 2356,
-        "jointProbability": 0.00297114,
-        "independentJointProbability": 0.00043382,
-        "lift": 6.84883721,
-        "phiCorrelation": 0.12485138,
-        "conditionalBGivenA": 0.08139535,
-        "conditionalAGivenB": 0.25,
-        "jaccard": 0.06542056
+        "observations": 1950,
+        "jointProbability": 0.00102564,
+        "independentJointProbability": 0.00048994,
+        "lift": 2.09339775,
+        "phiCorrelation": 0.0248679,
+        "conditionalBGivenA": 0.02469136,
+        "conditionalAGivenB": 0.08695652,
+        "jaccard": 0.01960784
       },
       {
         "factorA": "oracle",
         "factorB": "mev",
         "counts": {
           "both": 7,
-          "onlyA": 79,
+          "onlyA": 74,
           "onlyB": 14,
-          "neither": 2256
+          "neither": 1855
         },
-        "observations": 2356,
-        "jointProbability": 0.00297114,
-        "independentJointProbability": 0.00032536,
-        "lift": 9.13178295,
-        "phiCorrelation": 0.15010262,
-        "conditionalBGivenA": 0.08139535,
+        "observations": 1950,
+        "jointProbability": 0.00358974,
+        "independentJointProbability": 0.00044734,
+        "lift": 8.02469136,
+        "phiCorrelation": 0.15258387,
+        "conditionalBGivenA": 0.08641975,
         "conditionalAGivenB": 0.33333333,
-        "jaccard": 0.07
+        "jaccard": 0.07368421
       },
       {
         "factorA": "liquidity",
@@ -893,13 +894,13 @@
           "both": 126,
           "onlyA": 14,
           "onlyB": 0,
-          "neither": 2216
+          "neither": 1810
         },
-        "observations": 2356,
-        "jointProbability": 0.05348048,
-        "independentJointProbability": 0.00317796,
-        "lift": 16.82857143,
-        "phiCorrelation": 0.94570068,
+        "observations": 1950,
+        "jointProbability": 0.06461538,
+        "independentJointProbability": 0.00463905,
+        "lift": 13.92857143,
+        "phiCorrelation": 0.9450355,
         "conditionalBGivenA": 0.9,
         "conditionalAGivenB": 1,
         "jaccard": 0.9
@@ -910,17 +911,17 @@
         "counts": {
           "both": 66,
           "onlyA": 74,
-          "onlyB": 7,
-          "neither": 2209
+          "onlyB": 2,
+          "neither": 1808
         },
-        "observations": 2356,
-        "jointProbability": 0.02801358,
-        "independentJointProbability": 0.0018412,
-        "lift": 15.2148728,
-        "phiCorrelation": 0.63889662,
+        "observations": 1950,
+        "jointProbability": 0.03384615,
+        "independentJointProbability": 0.00250362,
+        "lift": 13.51890756,
+        "phiCorrelation": 0.66181379,
         "conditionalBGivenA": 0.47142857,
-        "conditionalAGivenB": 0.90410959,
-        "jaccard": 0.44897959
+        "conditionalAGivenB": 0.97058824,
+        "jaccard": 0.46478873
       },
       {
         "factorA": "liquidity",
@@ -929,13 +930,13 @@
           "both": 14,
           "onlyA": 126,
           "onlyB": 0,
-          "neither": 2216
+          "neither": 1810
         },
-        "observations": 2356,
-        "jointProbability": 0.00594228,
-        "independentJointProbability": 0.00035311,
-        "lift": 16.82857143,
-        "phiCorrelation": 0.30760361,
+        "observations": 1950,
+        "jointProbability": 0.00717949,
+        "independentJointProbability": 0.00051545,
+        "lift": 13.92857143,
+        "phiCorrelation": 0.30576418,
         "conditionalBGivenA": 0.1,
         "conditionalAGivenB": 1,
         "jaccard": 0.1
@@ -947,13 +948,13 @@
           "both": 42,
           "onlyA": 98,
           "onlyB": 0,
-          "neither": 2216
+          "neither": 1810
         },
-        "observations": 2356,
-        "jointProbability": 0.01782683,
-        "independentJointProbability": 0.00105932,
-        "lift": 16.82857143,
-        "phiCorrelation": 0.53599881,
+        "observations": 1950,
+        "jointProbability": 0.02153846,
+        "independentJointProbability": 0.00154635,
+        "lift": 13.92857143,
+        "phiCorrelation": 0.53347089,
         "conditionalBGivenA": 0.3,
         "conditionalAGivenB": 1,
         "jaccard": 0.3
@@ -964,17 +965,17 @@
         "counts": {
           "both": 21,
           "onlyA": 119,
-          "onlyB": 7,
-          "neither": 2209
+          "onlyB": 2,
+          "neither": 1808
         },
-        "observations": 2356,
-        "jointProbability": 0.00891341,
-        "independentJointProbability": 0.00070621,
-        "lift": 12.62142857,
-        "phiCorrelation": 0.32035107,
+        "observations": 1950,
+        "jointProbability": 0.01076923,
+        "independentJointProbability": 0.00084681,
+        "lift": 12.7173913,
+        "phiCorrelation": 0.35602355,
         "conditionalBGivenA": 0.15,
-        "conditionalAGivenB": 0.75,
-        "jaccard": 0.14285714
+        "conditionalAGivenB": 0.91304348,
+        "jaccard": 0.14788732
       },
       {
         "factorA": "liquidity",
@@ -983,13 +984,13 @@
           "both": 21,
           "onlyA": 119,
           "onlyB": 0,
-          "neither": 2216
+          "neither": 1810
         },
-        "observations": 2356,
-        "jointProbability": 0.00891341,
-        "independentJointProbability": 0.00052966,
-        "lift": 16.82857143,
-        "phiCorrelation": 0.37730023,
+        "observations": 1950,
+        "jointProbability": 0.01076923,
+        "independentJointProbability": 0.00077318,
+        "lift": 13.92857143,
+        "phiCorrelation": 0.37516197,
         "conditionalBGivenA": 0.15,
         "conditionalAGivenB": 1,
         "jaccard": 0.15
@@ -1000,17 +1001,17 @@
         "counts": {
           "both": 59,
           "onlyA": 67,
-          "onlyB": 14,
-          "neither": 2216
+          "onlyB": 9,
+          "neither": 1815
         },
-        "observations": 2356,
-        "jointProbability": 0.02504244,
-        "independentJointProbability": 0.00165708,
-        "lift": 15.11241574,
-        "phiCorrelation": 0.59985002,
+        "observations": 1950,
+        "jointProbability": 0.03025641,
+        "independentJointProbability": 0.00225325,
+        "lift": 13.42787115,
+        "phiCorrelation": 0.6208894,
         "conditionalBGivenA": 0.46825397,
-        "conditionalAGivenB": 0.80821918,
-        "jaccard": 0.42142857
+        "conditionalAGivenB": 0.86764706,
+        "jaccard": 0.43703704
       },
       {
         "factorA": "volatility",
@@ -1019,13 +1020,13 @@
           "both": 14,
           "onlyA": 112,
           "onlyB": 0,
-          "neither": 2230
+          "neither": 1824
         },
-        "observations": 2356,
-        "jointProbability": 0.00594228,
-        "independentJointProbability": 0.0003178,
-        "lift": 18.6984127,
-        "phiCorrelation": 0.3252653,
+        "observations": 1950,
+        "jointProbability": 0.00717949,
+        "independentJointProbability": 0.00046391,
+        "lift": 15.47619048,
+        "phiCorrelation": 0.32354783,
         "conditionalBGivenA": 0.11111111,
         "conditionalAGivenB": 1,
         "jaccard": 0.11111111
@@ -1037,13 +1038,13 @@
           "both": 35,
           "onlyA": 91,
           "onlyB": 7,
-          "neither": 2223
+          "neither": 1817
         },
-        "observations": 2356,
-        "jointProbability": 0.01485569,
-        "independentJointProbability": 0.00095339,
-        "lift": 15.58201058,
-        "phiCorrelation": 0.46697456,
+        "observations": 1950,
+        "jointProbability": 0.01794872,
+        "independentJointProbability": 0.00139172,
+        "lift": 12.8968254,
+        "phiCorrelation": 0.46391606,
         "conditionalBGivenA": 0.27777778,
         "conditionalAGivenB": 0.83333333,
         "jaccard": 0.26315789
@@ -1054,17 +1055,17 @@
         "counts": {
           "both": 21,
           "onlyA": 105,
-          "onlyB": 7,
-          "neither": 2223
+          "onlyB": 2,
+          "neither": 1822
         },
-        "observations": 2356,
-        "jointProbability": 0.00891341,
-        "independentJointProbability": 0.00063559,
-        "lift": 14.02380952,
-        "phiCorrelation": 0.33951456,
+        "observations": 1950,
+        "jointProbability": 0.01076923,
+        "independentJointProbability": 0.00076213,
+        "lift": 14.13043478,
+        "phiCorrelation": 0.37702923,
         "conditionalBGivenA": 0.16666667,
-        "conditionalAGivenB": 0.75,
-        "jaccard": 0.15789474
+        "conditionalAGivenB": 0.91304348,
+        "jaccard": 0.1640625
       },
       {
         "factorA": "volatility",
@@ -1073,13 +1074,13 @@
           "both": 21,
           "onlyA": 105,
           "onlyB": 0,
-          "neither": 2230
+          "neither": 1824
         },
-        "observations": 2356,
-        "jointProbability": 0.00891341,
-        "independentJointProbability": 0.00047669,
-        "lift": 18.6984127,
-        "phiCorrelation": 0.39896368,
+        "observations": 1950,
+        "jointProbability": 0.01076923,
+        "independentJointProbability": 0.00069586,
+        "lift": 15.47619048,
+        "phiCorrelation": 0.39698187,
         "conditionalBGivenA": 0.16666667,
         "conditionalAGivenB": 1,
         "jaccard": 0.16666667
@@ -1089,15 +1090,15 @@
         "factorB": "governance",
         "counts": {
           "both": 0,
-          "onlyA": 73,
+          "onlyA": 68,
           "onlyB": 14,
-          "neither": 2269
+          "neither": 1868
         },
-        "observations": 2356,
+        "observations": 1950,
         "jointProbability": 0,
-        "independentJointProbability": 0.00018412,
+        "independentJointProbability": 0.00025036,
         "lift": 0,
-        "phiCorrelation": -0.01382544,
+        "phiCorrelation": -0.01616427,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1107,15 +1108,15 @@
         "factorB": "stablecoin",
         "counts": {
           "both": 0,
-          "onlyA": 73,
+          "onlyA": 68,
           "onlyB": 42,
-          "neither": 2241
+          "neither": 1840
         },
-        "observations": 2356,
+        "observations": 1950,
         "jointProbability": 0,
-        "independentJointProbability": 0.00055236,
+        "independentJointProbability": 0.00075108,
         "lift": 0,
-        "phiCorrelation": -0.02409081,
+        "phiCorrelation": -0.02820201,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1124,37 +1125,37 @@
         "factorA": "keeper",
         "factorB": "gas",
         "counts": {
-          "both": 28,
+          "both": 23,
           "onlyA": 45,
           "onlyB": 0,
-          "neither": 2283
+          "neither": 1882
         },
-        "observations": 2356,
-        "jointProbability": 0.01188455,
-        "independentJointProbability": 0.00036824,
-        "lift": 32.2739726,
-        "phiCorrelation": 0.6133086,
-        "conditionalBGivenA": 0.38356164,
+        "observations": 1950,
+        "jointProbability": 0.01179487,
+        "independentJointProbability": 0.00041131,
+        "lift": 28.67647059,
+        "phiCorrelation": 0.57474925,
+        "conditionalBGivenA": 0.33823529,
         "conditionalAGivenB": 1,
-        "jaccard": 0.38356164
+        "jaccard": 0.33823529
       },
       {
         "factorA": "keeper",
         "factorB": "mev",
         "counts": {
           "both": 12,
-          "onlyA": 61,
+          "onlyA": 56,
           "onlyB": 9,
-          "neither": 2274
+          "neither": 1873
         },
-        "observations": 2356,
-        "jointProbability": 0.00509338,
-        "independentJointProbability": 0.00027618,
-        "lift": 18.44227006,
-        "phiCorrelation": 0.29578605,
-        "conditionalBGivenA": 0.16438356,
+        "observations": 1950,
+        "jointProbability": 0.00615385,
+        "independentJointProbability": 0.00037554,
+        "lift": 16.38655462,
+        "phiCorrelation": 0.30516138,
+        "conditionalBGivenA": 0.17647059,
         "conditionalAGivenB": 0.57142857,
-        "jaccard": 0.14634146
+        "jaccard": 0.15584416
       },
       {
         "factorA": "governance",
@@ -1163,13 +1164,13 @@
           "both": 5,
           "onlyA": 9,
           "onlyB": 37,
-          "neither": 2305
+          "neither": 1899
         },
-        "observations": 2356,
-        "jointProbability": 0.00212224,
-        "independentJointProbability": 0.00010593,
-        "lift": 20.03401361,
-        "phiCorrelation": 0.19826402,
+        "observations": 1950,
+        "jointProbability": 0.0025641,
+        "independentJointProbability": 0.00015464,
+        "lift": 16.58163265,
+        "phiCorrelation": 0.19658925,
         "conditionalBGivenA": 0.35714286,
         "conditionalAGivenB": 0.11904762,
         "jaccard": 0.09803922
@@ -1180,14 +1181,14 @@
         "counts": {
           "both": 0,
           "onlyA": 14,
-          "onlyB": 28,
-          "neither": 2314
+          "onlyB": 23,
+          "neither": 1913
         },
-        "observations": 2356,
+        "observations": 1950,
         "jointProbability": 0,
-        "independentJointProbability": 0.00007062,
+        "independentJointProbability": 0.00008468,
         "lift": 0,
-        "phiCorrelation": -0.00847926,
+        "phiCorrelation": -0.0092904,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1199,13 +1200,13 @@
           "both": 0,
           "onlyA": 14,
           "onlyB": 21,
-          "neither": 2321
+          "neither": 1915
         },
-        "observations": 2356,
+        "observations": 1950,
         "jointProbability": 0,
-        "independentJointProbability": 0.00005297,
+        "independentJointProbability": 0.00007732,
         "lift": 0,
-        "phiCorrelation": -0.00733224,
+        "phiCorrelation": -0.00887268,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1216,14 +1217,14 @@
         "counts": {
           "both": 0,
           "onlyA": 42,
-          "onlyB": 28,
-          "neither": 2286
+          "onlyB": 23,
+          "neither": 1885
         },
-        "observations": 2356,
+        "observations": 1950,
         "jointProbability": 0,
-        "independentJointProbability": 0.00021186,
+        "independentJointProbability": 0.00025404,
         "lift": 0,
-        "phiCorrelation": -0.0147751,
+        "phiCorrelation": -0.01620909,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1235,13 +1236,13 @@
           "both": 0,
           "onlyA": 42,
           "onlyB": 21,
-          "neither": 2293
+          "neither": 1887
         },
-        "observations": 2356,
+        "observations": 1950,
         "jointProbability": 0,
-        "independentJointProbability": 0.0001589,
+        "independentJointProbability": 0.00023195,
         "lift": 0,
-        "phiCorrelation": -0.01277642,
+        "phiCorrelation": -0.01548029,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1251,15 +1252,15 @@
         "factorB": "mev",
         "counts": {
           "both": 0,
-          "onlyA": 28,
+          "onlyA": 23,
           "onlyB": 21,
-          "neither": 2307
+          "neither": 1906
         },
-        "observations": 2356,
+        "observations": 1950,
         "jointProbability": 0,
-        "independentJointProbability": 0.00010593,
+        "independentJointProbability": 0.00012702,
         "lift": 0,
-        "phiCorrelation": -0.01040049,
+        "phiCorrelation": -0.011399,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1271,126 +1272,126 @@
         "factorB": "liquidity",
         "counts": {
           "both": 314,
-          "onlyA": 30,
+          "onlyA": 2,
           "onlyB": 243,
-          "neither": 1769
+          "neither": 1368
         },
-        "observations": 2356,
-        "jointProbability": 0.13327674,
-        "independentJointProbability": 0.03451939,
-        "lift": 3.86092439,
-        "phiCorrelation": 0.65823903,
-        "conditionalBGivenA": 0.9127907,
+        "observations": 1927,
+        "jointProbability": 0.16294759,
+        "independentJointProbability": 0.04740006,
+        "lift": 3.43770879,
+        "phiCorrelation": 0.68840642,
+        "conditionalBGivenA": 0.99367089,
         "conditionalAGivenB": 0.56373429,
-        "jaccard": 0.53492334
+        "jaccard": 0.56171735
       },
       {
         "factorA": "oracle",
         "factorB": "volatility",
         "counts": {
           "both": 254,
-          "onlyA": 90,
+          "onlyA": 62,
           "onlyB": 243,
-          "neither": 1769
+          "neither": 1368
         },
-        "observations": 2356,
-        "jointProbability": 0.10780985,
-        "independentJointProbability": 0.03080096,
-        "lift": 3.50021057,
-        "phiCorrelation": 0.53454013,
-        "conditionalBGivenA": 0.73837209,
+        "observations": 1927,
+        "jointProbability": 0.13181111,
+        "independentJointProbability": 0.04229412,
+        "lift": 3.11653465,
+        "phiCorrelation": 0.55262602,
+        "conditionalBGivenA": 0.80379747,
         "conditionalAGivenB": 0.5110664,
-        "jaccard": 0.43270869
+        "jaccard": 0.45438283
       },
       {
         "factorA": "oracle",
         "factorB": "keeper",
         "counts": {
-          "both": 180,
+          "both": 152,
           "onlyA": 164,
           "onlyB": 123,
-          "neither": 1889
+          "neither": 1488
         },
-        "observations": 2356,
-        "jointProbability": 0.07640068,
-        "independentJointProbability": 0.01877805,
-        "lift": 4.06861616,
-        "phiCorrelation": 0.48745513,
-        "conditionalBGivenA": 0.52325581,
-        "conditionalAGivenB": 0.59405941,
-        "jaccard": 0.38543897
+        "observations": 1927,
+        "jointProbability": 0.07887909,
+        "independentJointProbability": 0.02340218,
+        "lift": 3.37058688,
+        "phiCorrelation": 0.42836401,
+        "conditionalBGivenA": 0.48101266,
+        "conditionalAGivenB": 0.55272727,
+        "jaccard": 0.34624146
       },
       {
         "factorA": "oracle",
         "factorB": "governance",
         "counts": {
           "both": 28,
-          "onlyA": 316,
+          "onlyA": 288,
           "onlyB": 32,
-          "neither": 1980
+          "neither": 1579
         },
-        "observations": 2356,
-        "jointProbability": 0.01188455,
-        "independentJointProbability": 0.00371843,
-        "lift": 3.19612403,
-        "phiCorrelation": 0.14679517,
-        "conditionalBGivenA": 0.08139535,
+        "observations": 1927,
+        "jointProbability": 0.01453036,
+        "independentJointProbability": 0.00510593,
+        "lift": 2.84578059,
+        "phiCorrelation": 0.1465478,
+        "conditionalBGivenA": 0.08860759,
         "conditionalAGivenB": 0.46666667,
-        "jaccard": 0.07446809
+        "jaccard": 0.08045977
       },
       {
         "factorA": "oracle",
         "factorB": "stablecoin",
         "counts": {
           "both": 120,
-          "onlyA": 224,
+          "onlyA": 196,
           "onlyB": 60,
-          "neither": 1952
+          "neither": 1551
         },
-        "observations": 2356,
-        "jointProbability": 0.05093379,
-        "independentJointProbability": 0.01115528,
-        "lift": 4.56589147,
-        "phiCorrelation": 0.42407255,
-        "conditionalBGivenA": 0.34883721,
+        "observations": 1927,
+        "jointProbability": 0.06227296,
+        "independentJointProbability": 0.01531779,
+        "lift": 4.06540084,
+        "phiCorrelation": 0.43578557,
+        "conditionalBGivenA": 0.37974684,
         "conditionalAGivenB": 0.66666667,
-        "jaccard": 0.2970297
+        "jaccard": 0.31914894
       },
       {
         "factorA": "oracle",
         "factorB": "gas",
         "counts": {
-          "both": 30,
+          "both": 2,
           "onlyA": 314,
           "onlyB": 90,
-          "neither": 1922
+          "neither": 1521
         },
-        "observations": 2356,
-        "jointProbability": 0.01273345,
-        "independentJointProbability": 0.00743685,
-        "lift": 1.7122093,
-        "phiCorrelation": 0.0682225,
-        "conditionalBGivenA": 0.0872093,
-        "conditionalAGivenB": 0.25,
-        "jaccard": 0.06912442
+        "observations": 1927,
+        "jointProbability": 0.00103788,
+        "independentJointProbability": 0.00782909,
+        "lift": 0.13256742,
+        "phiCorrelation": -0.08602157,
+        "conditionalBGivenA": 0.00632911,
+        "conditionalAGivenB": 0.02173913,
+        "jaccard": 0.00492611
       },
       {
         "factorA": "oracle",
         "factorB": "mev",
         "counts": {
           "both": 30,
-          "onlyA": 314,
+          "onlyA": 286,
           "onlyB": 60,
-          "neither": 1952
+          "neither": 1551
         },
-        "observations": 2356,
-        "jointProbability": 0.01273345,
-        "independentJointProbability": 0.00557764,
-        "lift": 2.28294574,
-        "phiCorrelation": 0.10572187,
-        "conditionalBGivenA": 0.0872093,
+        "observations": 1927,
+        "jointProbability": 0.01556824,
+        "independentJointProbability": 0.0076589,
+        "lift": 2.03270042,
+        "phiCorrelation": 0.10123643,
+        "conditionalBGivenA": 0.09493671,
         "conditionalAGivenB": 0.33333333,
-        "jaccard": 0.07425743
+        "jaccard": 0.07978723
       },
       {
         "factorA": "liquidity",
@@ -1399,13 +1400,13 @@
           "both": 497,
           "onlyA": 60,
           "onlyB": 0,
-          "neither": 1799
+          "neither": 1370
         },
-        "observations": 2356,
-        "jointProbability": 0.21095076,
-        "independentJointProbability": 0.04987249,
-        "lift": 4.22980251,
-        "phiCorrelation": 0.92923698,
+        "observations": 1927,
+        "jointProbability": 0.25791386,
+        "independentJointProbability": 0.07455009,
+        "lift": 3.45960503,
+        "phiCorrelation": 0.92457652,
         "conditionalBGivenA": 0.89228007,
         "conditionalAGivenB": 1,
         "jaccard": 0.89228007
@@ -1416,17 +1417,17 @@
         "counts": {
           "both": 273,
           "onlyA": 284,
-          "onlyB": 30,
-          "neither": 1769
+          "onlyB": 2,
+          "neither": 1368
         },
-        "observations": 2356,
-        "jointProbability": 0.11587436,
-        "independentJointProbability": 0.03040516,
-        "lift": 3.81101019,
-        "phiCorrelation": 0.60089871,
+        "observations": 1927,
+        "jointProbability": 0.14167099,
+        "independentJointProbability": 0.04125005,
+        "lift": 3.43444426,
+        "phiCorrelation": 0.63332769,
         "conditionalBGivenA": 0.49012567,
-        "conditionalAGivenB": 0.9009901,
-        "jaccard": 0.46507666
+        "conditionalAGivenB": 0.99272727,
+        "jaccard": 0.48837209
       },
       {
         "factorA": "liquidity",
@@ -1435,13 +1436,13 @@
           "both": 60,
           "onlyA": 497,
           "onlyB": 0,
-          "neither": 1799
+          "neither": 1370
         },
-        "observations": 2356,
-        "jointProbability": 0.02546689,
-        "independentJointProbability": 0.00602082,
-        "lift": 4.22980251,
-        "phiCorrelation": 0.29052109,
+        "observations": 1927,
+        "jointProbability": 0.03113648,
+        "independentJointProbability": 0.00900001,
+        "lift": 3.45960503,
+        "phiCorrelation": 0.28114875,
         "conditionalBGivenA": 0.10771993,
         "conditionalAGivenB": 1,
         "jaccard": 0.10771993
@@ -1453,13 +1454,13 @@
           "both": 180,
           "onlyA": 377,
           "onlyB": 0,
-          "neither": 1799
+          "neither": 1370
         },
-        "observations": 2356,
-        "jointProbability": 0.07640068,
-        "independentJointProbability": 0.01806247,
-        "lift": 4.22980251,
-        "phiCorrelation": 0.51688603,
+        "observations": 1927,
+        "jointProbability": 0.09340944,
+        "independentJointProbability": 0.02700003,
+        "lift": 3.45960503,
+        "phiCorrelation": 0.50341075,
         "conditionalBGivenA": 0.32315978,
         "conditionalAGivenB": 1,
         "jaccard": 0.32315978
@@ -1470,17 +1471,17 @@
         "counts": {
           "both": 90,
           "onlyA": 467,
-          "onlyB": 30,
-          "neither": 1769
+          "onlyB": 2,
+          "neither": 1368
         },
-        "observations": 2356,
-        "jointProbability": 0.03820034,
-        "independentJointProbability": 0.01204165,
-        "lift": 3.17235189,
-        "phiCorrelation": 0.28002507,
+        "observations": 1927,
+        "jointProbability": 0.04670472,
+        "independentJointProbability": 0.01380002,
+        "lift": 3.38439622,
+        "phiCorrelation": 0.34042514,
         "conditionalBGivenA": 0.16157989,
-        "conditionalAGivenB": 0.75,
-        "jaccard": 0.15332198
+        "conditionalAGivenB": 0.97826087,
+        "jaccard": 0.16100179
       },
       {
         "factorA": "liquidity",
@@ -1489,13 +1490,13 @@
           "both": 90,
           "onlyA": 467,
           "onlyB": 0,
-          "neither": 1799
+          "neither": 1370
         },
-        "observations": 2356,
-        "jointProbability": 0.03820034,
-        "independentJointProbability": 0.00903123,
-        "lift": 4.22980251,
-        "phiCorrelation": 0.35816182,
+        "observations": 1927,
+        "jointProbability": 0.04670472,
+        "independentJointProbability": 0.01350002,
+        "lift": 3.45960503,
+        "phiCorrelation": 0.34713577,
         "conditionalBGivenA": 0.16157989,
         "conditionalAGivenB": 1,
         "jaccard": 0.16157989
@@ -1506,17 +1507,17 @@
         "counts": {
           "both": 243,
           "onlyA": 254,
-          "onlyB": 60,
-          "neither": 1799
+          "onlyB": 32,
+          "neither": 1398
         },
-        "observations": 2356,
-        "jointProbability": 0.10314092,
-        "independentJointProbability": 0.02712992,
-        "lift": 3.80174114,
-        "phiCorrelation": 0.55653611,
+        "observations": 1927,
+        "jointProbability": 0.12610275,
+        "independentJointProbability": 0.0368066,
+        "lift": 3.42609109,
+        "phiCorrelation": 0.58355071,
         "conditionalBGivenA": 0.4889336,
-        "conditionalAGivenB": 0.8019802,
-        "jaccard": 0.43626571
+        "conditionalAGivenB": 0.88363636,
+        "jaccard": 0.45935728
       },
       {
         "factorA": "volatility",
@@ -1525,13 +1526,13 @@
           "both": 60,
           "onlyA": 437,
           "onlyB": 0,
-          "neither": 1859
+          "neither": 1430
         },
-        "observations": 2356,
-        "jointProbability": 0.02546689,
-        "independentJointProbability": 0.00537226,
-        "lift": 4.74044266,
-        "phiCorrelation": 0.31264478,
+        "observations": 1927,
+        "jointProbability": 0.03113648,
+        "independentJointProbability": 0.00803053,
+        "lift": 3.87726358,
+        "phiCorrelation": 0.3040838,
         "conditionalBGivenA": 0.12072435,
         "conditionalAGivenB": 1,
         "jaccard": 0.12072435
@@ -1543,13 +1544,13 @@
           "both": 150,
           "onlyA": 347,
           "onlyB": 30,
-          "neither": 1829
+          "neither": 1400
         },
-        "observations": 2356,
-        "jointProbability": 0.06366723,
-        "independentJointProbability": 0.01611678,
-        "lift": 3.95036888,
-        "phiCorrelation": 0.43875454,
+        "observations": 1927,
+        "jointProbability": 0.0778412,
+        "independentJointProbability": 0.02409159,
+        "lift": 3.23105298,
+        "phiCorrelation": 0.42219186,
         "conditionalBGivenA": 0.30181087,
         "conditionalAGivenB": 0.83333333,
         "jaccard": 0.28462998
@@ -1560,17 +1561,17 @@
         "counts": {
           "both": 90,
           "onlyA": 407,
-          "onlyB": 30,
-          "neither": 1829
+          "onlyB": 2,
+          "neither": 1428
         },
-        "observations": 2356,
-        "jointProbability": 0.03820034,
-        "independentJointProbability": 0.01074452,
-        "lift": 3.55533199,
-        "phiCorrelation": 0.30608395,
+        "observations": 1927,
+        "jointProbability": 0.04670472,
+        "independentJointProbability": 0.01231348,
+        "lift": 3.79297524,
+        "phiCorrelation": 0.36868302,
         "conditionalBGivenA": 0.18108652,
-        "conditionalAGivenB": 0.75,
-        "jaccard": 0.17077799
+        "conditionalAGivenB": 0.97826087,
+        "jaccard": 0.18036072
       },
       {
         "factorA": "volatility",
@@ -1579,13 +1580,13 @@
           "both": 90,
           "onlyA": 407,
           "onlyB": 0,
-          "neither": 1859
+          "neither": 1430
         },
-        "observations": 2356,
-        "jointProbability": 0.03820034,
-        "independentJointProbability": 0.00805839,
-        "lift": 4.74044266,
-        "phiCorrelation": 0.38543647,
+        "observations": 1927,
+        "jointProbability": 0.04670472,
+        "independentJointProbability": 0.0120458,
+        "lift": 3.87726358,
+        "phiCorrelation": 0.3754538,
         "conditionalBGivenA": 0.18108652,
         "conditionalAGivenB": 1,
         "jaccard": 0.18108652
@@ -1595,15 +1596,15 @@
         "factorB": "governance",
         "counts": {
           "both": 0,
-          "onlyA": 303,
+          "onlyA": 275,
           "onlyB": 60,
-          "neither": 1993
+          "neither": 1592
         },
-        "observations": 2356,
+        "observations": 1927,
         "jointProbability": 0,
-        "independentJointProbability": 0.00327524,
+        "independentJointProbability": 0.00444345,
         "lift": 0,
-        "phiCorrelation": -0.06210356,
+        "phiCorrelation": -0.07314166,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1613,54 +1614,54 @@
         "factorB": "stablecoin",
         "counts": {
           "both": 18,
-          "onlyA": 285,
+          "onlyA": 257,
           "onlyB": 162,
-          "neither": 1891
+          "neither": 1490
         },
-        "observations": 2356,
-        "jointProbability": 0.00764007,
-        "independentJointProbability": 0.00982572,
-        "lift": 0.77755776,
-        "phiCorrelation": -0.02457825,
-        "conditionalBGivenA": 0.05940594,
+        "observations": 1927,
+        "jointProbability": 0.00934094,
+        "independentJointProbability": 0.01333036,
+        "lift": 0.70072727,
+        "phiCorrelation": -0.03919388,
+        "conditionalBGivenA": 0.06545455,
         "conditionalAGivenB": 0.1,
-        "jaccard": 0.03870968
+        "jaccard": 0.04118993
       },
       {
         "factorA": "keeper",
         "factorB": "gas",
         "counts": {
-          "both": 120,
+          "both": 92,
           "onlyA": 183,
           "onlyB": 0,
-          "neither": 2053
+          "neither": 1652
         },
-        "observations": 2356,
-        "jointProbability": 0.05093379,
-        "independentJointProbability": 0.00655048,
-        "lift": 7.77557756,
-        "phiCorrelation": 0.60301468,
-        "conditionalBGivenA": 0.3960396,
+        "observations": 1927,
+        "jointProbability": 0.04774261,
+        "independentJointProbability": 0.00681329,
+        "lift": 7.00727273,
+        "phiCorrelation": 0.54880057,
+        "conditionalBGivenA": 0.33454545,
         "conditionalAGivenB": 1,
-        "jaccard": 0.3960396
+        "jaccard": 0.33454545
       },
       {
         "factorA": "keeper",
         "factorB": "mev",
         "counts": {
           "both": 58,
-          "onlyA": 245,
+          "onlyA": 217,
           "onlyB": 32,
-          "neither": 2021
+          "neither": 1620
         },
-        "observations": 2356,
-        "jointProbability": 0.024618,
-        "independentJointProbability": 0.00491286,
-        "lift": 5.01092776,
-        "phiCorrelation": 0.3070881,
-        "conditionalBGivenA": 0.19141914,
+        "observations": 1927,
+        "jointProbability": 0.0300986,
+        "independentJointProbability": 0.00666518,
+        "lift": 4.51579798,
+        "phiCorrelation": 0.31750598,
+        "conditionalBGivenA": 0.21090909,
         "conditionalAGivenB": 0.64444444,
-        "jaccard": 0.17313433
+        "jaccard": 0.18892508
       },
       {
         "factorA": "governance",
@@ -1669,13 +1670,13 @@
           "both": 28,
           "onlyA": 32,
           "onlyB": 152,
-          "neither": 2144
+          "neither": 1715
         },
-        "observations": 2356,
-        "jointProbability": 0.01188455,
-        "independentJointProbability": 0.00194569,
-        "lift": 6.10814815,
-        "phiCorrelation": 0.23749801,
+        "observations": 1927,
+        "jointProbability": 0.01453036,
+        "independentJointProbability": 0.00290844,
+        "lift": 4.99592593,
+        "phiCorrelation": 0.22993797,
         "conditionalBGivenA": 0.46666667,
         "conditionalAGivenB": 0.15555556,
         "jaccard": 0.13207547
@@ -1686,14 +1687,14 @@
         "counts": {
           "both": 0,
           "onlyA": 60,
-          "onlyB": 120,
-          "neither": 2176
+          "onlyB": 92,
+          "neither": 1775
         },
-        "observations": 2356,
+        "observations": 1927,
         "jointProbability": 0,
-        "independentJointProbability": 0.00129713,
+        "independentJointProbability": 0.00148654,
         "lift": 0,
-        "phiCorrelation": -0.03744936,
+        "phiCorrelation": -0.04014018,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1705,13 +1706,13 @@
           "both": 0,
           "onlyA": 60,
           "onlyB": 90,
-          "neither": 2206
+          "neither": 1777
         },
-        "observations": 2356,
+        "observations": 1927,
         "jointProbability": 0,
-        "independentJointProbability": 0.00097284,
+        "independentJointProbability": 0.00145422,
         "lift": 0,
-        "phiCorrelation": -0.03221669,
+        "phiCorrelation": -0.03967986,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1722,17 +1723,17 @@
         "counts": {
           "both": 2,
           "onlyA": 178,
-          "onlyB": 118,
-          "neither": 2058
+          "onlyB": 90,
+          "neither": 1657
         },
-        "observations": 2356,
-        "jointProbability": 0.0008489,
-        "independentJointProbability": 0.00389138,
-        "lift": 0.21814815,
-        "phiCorrelation": -0.0520938,
+        "observations": 1927,
+        "jointProbability": 0.00103788,
+        "independentJointProbability": 0.00445961,
+        "lift": 0.23272947,
+        "phiCorrelation": -0.05514602,
         "conditionalBGivenA": 0.01111111,
-        "conditionalAGivenB": 0.01666667,
-        "jaccard": 0.00671141
+        "conditionalAGivenB": 0.02173913,
+        "jaccard": 0.00740741
       },
       {
         "factorA": "stablecoin",
@@ -1741,13 +1742,13 @@
           "both": 0,
           "onlyA": 180,
           "onlyB": 90,
-          "neither": 2086
+          "neither": 1657
         },
-        "observations": 2356,
+        "observations": 1927,
         "jointProbability": 0,
-        "independentJointProbability": 0.00291853,
+        "independentJointProbability": 0.00436266,
         "lift": 0,
-        "phiCorrelation": -0.05731893,
+        "phiCorrelation": -0.07104876,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0
@@ -1757,15 +1758,15 @@
         "factorB": "mev",
         "counts": {
           "both": 0,
-          "onlyA": 120,
+          "onlyA": 92,
           "onlyB": 90,
-          "neither": 2146
+          "neither": 1745
         },
-        "observations": 2356,
+        "observations": 1927,
         "jointProbability": 0,
-        "independentJointProbability": 0.00194569,
+        "independentJointProbability": 0.00222981,
         "lift": 0,
-        "phiCorrelation": -0.04616853,
+        "phiCorrelation": -0.04956128,
         "conditionalBGivenA": 0,
         "conditionalAGivenB": 0,
         "jaccard": 0

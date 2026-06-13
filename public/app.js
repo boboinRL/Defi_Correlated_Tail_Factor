@@ -134,6 +134,9 @@ const els = {
   heatmap: document.querySelector("#heatmap"),
   dependencySource: document.querySelector("#dependencySource"),
   dependencyList: document.querySelector("#dependencyList"),
+  validationVersion: document.querySelector("#validationVersion"),
+  validationSummary: document.querySelector("#validationSummary"),
+  calibrationChart: document.querySelector("#calibrationChart"),
   codeScore: document.querySelector("#codeScore"),
   opsScore: document.querySelector("#opsScore"),
   marketScore: document.querySelector("#marketScore"),
@@ -177,6 +180,7 @@ const zh = {
   "Multi-factor stress testing for liquidation resilience": "面向清算韧性的多因素压力测试",
   "Select a contract and combine stress factors to estimate joint tail-event probability, bad-debt exposure, liquidity shock, keeper congestion, and governance upgrade risk.": "选择合约并组合压力因子，以估算联合尾部事件概率、坏账敞口、流动性冲击、Keeper 拥堵和治理升级风险。",
   "Joint Tail Probability": "联合尾部概率",
+  "All-Selected Joint Probability": "所选因子全部联动概率",
   "Expected Bad Debt": "预期坏账",
   "Recovery Window": "恢复窗口",
   "Scenario Builder": "场景构建器",
@@ -199,6 +203,9 @@ const zh = {
   "Dependency Model": "依赖模型",
   "Active Factor Pair Coupling": "当前因子对耦合",
   "Single-factor prior + pair coupling": "单因子先验 + 因子对耦合",
+  "Model Validation": "模型验证",
+  "Walk-Forward Calibration": "滚动前推校准",
+  "Not available": "暂无数据",
   "Code Security": "代码安全",
   "Operational Resilience": "运营韧性",
   "Market Stability": "市场稳定性",
@@ -228,7 +235,7 @@ function translateStaticUi() {
     ".hero-metrics span", ".control-panel .panel-head .eyebrow", ".control-panel .panel-head h3",
     "#glmFactorButton", "#resetButton", ".horizon-block > span", ".slider-label span", ".switch-row span",
     ".probability-orb small", ".risk-summary .eyebrow", ".metric-grid span",
-    ".chart-card .eyebrow", ".chart-card h3", "#dependencySource",
+    ".chart-card .eyebrow", ".chart-card h3", "#dependencySource", "#validationVersion",
     ".section-title span", ".audit-card > p", ".timeline-card .eyebrow", ".timeline-card h3"
   ];
   document.querySelectorAll(selectors.join(",")).forEach((element) => {
@@ -244,6 +251,12 @@ function translateStaticUi() {
 
 function percent(value, digits = 2) {
   return `${(value * 100).toFixed(digits)}%`;
+}
+
+function probabilityPercent(value) {
+  if (value > 0 && value < 0.0001) return `${(value * 100).toFixed(4)}%`;
+  if (value > 0 && value < 0.001) return `${(value * 100).toFixed(3)}%`;
+  return percent(value);
 }
 
 function money(value) {
@@ -484,19 +497,19 @@ function renderResult(result) {
   els.riskGrade.textContent = grade(result.resilienceScore);
   els.scoreRing.style.setProperty("--score", `${result.resilienceScore}%`);
   els.narrative.textContent = isZh()
-    ? `${level}：${result.resilienceScore >= 80 ? "清算路径整体具备韧性" : "需要加强清算与流动性缓冲"}。模型置信度为 ${percent(result.model.confidence, 0)}。`
-    : `${level}: ${result.resilienceScore >= 80 ? "liquidation paths remain broadly resilient" : "liquidation and liquidity buffers need reinforcement"}. Model confidence is ${percent(result.model.confidence, 0)}.`;
-  els.jointProbability.textContent = percent(result.jointProbability);
+    ? `${level}：${result.resilienceScore >= 80 ? "清算路径整体具备韧性" : "需要加强清算与流动性缓冲"}。合约元数据与证据覆盖度为 ${percent(result.model.confidence, 0)}。`
+    : `${level}: ${result.resilienceScore >= 80 ? "liquidation paths remain broadly resilient" : "liquidation and liquidity buffers need reinforcement"}. Contract metadata and evidence coverage is ${percent(result.model.confidence, 0)}.`;
+  els.jointProbability.textContent = probabilityPercent(result.jointProbability);
   els.badDebt.textContent = money(result.expectedBadDebtUsdM);
   els.recoveryWindow.textContent = `${result.recoveryWindowMinutes}m`;
-  els.orbValue.textContent = percent(result.jointProbability);
+  els.orbValue.textContent = probabilityPercent(result.jointProbability);
   els.orb.style.setProperty("--score", `${clamp(result.jointProbability * 300, 4, 100)}%`);
   els.orb.style.background = `radial-gradient(circle at center, #14233b 0 56%, transparent 57%), conic-gradient(${probabilityColor} var(--score), rgba(255, 255, 255, 0.16) 0)`;
   els.scenarioTitle.textContent = names.length ? names.join(" + ") : (isZh() ? "基准清算监控" : "Baseline liquidation monitor");
   els.scenarioCopy.textContent = names.length
     ? (isZh()
-        ? `${level}：这是 ${result.predictionHorizon} 预测，后端使用单因子边际概率与尾部依赖矩阵计算当前因子组合。`
-        : `${level}: this is a ${result.predictionHorizon} forecast using marginal probabilities plus a tail-dependence matrix.`)
+        ? `${level}：这是 ${result.predictionHorizon} 所选因子全部联动概率，使用校准边际概率与 Gaussian copula Monte Carlo 计算。`
+        : `${level}: ${result.predictionHorizon} all-selected joint probability from calibrated marginals and Gaussian-copula Monte Carlo.`)
     : (isZh() ? "当前未选择风险因子，因此场景概率和压力指标均重置为零。" : "No risk factor is selected, so scenario probability and stress metrics are reset to zero.");
   els.coverageMetric.textContent = `${Math.round(result.liquidationCoverage)}%`;
   els.gapMetric.textContent = money(result.expectedBadDebtUsdM);
@@ -510,12 +523,13 @@ function renderResult(result) {
   els.opsScore.textContent = `${Math.round(clamp(result.liquidationCoverage - result.queueCongestion * 0.12, 28, 95))}%`;
   els.marketScore.textContent = `${Math.round(clamp(96 - result.expectedBadDebtUsdM * 0.22 - result.jointProbability * 120, 25, 94))}%`;
   els.dependencySource.textContent = isZh()
-    ? `${result.model.version} · 未校准`
-    : `${result.model.version} · Uncalibrated`;
+    ? `${result.model.version} · ${result.model.calibrationStatus}`
+    : `${result.model.version} · ${result.model.calibrationStatus}`;
 
   renderHeatmap(result);
   updateRiskProbabilities(result);
   renderDependencies(result);
+  renderValidation(result);
   renderFindings(result);
   renderEvents(result);
 }
@@ -537,20 +551,42 @@ function updateRiskProbabilities(result) {
 }
 
 function renderHeatmap(result) {
+  const horizons = ["1d", "7d", "30d"];
   const cells = Array.from({ length: 36 }, (_, index) => {
-    const horizon = 1 + Math.floor(index / 12);
-    const phase = (index % 12) / 11;
-    const multiplier = 0.55 + horizon * 0.36 + phase * 0.62;
-    const value = clamp(result.jointProbability * multiplier, 0.002, 0.36);
+    const horizon = horizons[Math.floor(index / 12)];
+    const value = result.horizonSurface?.[horizon]?.jointProbability || 0;
     const alpha = clamp(0.18 + value * 2.1, 0.18, 0.92);
     const color = colorForProbability(value);
-    return `<span class="heat-cell" title="${horizon === 1 ? "1d" : horizon === 2 ? "7d" : "30d"} ${percent(value)}" style="--cell: color-mix(in srgb, ${color} ${Math.round(alpha * 100)}%, white);"></span>`;
+    return `<span class="heat-cell" title="${horizon} ${probabilityPercent(value)}" style="--cell: color-mix(in srgb, ${color} ${Math.round(alpha * 100)}%, white);"></span>`;
   });
 
   els.heatmap.innerHTML = cells.join("");
 }
 
 function renderDependencies(result) {
+  const simulationRows = result.risks.length ? `
+    <div class="dependency-item">
+      <div>
+        <strong>${isZh() ? "至少一个所选因子" : "At least one selected factor"}</strong>
+        <span>${isZh() ? "同一预测周期内任一所选因子发生" : "Any selected factor occurs inside the horizon"}</span>
+      </div>
+      <div class="dependency-score">${probabilityPercent(result.anySelectedProbability)}</div>
+    </div>
+    <div class="dependency-item">
+      <div>
+        <strong>${isZh() ? "至少两个因子联动" : "At least two selected factors"}</strong>
+        <span>${result.simulation.method} · ${Number(result.simulation.samples).toLocaleString()} ${isZh() ? "次模拟" : "draws"}</span>
+      </div>
+      <div class="dependency-score">${probabilityPercent(result.atLeastTwoProbability)}</div>
+    </div>
+    <div class="dependency-item">
+      <div>
+        <strong>${isZh() ? "全部联动概率 95% 区间" : "All-selected 95% interval"}</strong>
+        <span>${isZh() ? "仅表示 Monte Carlo 抽样误差，不包含模型风险" : "Monte Carlo sampling error only; excludes model risk"}</span>
+      </div>
+      <div class="dependency-score">${probabilityPercent(result.jointConfidence95.low)}-${probabilityPercent(result.jointConfidence95.high)}</div>
+    </div>
+  ` : "";
   const factorRows = result.factorProbabilities
     .map((item) => {
       const localRisk = riskFactors.find((risk) => risk.id === item.id);
@@ -558,7 +594,7 @@ function renderDependencies(result) {
       <div class="dependency-item">
         <div>
           <strong>${isZh() && localRisk ? localRisk.zhName : item.name}</strong>
-          <span>${isZh() ? `单因子边际概率 · ${item.eventCount} 个尾部事件样本` : `Single-factor marginal probability · ${item.eventCount} tail-event sample(s)`}</span>
+          <span>${isZh() ? `校准边际概率 · ${item.calibrationObservations} 个日频观测` : `Calibrated marginal probability · ${item.calibrationObservations} daily observations`}</span>
         </div>
         <div class="dependency-score">${percent(item.marginalProbability, 1)}</div>
       </div>
@@ -583,6 +619,7 @@ function renderDependencies(result) {
 
   if (!result.dependencies.length) {
     els.dependencyList.innerHTML = `
+      ${simulationRows}
       ${marketRows}
       ${factorRows}
       <div class="empty">${isZh() ? "至少选择两个因子才能计算因子对耦合。" : "Select at least two factors to compute pair coupling."}</div>
@@ -603,7 +640,40 @@ function renderDependencies(result) {
     `)
     .join("");
 
-  els.dependencyList.innerHTML = `${marketRows}${factorRows}${pairRows}`;
+  els.dependencyList.innerHTML = `${simulationRows}${marketRows}${factorRows}${pairRows}`;
+}
+
+function renderValidation(result) {
+  const validation = result.model?.validation;
+  if (!validation || !validation.observations) {
+    els.validationVersion.textContent = isZh() ? "暂无回测" : "No backtest";
+    els.validationSummary.innerHTML = `<div class="empty">${isZh() ? "请先运行 npm run backtest:model。" : "Run npm run backtest:model first."}</div>`;
+    els.calibrationChart.innerHTML = "";
+    return;
+  }
+
+  els.validationVersion.textContent = validation.metadata?.validationVersion || result.model.version;
+  els.validationSummary.innerHTML = `
+    <div><span>${isZh() ? "样本" : "Observations"}</span><strong>${validation.observations}</strong></div>
+    <div><span>${isZh() ? "正标签" : "Positives"}</span><strong>${validation.positives}</strong></div>
+    <div><span>Brier Score</span><strong>${Number(validation.brierScore).toFixed(4)}</strong></div>
+    <div><span>Log Loss</span><strong>${Number(validation.logLoss).toFixed(4)}</strong></div>
+  `;
+
+  els.calibrationChart.innerHTML = (validation.calibrationCurve || []).map((bin) => {
+    const predicted = clamp(Number(bin.meanPredicted || 0), 0, 1);
+    const observed = clamp(Number(bin.observedRate || 0), 0, 1);
+    const scale = Math.max(predicted, observed, 0.01);
+    return `
+      <div class="calibration-bin" title="${isZh() ? "预测" : "Predicted"} ${percent(predicted)} · ${isZh() ? "实际" : "Observed"} ${percent(observed)}">
+        <div class="calibration-bars">
+          <i class="predicted" style="height:${Math.max(3, predicted / scale * 100)}%"></i>
+          <i class="observed" style="height:${Math.max(3, observed / scale * 100)}%"></i>
+        </div>
+        <span>${bin.observations}</span>
+      </div>
+    `;
+  }).join("");
 }
 
 function finding(text, type = "") {

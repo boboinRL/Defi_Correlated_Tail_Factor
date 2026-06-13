@@ -52,6 +52,9 @@ const events = rawEvents
     endDay: utcDay(event.end_time || event.start_time)
   }))
   .sort((a, b) => a.startDay - b.startDay);
+const labelObservedThrough = events.length
+  ? Math.max(...events.map((event) => event.endDay))
+  : null;
 
 function labelsForDate(date, horizonDays) {
   const day = utcDay(date);
@@ -66,6 +69,7 @@ function labelsForDate(date, horizonDays) {
 
   return {
     horizonDays,
+    observed: labelObservedThrough !== null && horizonEnd <= labelObservedThrough,
     anyTailEvent: futureEvents.length ? 1 : 0,
     factors: labels,
     severity,
@@ -125,8 +129,10 @@ const labelOutput = {
     featureRange: { start: featureStart, end: featureEnd },
     eventRange: {
       start: events.length ? dateString(events[0].startDay) : null,
-      end: events.length ? dateString(Math.max(...events.map((event) => event.endDay))) : null
+      end: labelObservedThrough === null ? null : dateString(labelObservedThrough)
     },
+    labelObservedThrough: labelObservedThrough === null ? null : dateString(labelObservedThrough),
+    censoringPolicy: "Rows whose complete forecast horizon extends beyond labelObservedThrough are retained but excluded from calibration and backtesting.",
     eventCount: events.length,
     overlappingEventCount: overlappingEvents.length,
     overlappingEventIds: overlappingEvents.map((event) => event.event_id),
@@ -240,6 +246,7 @@ for (const row of rows) {
       horizon,
       horizonDays: horizons[horizon],
       labelAnyTailEvent: row.labels[horizon].anyTailEvent,
+      labelObserved: row.labels[horizon].observed,
       labelSeverity: row.labels[horizon].severity,
       labels: row.labels[horizon].factors,
       eventIds: row.labels[horizon].eventIds
@@ -270,6 +277,7 @@ function labelsCsv(labelRows) {
     "horizon",
     "horizon_days",
     "label_any_tail_event",
+    "label_observed",
     ...factorIds.map((factor) => `label_${factor}`),
     "label_severity",
     "event_ids",
@@ -283,6 +291,7 @@ function labelsCsv(labelRows) {
         horizon,
         label.horizonDays,
         label.anyTailEvent,
+        label.observed,
         ...factorIds.map((factor) => label.factors[factor]),
         label.severity,
         label.eventIds.join("|"),
@@ -327,6 +336,7 @@ function trainingCsv(training) {
     "stablecoin_supply_change_1d",
     "tracked_protocol_tvl_usd",
     "label_any_tail_event",
+    "label_observed",
     ...factorIds.map((factor) => `label_${factor}`),
     "label_severity",
     "event_ids"
@@ -364,6 +374,7 @@ function trainingCsv(training) {
     row.stablecoinSupplyChange1d,
     row.trackedProtocolTvlUsd,
     row.labelAnyTailEvent,
+    row.labelObserved,
     ...factorIds.map((factor) => row.labels[factor]),
     row.labelSeverity,
     row.eventIds.join("|")

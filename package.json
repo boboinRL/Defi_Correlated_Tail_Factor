@@ -8,6 +8,8 @@
     "collect:coingecko": "node scripts/collect-coingecko.js",
     "collect:defillama": "node scripts/collect-defillama.js",
     "build:labels": "node scripts/build-training-labels.js",
-    "calibrate:marginals": "node scripts/calibrate-marginals.js"
+    "calibrate:marginals": "node scripts/calibrate-marginals.js",
+    "backtest:model": "node scripts/backtest-model.js",
+    "test": "node --test"
   }
 }

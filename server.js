@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { createReadStream, readFileSync, statSync } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { networkInterfaces } from "node:os";
+import { simulateJointProbability } from "./lib/tail-model.js";
 
 const port = Number(process.env.PORT || 3000);
 const root = join(process.cwd(), "public");
@@ -15,7 +16,6 @@ const duneQueryId = process.env.DUNE_QUERY_ID || "";
 const dataRoot = join(process.cwd(), "data");
 const DUMMY_EVENT_PRIOR_WEIGHT = 0.62;
 const MARKET_PRIOR_WEIGHT = 0.18;
-const MODEL_VERSION = "horizon-prior-v0.2.0";
 const HORIZONS = {
   "1d": 1,
   "7d": 7,
@@ -120,22 +120,10 @@ const riskFactors = [
 const tailEvents = loadJson("tail_events.json", []);
 const riskFactorMap = loadJson("risk_factor_map.json", { default: { riskFactorIds: ["liquidity", "volatility"] }, categories: {}, protocolOverrides: {} });
 const marketSources = loadJson("market_sources.json", { protocols: {}, defaults: { coingeckoIds: ["ethereum"], days: 30 }, dune: {} });
+const modelParameters = loadJson("model_parameters.json", null);
+const modelValidation = loadJson("model_validation.json", null);
 const eventPriors = buildEventPriors(tailEvents);
 const marketCache = new Map();
-
-const tailDependence = {
-  "oracle:liquidity": { value: 0.58, source: "Historical prior", label: "Strong" },
-  "oracle:volatility": { value: 0.52, source: "Historical prior", label: "Strong" },
-  "liquidity:volatility": { value: 0.67, source: "Historical prior", label: "Very strong" },
-  "keeper:gas": { value: 0.74, source: "Mechanism prior", label: "Very strong" },
-  "keeper:liquidity": { value: 0.39, source: "Expert calibration", label: "Moderate" },
-  "governance:oracle": { value: 0.28, source: "Expert calibration", label: "Moderate" },
-  "stablecoin:liquidity": { value: 0.63, source: "Historical prior", label: "Very strong" },
-  "stablecoin:volatility": { value: 0.44, source: "Historical prior", label: "Strong" },
-  "mev:liquidity": { value: 0.35, source: "Mechanism prior", label: "Moderate" },
-  "mev:keeper": { value: 0.41, source: "Mechanism prior", label: "Strong" },
-  "gas:liquidity": { value: 0.33, source: "Expert calibration", label: "Moderate" }
-};
 
 function localIps() {
   return Object.values(networkInterfaces())
@@ -185,6 +173,8 @@ function buildEventPriors(events) {
 }
 
 function probabilityForFactor(risk, horizonDays = 7) {
+  const horizon = Object.entries(HORIZONS).find(([, days]) => days === horizonDays)?.[0] || "7d";
+  const calibrated = modelParameters?.probabilityByHorizon?.[horizon]?.[risk.id];
   const prior = eventPriors[risk.id];
   let thirtyDayProbability;
   if (!prior) {
@@ -200,9 +190,16 @@ function probabilityForFactor(risk, horizonDays = 7) {
   return {
     ...risk,
     thirtyDayProbability,
-    marginalProbability: clamp(1 - Math.pow(1 - thirtyDayProbability, horizonDays / 30), 0, 0.35),
-    priorSource: prior ? "tail_events.json 30d dummy prior" : "Static 30d model prior",
+    marginalProbability: calibrated?.posteriorMean ??
+      clamp(1 - Math.pow(1 - thirtyDayProbability, horizonDays / 30), 0, 0.35),
+    confidence95: calibrated?.confidence95 || null,
+    priorSource: calibrated
+      ? `${modelParameters.modelVersion} calibrated posterior`
+      : prior
+        ? "tail_events.json 30d fallback prior"
+        : "Static 30d fallback prior",
     eventCount: prior?.count || 0,
+    calibrationObservations: calibrated?.observations || 0,
     avgSeverity: prior?.avgSeverity || 0
   };
 }
@@ -387,10 +384,6 @@ function clamp(value, min, max) {
 
 function isAddress(value) {
   return /^0x[a-fA-F0-9]{40}$/.test(value || "");
-}
-
-function canonicalPair(a, b) {
-  return [a, b].sort().join(":");
 }
 
 function knownByAddress(address) {
@@ -603,29 +596,64 @@ function runStress({ profile, factorIds, horizon = "7d", severity = 0.65, useCor
     .map((risk) => applyMarketSignalToFactor(risk, marketSignals));
   const selected = probabilityFactors.filter((risk) => factorIds.includes(risk.id));
   const risks = selected;
-  const pairs = [];
-  let dependencySum = 0;
-
-  for (let i = 0; i < risks.length; i += 1) {
-    for (let j = i + 1; j < risks.length; j += 1) {
-      const pair = canonicalPair(risks[i].id, risks[j].id);
-      const dependency = tailDependence[pair] || { value: 0.18, source: "Sparse-data prior", label: "Weak" };
-      dependencySum += dependency.value;
-      pairs.push({
-        factors: [risks[i].name, risks[j].name],
-        factorIds: [risks[i].id, risks[j].id],
-        tailDependence: dependency.value,
-        source: dependency.source,
-        label: dependency.label
-      });
-    }
-  }
-
-  const avgDependency = pairs.length ? dependencySum / pairs.length : 0;
-  const dependenceBoost = useCorrelation ? 1 + avgDependency * Math.log2(risks.length + 1) : 1;
-  const keeperPenalty = simulateKeeper ? 1 + (1 - profile.keeperQuality) * 0.46 : 1;
-  const baseNoEvent = risks.reduce((acc, risk) => acc * (1 - risk.marginalProbability * (0.72 + severity)), 1);
-  const jointProbability = risks.length ? clamp((1 - baseNoEvent) * dependenceBoost * keeperPenalty, 0.001, 0.48) : 0;
+  const marketMultipliers = Object.fromEntries(
+    risks.map((risk) => {
+      const executionMultiplier = simulateKeeper && ["keeper", "gas"].includes(risk.id)
+        ? 1 + (1 - profile.keeperQuality) * 0.46
+        : 1;
+      return [risk.id, (risk.marketMultiplier || 1) * executionMultiplier];
+    })
+  );
+  const simulation = simulateJointProbability({
+    factors: risks,
+    horizon: predictionHorizon,
+    modelParameters,
+    useCorrelation,
+    severity,
+    marketMultipliers,
+    samples: Number(process.env.MONTE_CARLO_SAMPLES || 100000),
+    seed: `${profile.address}:${predictionHorizon}:${risks.map((risk) => risk.id).join(",")}:${severity}:${useCorrelation}`
+  });
+  const horizonSurface = Object.fromEntries(
+    Object.keys(HORIZONS).map((surfaceHorizon) => {
+      const surfaceSimulation = surfaceHorizon === predictionHorizon
+        ? simulation
+        : simulateJointProbability({
+            factors: risks,
+            horizon: surfaceHorizon,
+            modelParameters,
+            useCorrelation,
+            severity,
+            marketMultipliers,
+            samples: Number(process.env.MONTE_CARLO_SURFACE_SAMPLES || 50000),
+            seed: `${profile.address}:${surfaceHorizon}:${risks.map((risk) => risk.id).join(",")}:${severity}:${useCorrelation}`
+          });
+      return [surfaceHorizon, {
+        jointProbability: risks.length ? surfaceSimulation.allSelectedProbability : 0,
+        anySelectedProbability: risks.length ? surfaceSimulation.anySelectedProbability : 0,
+        atLeastTwoProbability: risks.length ? surfaceSimulation.atLeastTwoProbability : 0,
+        confidence95: risks.length ? surfaceSimulation.confidence95 : { low: 0, high: 0 }
+      }];
+    })
+  );
+  const pairs = simulation.correlation.diagnostics.map((dependency) => {
+    const left = risks.find((risk) => risk.id === dependency.factorIds[0]);
+    const right = risks.find((risk) => risk.id === dependency.factorIds[1]);
+    const strength = Math.abs(dependency.correlation);
+    return {
+      factors: [left?.name || dependency.factorIds[0], right?.name || dependency.factorIds[1]],
+      factorIds: dependency.factorIds,
+      tailDependence: dependency.correlation,
+      observedPhi: dependency.observedPhi,
+      jointEventCount: dependency.jointEventCount,
+      reliability: dependency.reliability,
+      source: dependency.source,
+      label: strength >= 0.5 ? "Strong" : strength >= 0.25 ? "Moderate" : "Weak"
+    };
+  });
+  const jointProbability = risks.length
+    ? clamp(simulation.allSelectedProbability, 0, 0.75)
+    : 0;
   const lossLoad = risks.reduce((sum, risk) => sum + risk.loss, 0);
   const queueLoad = risks.reduce((sum, risk) => sum + risk.queue, 0);
   const governanceLoad = risks.reduce((sum, risk) => sum + risk.governance, 0);
@@ -648,9 +676,12 @@ function runStress({ profile, factorIds, horizon = "7d", severity = 0.65, useCor
       name: risk.name,
       baseProbability: risk.baseProb,
       thirtyDayProbability: risk.thirtyDayProbability,
-      marginalProbability: risk.marginalProbability,
+      marginalProbability: simulation.marginals[risk.id] ?? risk.marginalProbability,
+      calibratedProbability: risk.marginalProbability,
+      confidence95: risk.confidence95,
       priorSource: risk.priorSource,
       eventCount: risk.eventCount,
+      calibrationObservations: risk.calibrationObservations,
       avgSeverity: risk.avgSeverity
     })),
     severity,
@@ -659,6 +690,12 @@ function runStress({ profile, factorIds, horizon = "7d", severity = 0.65, useCor
     useCorrelation,
     simulateKeeper,
     jointProbability,
+    anySelectedProbability: risks.length ? simulation.anySelectedProbability : 0,
+    atLeastTwoProbability: risks.length ? simulation.atLeastTwoProbability : 0,
+    independentJointProbability: risks.length ? simulation.independentAllProbability : 0,
+    dependenceLift: risks.length ? simulation.dependenceLift : null,
+    jointConfidence95: risks.length ? simulation.confidence95 : { low: 0, high: 0 },
+    horizonSurface,
     expectedBadDebtUsdM: gap,
     queueCongestion: queue,
     governanceExposure: governance,
@@ -666,13 +703,29 @@ function runStress({ profile, factorIds, horizon = "7d", severity = 0.65, useCor
     resilienceScore: score,
     recoveryWindowMinutes: recovery,
     dependencies: pairs.sort((a, b) => b.tailDependence - a.tailDependence),
+    simulation: {
+      method: "Gaussian copula Monte Carlo",
+      samples: simulation.samples,
+      seed: simulation.seed,
+      psdShrinkage: simulation.correlation.psdShrinkage
+    },
     marketSignals,
     model: {
-      name: "Horizon-aware tail dependence prior",
-      version: MODEL_VERSION,
-      calibrationStatus: "uncalibrated",
-      source: "tail_events.json dummy prior + risk_factor_map.json + market collectors + tail-dependence matrix",
+      name: "Calibrated empirical marginals + Gaussian copula",
+      version: modelParameters?.modelVersion || "fallback-prior-v0",
+      calibrationStatus: modelParameters?.status || "fallback",
+      source: "CoinGecko + DefiLlama features, curated event labels, sparse-sample-shrunk event phi matrix",
+      jointDefinition: "All selected factor labels occur within the forecast horizon; they are not guaranteed to belong to one incident.",
+      dependenceLimit: "Binary event-level Phi is used as a shrunk Gaussian-copula correlation proxy; it is not a fitted tetrachoric correlation.",
       tailEventCount: tailEvents.length,
+      latestFeatureDate: modelParameters?.latestFeatureDate || null,
+      labelObservedThrough: modelParameters?.labelObservedThrough || null,
+      warnings: modelParameters?.warnings || ["Versioned model parameters were not found; fallback priors are active."],
+      validation: modelValidation ? {
+        ...modelValidation.horizons?.[predictionHorizon]?.any,
+        metadata: modelValidation.metadata
+      } : null,
+      confidenceType: "contract metadata and evidence coverage",
       confidence
     }
   };
@@ -899,6 +952,9 @@ createServer(async (req, res) => {
       return await handleProfile(url, res);
     }
     if (req.method === "GET" && url.pathname === "/api/market/snapshot") return await handleMarketSnapshot(url, res);
+    if (req.method === "GET" && url.pathname === "/api/model/validation") {
+      return sendJson(res, 200, modelValidation || { error: "Model validation has not been generated." });
+    }
     if (req.method === "POST" && url.pathname === "/api/stress/run") return await handleStress(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/classify") return await handleClassify(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/explain") return await handleExplain(req, res);

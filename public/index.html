@@ -111,7 +111,7 @@
           </div>
           <div class="hero-metrics">
             <div>
-              <span>Joint Tail Probability</span>
+              <span>All-Selected Joint Probability</span>
               <strong id="jointProbability">3.74%</strong>
             </div>
             <div>
@@ -227,6 +227,18 @@
                 <span id="dependencySource">Single-factor prior + pair coupling</span>
               </div>
               <div class="dependency-list" id="dependencyList"></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="panel-head compact">
+                <div>
+                  <p class="eyebrow">Model Validation</p>
+                  <h3>Walk-Forward Calibration</h3>
+                </div>
+                <span id="validationVersion">Not available</span>
+              </div>
+              <div class="validation-summary" id="validationSummary"></div>
+              <div class="calibration-chart" id="calibrationChart" aria-label="Calibration curve"></div>
             </div>
           </section>
         </section>
