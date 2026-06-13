@@ -4,6 +4,7 @@ data/generated/audits/
 .venv-audit/
 data/generated/slither-workspaces/
 data/generated/slither-results/
+data/generated/agent-reports/
 !data/generated/.gitkeep
 .env
 *.log

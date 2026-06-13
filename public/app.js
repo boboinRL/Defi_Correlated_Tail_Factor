@@ -104,6 +104,10 @@ const els = {
   slither: document.querySelector("#slitherButton"),
   slitherStatus: document.querySelector("#slitherStatus"),
   slitherReport: document.querySelector("#slitherReport"),
+  fullAudit: document.querySelector("#fullAuditButton"),
+  fullAuditStatus: document.querySelector("#fullAuditStatus"),
+  fullAuditReport: document.querySelector("#fullAuditReport"),
+  fullAuditDownload: document.querySelector("#fullAuditDownload"),
   agentStatus: document.querySelector("#agentStatus"),
   contract: document.querySelector("#contractSelect"),
   icon: document.querySelector("#protocolIcon"),
@@ -162,6 +166,7 @@ const state = {
   latestResult: null,
   auditMemoKey: "",
   reconKey: "",
+  fullAuditResult: null,
   requestId: 0,
   locale: localStorage.getItem("tail-risk-locale") || "en",
   horizon: localStorage.getItem("tail-risk-horizon") || "7d"
@@ -225,6 +230,15 @@ const zh = {
   "Contract Reconnaissance": "合约侦察",
   "Run Reconnaissance": "运行合约侦察",
   "Build a traceable evidence bundle from verified source, ABI, proxy slots, bytecode, and function signatures.": "从验证源码、ABI、代理槽位、字节码和函数签名构建可追溯证据包。",
+  "Audit Agent · Full Pipeline": "审计 Agent · 完整流程",
+  "Autonomous Contract Audit": "自主智能合约审计",
+  "Run Full Audit": "运行完整审计",
+  "Download JSON": "下载 JSON",
+  "One run collects evidence, executes Slither, triages findings, builds attack paths, and performs multi-round GLM review.": "一次运行即可收集证据、执行 Slither、筛选发现、构建攻击路径并完成 GLM 多轮复核。",
+  "Audit Agent · Phase 2": "审计 Agent · 第二阶段",
+  "Static Analysis & Finding Triage": "静态分析与发现筛选",
+  "Run Slither Scan": "运行 Slither 扫描",
+  "Run Slither against the verified source evidence, then map candidate findings to tail-risk factors.": "对已验证源码运行 Slither，并将候选发现映射到尾部风险因子。",
   "Code Security": "代码安全",
   "Operational Resilience": "运营韧性",
   "Market Stability": "市场稳定性",
@@ -252,7 +266,7 @@ function translateStaticUi() {
     ".search-card .eyebrow", ".search-card h2", ".search-card > div:first-child > p:last-child",
     ".search-form button", "#searchStatus", "#agentStatus", ".hero-band .eyebrow", ".hero-band h2", ".hero-band > div:first-child > p:last-child",
     ".hero-metrics span", ".control-panel .panel-head .eyebrow", ".control-panel .panel-head h3",
-    "#glmFactorButton", "#glmAuditButton", "#glmAuditStatus", "#reconButton", "#reconStatus", "#resetButton", ".horizon-block > span", ".slider-label span", ".switch-row span",
+    "#glmFactorButton", "#glmAuditButton", "#glmAuditStatus", "#fullAuditButton", "#fullAuditDownload", "#fullAuditStatus", "#reconButton", "#reconStatus", "#slitherButton", "#slitherStatus", "#resetButton", ".horizon-block > span", ".slider-label span", ".switch-row span",
     ".probability-orb small", ".risk-summary .eyebrow", ".metric-grid span",
     ".chart-card .eyebrow", ".chart-card h3", "#dependencySource", "#validationVersion",
     ".section-title span", ".audit-card > p", ".timeline-card .eyebrow", ".timeline-card h3"
@@ -617,6 +631,16 @@ function clearSlitherReport() {
     : "Run Slither against the verified source evidence, then map candidate findings to tail-risk factors.";
 }
 
+function clearFullAuditReport() {
+  if (!els.fullAuditReport) return;
+  state.fullAuditResult = null;
+  els.fullAuditDownload.hidden = true;
+  els.fullAuditReport.innerHTML = "";
+  els.fullAuditStatus.textContent = isZh()
+    ? "一次运行即可收集证据、执行 Slither、筛选发现、构建攻击路径并完成 GLM 多轮复核。"
+    : "One run collects evidence, executes Slither, triages findings, builds attack paths, and performs multi-round GLM review.";
+}
+
 function reconList(items, emptyText) {
   if (!items?.length) return `<div class="empty">${escapeHtml(emptyText)}</div>`;
   return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
@@ -789,6 +813,128 @@ async function runSlitherAudit() {
       : `Slither scan failed: ${error.message}`;
   } finally {
     els.slither.disabled = false;
+  }
+}
+
+function verdictLabel(verdict) {
+  const labels = {
+    "credible-candidate": isZh() ? "可信候选" : "Credible candidate",
+    "likely-benign-pattern": isZh() ? "疑似正常模式" : "Likely benign pattern",
+    "needs-manual-review": isZh() ? "需要人工复核" : "Manual review"
+  };
+  return labels[verdict] || verdict;
+}
+
+function renderFullAuditReport(report) {
+  const reviewById = new Map((report.aiReview?.findings || []).map((item) => [item.clusterId, item]));
+  const queue = (report.reviewQueue || []).slice(0, 16);
+  const factorNames = {
+    oracle: "Oracle",
+    "dex-liquidity": "DEX Liquidity",
+    liquidity: "DEX Liquidity",
+    volatility: "Volatility",
+    keeper: "Keeper",
+    governance: "Governance",
+    gas: "Gas",
+    mev: "MEV",
+    stablecoin: "Stablecoin"
+  };
+  const aiSource = report.aiReview?.source || "deterministic fallback";
+  els.fullAuditDownload.href = `/api/audit/report/${report.chainId}/${report.address}`;
+  els.fullAuditDownload.hidden = false;
+  els.fullAuditDownload.textContent = isZh() ? "下载 JSON" : "Download JSON";
+  els.fullAuditStatus.textContent = isZh()
+    ? `审计完成 · ${report.status} · ${aiSource} · 报告 ${report.reportId}`
+    : `Audit completed · ${report.status} · ${aiSource} · Report ${report.reportId}`;
+  els.fullAuditReport.innerHTML = `
+    <div class="audit-overview">
+      <div><span>${isZh() ? "审查等级" : "Review Level"}</span><strong>${escapeHtml(report.executiveRisk)}</strong></div>
+      <div><span>${isZh() ? "原始发现" : "Raw Findings"}</span><strong>${report.summary?.rawFindings || 0}</strong></div>
+      <div><span>${isZh() ? "复核队列" : "Review Queue"}</span><strong>${report.summary?.reviewQueue || 0}</strong></div>
+      <div><span>${isZh() ? "可信候选" : "Credible Candidates"}</span><strong>${report.summary?.credibleCandidates || 0}</strong></div>
+    </div>
+    <section class="audit-executive">
+      <div>
+        <span>${isZh() ? "证据哈希" : "Evidence Hash"}</span>
+        <code>${escapeHtml(report.evidence?.evidenceHash || "")}</code>
+      </div>
+      <p>${escapeHtml(report.aiReview?.executiveSummary || "")}</p>
+    </section>
+    <div class="audit-factor-strip">
+      ${(report.factorExposure || []).map((factor) => `
+        <span>${escapeHtml(factorNames[factor.id] || factor.id)} <strong>${factor.count}</strong></span>
+      `).join("") || `<span>${isZh() ? "未映射尾部风险因子" : "No mapped tail-risk factors"}</span>`}
+    </div>
+    <section class="audit-review-list">
+      <div class="audit-section-heading">
+        <div><p class="eyebrow">${isZh() ? "复核队列" : "Review Queue"}</p><h4>${isZh() ? "证据化候选发现" : "Evidence-backed Candidates"}</h4></div>
+        <span>${queue.length} / ${report.summary?.reviewQueue || 0}</span>
+      </div>
+      ${queue.map((item) => {
+        const ai = reviewById.get(item.clusterId);
+        const verdict = ai?.verdict || item.deterministicVerdict;
+        return `
+          <article class="audit-candidate verdict-${verdict}">
+            <div class="candidate-head">
+              <div>
+                <strong>${escapeHtml(item.title)}</strong>
+                <span>${escapeHtml(item.maxImpact)} · ${escapeHtml(item.confidence)} · ${item.occurrenceCount}x</span>
+              </div>
+              <b>${escapeHtml(verdictLabel(verdict))}</b>
+            </div>
+            <p>${escapeHtml(ai?.rationale || item.description)}</p>
+            <code>${escapeHtml(item.location?.file || "")}${item.location?.line ? `:${item.location.line}` : ""}</code>
+            <pre>${escapeHtml(item.evidenceExcerpt?.text || "")}</pre>
+            <div class="finding-factors">${(item.riskFactors || []).map((factor) => `<span>${factorNames[factor] || factor}</span>`).join("")}</div>
+            <small><strong>${isZh() ? "建议测试：" : "Recommended test: "}</strong>${escapeHtml(ai?.recommendedTest || item.remediation)}</small>
+          </article>
+        `;
+      }).join("")}
+    </section>
+    <div class="audit-report-grid">
+      <section>
+        <h4>${isZh() ? "跨因子机制链" : "Cross-factor Chains"}</h4>
+        ${reconList(report.aiReview?.crossFactorChains || [], isZh() ? "没有生成机制链。" : "No mechanism chain was generated.")}
+      </section>
+      <section>
+        <h4>${isZh() ? "立即行动" : "Immediate Actions"}</h4>
+        ${reconList(report.aiReview?.immediateActions || [], isZh() ? "没有生成行动项。" : "No action was generated.")}
+      </section>
+    </div>
+    <div class="recon-warning">
+      <strong>${isZh() ? "审计边界" : "Audit Boundary"}</strong>
+      <p>${isZh() ? "可信候选仍不等于已确认漏洞。最终确认需要主网分叉测试、部署状态验证和协议不变量检查。" : "A credible candidate is still not a confirmed vulnerability. Final confirmation requires fork tests, deployed-state validation, and protocol-invariant checks."}</p>
+    </div>
+  `;
+}
+
+async function runFullAudit() {
+  const profile = state.selectedProfile;
+  if (!profile) return;
+  const key = profileKey(profile);
+  els.fullAudit.disabled = true;
+  els.fullAuditStatus.textContent = isZh()
+    ? "Audit Agent 正在收集证据、编译源码、运行静态分析并进行多轮复核。这通常需要 10-90 秒..."
+    : "Audit Agent is collecting evidence, compiling source, running static analysis, and performing multi-round review. This usually takes 10-90 seconds...";
+  try {
+    const data = await api("/api/audit/full", {
+      method: "POST",
+      body: JSON.stringify({
+        chainId: profile.chainId,
+        address: profile.address,
+        profile,
+        locale: state.locale
+      })
+    });
+    if (key !== profileKey(state.selectedProfile)) return clearFullAuditReport();
+    state.fullAuditResult = data.report;
+    renderFullAuditReport(data.report);
+  } catch (error) {
+    els.fullAuditStatus.textContent = isZh()
+      ? `完整审计失败：${error.message}`
+      : `Full audit failed: ${error.message}`;
+  } finally {
+    els.fullAudit.disabled = false;
   }
 }
 
@@ -1133,6 +1279,7 @@ els.searchResults.addEventListener("click", (event) => {
   renderRiskGrid(profile);
   clearReconReport();
   clearSlitherReport();
+  clearFullAuditReport();
   setStatus(`Using ${profile.name}. Stress engine refreshed.`);
   runStress();
 });
@@ -1142,6 +1289,7 @@ els.contract.addEventListener("change", () => {
   renderRiskGrid(state.selectedProfile);
   clearReconReport();
   clearSlitherReport();
+  clearFullAuditReport();
   setAgentStatus(isZh() ? "合约已切换。点击“询问 GLM-5.1”获取推荐风险因子。" : "Contract changed. Use Ask GLM-5.1 to classify recommended factors.", "");
   runStress();
 });
@@ -1155,6 +1303,7 @@ els.language.addEventListener("change", () => {
     input.checked = selectedIds.has(input.value);
   });
   if (state.latestResult) renderResult(state.latestResult);
+  if (state.fullAuditResult) renderFullAuditReport(state.fullAuditResult);
   setAgentStatus(isZh() ? "语言已切换为简体中文。" : "Language switched to English.", "ok");
 });
 els.severity.addEventListener("input", runStress);
@@ -1172,6 +1321,7 @@ els.glmFactor.addEventListener("click", applyGlmFactors);
 els.glmAudit.addEventListener("click", generateGlmAudit);
 els.recon.addEventListener("click", runReconnaissance);
 els.slither.addEventListener("click", runSlitherAudit);
+els.fullAudit.addEventListener("click", runFullAudit);
 els.reset.addEventListener("click", resetScenario);
 els.riskGrid.addEventListener("change", runStress);
 

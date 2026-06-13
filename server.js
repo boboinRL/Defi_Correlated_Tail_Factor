@@ -1,11 +1,12 @@
 import { createServer } from "node:http";
-import { createReadStream, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import { extname, join, normalize } from "node:path";
 import { promisify } from "node:util";
 import { networkInterfaces } from "node:os";
 import { simulateJointProbability } from "./lib/tail-model.js";
+import { buildDeterministicAuditReport, persistAuditReport } from "./lib/audit-agent.js";
 
 const port = Number(process.env.PORT || 3000);
 const root = join(process.cwd(), "public");
@@ -131,6 +132,7 @@ const eventPriors = buildEventPriors(tailEvents);
 const marketCache = new Map();
 const glmAuditCache = new Map();
 const reconnaissanceCache = new Map();
+const fullAuditCache = new Map();
 
 function localIps() {
   return Object.values(networkInterfaces())
@@ -1176,6 +1178,200 @@ async function handleSlitherAudit(req, res) {
   return sendJson(res, 200, { report });
 }
 
+function normalizeAgentReview(value, fallback = {}) {
+  const allowed = new Set(["credible-candidate", "likely-benign-pattern", "needs-manual-review"]);
+  const findings = Array.isArray(value?.findings) ? value.findings.slice(0, 24).map((item) => ({
+    clusterId: compactText(item?.clusterId, "", 240),
+    verdict: allowed.has(item?.verdict) ? item.verdict : "needs-manual-review",
+    confidence: clamp(Number(item?.confidence ?? 0.5), 0, 1),
+    rationale: compactText(item?.rationale, "Manual validation is required.", 420),
+    exploitPreconditions: compactList(item?.exploitPreconditions, [], 5, 180),
+    recommendedTest: compactText(item?.recommendedTest, "Add a focused regression test for the reported path.", 300)
+  })).filter((item) => item.clusterId) : (fallback.findings || []);
+  return {
+    executiveSummary: compactText(value?.executiveSummary, fallback.executiveSummary || "AI review was not available.", 720),
+    findings,
+    crossFactorChains: compactList(value?.crossFactorChains, fallback.crossFactorChains || [], 6, 320),
+    immediateActions: compactList(value?.immediateActions, fallback.immediateActions || [], 8, 260)
+  };
+}
+
+function fallbackAgentReview(report, reason = "") {
+  return {
+    source: "deterministic fallback",
+    model: "local audit rules",
+    reason,
+    executiveSummary: `The deterministic review produced ${report.summary.reviewQueue} prioritized clusters. Static findings remain unconfirmed until their preconditions are tested against protocol invariants.`,
+    findings: report.reviewQueue.slice(0, 12).map((item) => ({
+      clusterId: item.clusterId,
+      verdict: item.deterministicVerdict,
+      confidence: item.deterministicVerdict === "likely-benign-pattern" ? 0.72 : 0.52,
+      rationale: item.deterministicVerdict === "likely-benign-pattern"
+        ? "The detector matches a common framework or explicit-user asset-flow pattern; retain it for manual confirmation."
+        : "The reported source path is economically or operationally sensitive and needs a targeted test.",
+      exploitPreconditions: [
+        "The reported entry point must be externally reachable in the deployed configuration.",
+        "Protocol authorization and state invariants must permit the detector-reported sink."
+      ],
+      recommendedTest: item.remediation
+    })),
+    crossFactorChains: report.attackPaths.slice(0, 5).map((path) =>
+      `${path.entryPoint} -> ${path.sink} -> ${path.riskFactors.join(" + ") || "contract-state"}`
+    ),
+    immediateActions: [
+      "Reproduce credible high-impact candidates on a mainnet fork.",
+      "Validate proxy initialization and upgrade authorization against the deployed implementation.",
+      "Convert confirmed issues into regression tests before proposing code changes."
+    ]
+  };
+}
+
+async function runGlmAuditRounds(report, locale) {
+  const fallback = fallbackAgentReview(report);
+  if (!glmApiKey) return fallbackAgentReview(report, "GLM_API_KEY is not configured.");
+  const evidence = {
+    contract: report.contract,
+    executiveRisk: report.executiveRisk,
+    evidence: report.evidence,
+    reviewQueue: report.reviewQueue.slice(0, 16).map((item) => ({
+      clusterId: item.clusterId,
+      detector: item.detector,
+      impact: item.maxImpact,
+      confidence: item.confidence,
+      priorityScore: item.priorityScore,
+      deterministicVerdict: item.deterministicVerdict,
+      location: item.location,
+      description: item.description,
+      evidenceExcerpt: item.evidenceExcerpt,
+      riskFactors: item.riskFactors
+    }))
+  };
+  const language = locale === "zh-CN" ? "Simplified Chinese" : "English";
+  try {
+    const analystResponse = await fetchJson(glmBaseUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${glmApiKey}` },
+      body: JSON.stringify({
+        model: glmModel,
+        messages: [
+          {
+            role: "system",
+            content: [
+              "You are the primary smart-contract audit analyst.",
+              "Use only the supplied source excerpts and static-analysis evidence.",
+              "Do not invent call paths, deployed state, exploit success, or financial loss.",
+              "Return strict JSON: executiveSummary, findings, crossFactorChains, immediateActions.",
+              "Each finding needs clusterId, verdict, confidence, rationale, exploitPreconditions, recommendedTest.",
+              "Allowed verdicts: credible-candidate, likely-benign-pattern, needs-manual-review.",
+              `Write in ${language}.`
+            ].join(" ")
+          },
+          { role: "user", content: JSON.stringify(evidence) }
+        ],
+        response_format: { type: "json_object" }
+      })
+    }, glmTimeoutMs);
+    const analyst = normalizeAgentReview(
+      JSON.parse(analystResponse?.choices?.[0]?.message?.content || "{}"),
+      fallback
+    );
+
+    const criticResponse = await fetchJson(glmBaseUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${glmApiKey}` },
+      body: JSON.stringify({
+        model: glmModel,
+        messages: [
+          {
+            role: "system",
+            content: [
+              "You are the adversarial audit reviewer.",
+              "Challenge overclaims, identify likely false positives, and demand explicit exploit preconditions.",
+              "You may downgrade a verdict but cannot change source evidence, detector output, or locations.",
+              "Return the same strict JSON schema as the analyst.",
+              `Write in ${language}.`
+            ].join(" ")
+          },
+          { role: "user", content: JSON.stringify({ evidence, analystReview: analyst }) }
+        ],
+        response_format: { type: "json_object" }
+      })
+    }, glmTimeoutMs);
+    const critic = normalizeAgentReview(
+      JSON.parse(criticResponse?.choices?.[0]?.message?.content || "{}"),
+      analyst
+    );
+    return {
+      source: "GLM multi-round review",
+      model: glmModel,
+      analyst,
+      critic,
+      executiveSummary: critic.executiveSummary,
+      findings: critic.findings,
+      crossFactorChains: critic.crossFactorChains,
+      immediateActions: critic.immediateActions
+    };
+  } catch (error) {
+    return fallbackAgentReview(report, error.message);
+  }
+}
+
+async function handleFullAudit(req, res) {
+  const body = await parseBody(req);
+  const chainId = Number(body.chainId || 1);
+  const address = String(body.address || "").toLowerCase();
+  if (!isAddress(address)) return sendJson(res, 400, { error: "A valid contract address is required." });
+  const cacheKey = `${chainId}:${address}:${body.locale || "en"}`;
+  const cached = fullAuditCache.get(cacheKey);
+  if (!body.force && cached && Date.now() - cached.timestamp < 15 * 60 * 1000) {
+    return sendJson(res, 200, { report: { ...cached.report, cached: true } });
+  }
+
+  const profile = body.profile || await resolveProfile(chainId, address);
+  const evidencePath = join(auditRoot, `${chainId}-${address}-latest.json`);
+  if (body.force || !existsSync(evidencePath)) {
+    await buildEvidenceBundle(chainId, address, Boolean(body.force));
+  }
+  const script = join(process.cwd(), "scripts", "run-slither-audit.js");
+  await execFileAsync(process.execPath, [script, String(chainId), address], {
+    cwd: process.cwd(),
+    timeout: Number(process.env.SLITHER_TIMEOUT_MS || 180000),
+    maxBuffer: 20 * 1024 * 1024,
+    windowsHide: true
+  });
+  const evidence = JSON.parse(readFileSync(evidencePath, "utf8"));
+  const slither = JSON.parse(readFileSync(
+    join(dataRoot, "generated", "slither-results", `${chainId}-${address}-latest.json`),
+    "utf8"
+  ));
+  const report = buildDeterministicAuditReport({ evidence, slither, profile });
+  report.aiReview = await runGlmAuditRounds(report, body.locale || "en");
+  report.status = report.aiReview.source === "GLM multi-round review"
+    ? "multi-round-review-completed"
+    : "deterministic-review-completed";
+  report.cached = false;
+  report.finalReportHash = sha256(JSON.stringify(report));
+  persistAuditReport(process.cwd(), report);
+  fullAuditCache.set(cacheKey, { timestamp: Date.now(), report });
+  return sendJson(res, 200, { report });
+}
+
+function handleLatestAuditReport(url, res) {
+  const match = url.pathname.match(/^\/api\/audit\/report\/(\d+)\/(0x[a-fA-F0-9]{40})$/);
+  if (!match) return sendJson(res, 400, { error: "Expected /api/audit/report/:chainId/:address" });
+  const [, chainId, rawAddress] = match;
+  const address = rawAddress.toLowerCase();
+  const path = join(dataRoot, "generated", "agent-reports", `${chainId}-${address}-latest.json`);
+  if (!existsSync(path)) return sendJson(res, 404, { error: "No completed audit report is available." });
+  const report = readFileSync(path, "utf8");
+  res.writeHead(200, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Content-Disposition": `attachment; filename="audit-${chainId}-${address.slice(2, 10)}.json"`,
+    "Cache-Control": "no-store"
+  });
+  res.end(report);
+}
+
 function deterministicClassification(profile) {
   const factorIds = inferRiskFactorIds(profile);
   return {
@@ -1555,9 +1751,13 @@ createServer(async (req, res) => {
         loadJson("model_validation.json", null) || { error: "Model validation has not been generated." }
       );
     }
+    if (req.method === "GET" && /^\/api\/audit\/report\/\d+\/0x[a-fA-F0-9]{40}$/.test(url.pathname)) {
+      return handleLatestAuditReport(url, res);
+    }
     if (req.method === "POST" && url.pathname === "/api/stress/run") return await handleStress(req, res);
     if (req.method === "POST" && url.pathname === "/api/audit/recon") return await handleReconnaissance(req, res);
     if (req.method === "POST" && url.pathname === "/api/audit/slither") return await handleSlitherAudit(req, res);
+    if (req.method === "POST" && url.pathname === "/api/audit/full") return await handleFullAudit(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/classify") return await handleClassify(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/audit") return await handleAuditMemo(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/explain") return await handleExplain(req, res);

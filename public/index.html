@@ -286,6 +286,23 @@
           </article>
         </section>
 
+        <section class="timeline-card full-audit-card" id="fullAudit">
+          <div class="panel-head compact">
+            <div>
+              <p class="eyebrow">Audit Agent · Full Pipeline</p>
+              <h3>Autonomous Contract Audit</h3>
+            </div>
+            <div class="audit-actions">
+              <a class="ghost-button" id="fullAuditDownload" href="#" hidden>Download JSON</a>
+              <button class="primary-button" id="fullAuditButton" type="button">Run Full Audit</button>
+            </div>
+          </div>
+          <div class="audit-progress" id="fullAuditStatus">
+            One run collects evidence, executes Slither, triages findings, builds attack paths, and performs multi-round GLM review.
+          </div>
+          <div class="full-audit-report" id="fullAuditReport"></div>
+        </section>
+
         <section class="timeline-card recon-card" id="recon">
           <div class="panel-head compact">
             <div>
