@@ -95,6 +95,9 @@ const els = {
   searchStatus: document.querySelector("#searchStatus"),
   searchResults: document.querySelector("#searchResults"),
   glmFactor: document.querySelector("#glmFactorButton"),
+  glmAudit: document.querySelector("#glmAuditButton"),
+  glmAuditStatus: document.querySelector("#glmAuditStatus"),
+  glmAuditMemo: document.querySelector("#glmAuditMemo"),
   agentStatus: document.querySelector("#agentStatus"),
   contract: document.querySelector("#contractSelect"),
   icon: document.querySelector("#protocolIcon"),
@@ -151,6 +154,7 @@ const state = {
   profiles: [],
   selectedProfile: null,
   latestResult: null,
+  auditMemoKey: "",
   requestId: 0,
   locale: localStorage.getItem("tail-risk-locale") || "en",
   horizon: localStorage.getItem("tail-risk-horizon") || "7d"
@@ -206,6 +210,10 @@ const zh = {
   "Model Validation": "模型验证",
   "Walk-Forward Calibration": "滚动前推校准",
   "Not available": "暂无数据",
+  "AI Analysis": "AI 分析",
+  "GLM Risk Memo": "GLM 风险备忘录",
+  "Generate AI Risk Memo": "生成 AI 风险备忘录",
+  "Generate a structured explanation, mechanism chain, mitigations, monitoring signals, and limitations for the current scenario.": "为当前场景生成结构化解释、机制链、缓解措施、监控指标和模型限制。",
   "Code Security": "代码安全",
   "Operational Resilience": "运营韧性",
   "Market Stability": "市场稳定性",
@@ -233,7 +241,7 @@ function translateStaticUi() {
     ".search-card .eyebrow", ".search-card h2", ".search-card > div:first-child > p:last-child",
     ".search-form button", "#searchStatus", "#agentStatus", ".hero-band .eyebrow", ".hero-band h2", ".hero-band > div:first-child > p:last-child",
     ".hero-metrics span", ".control-panel .panel-head .eyebrow", ".control-panel .panel-head h3",
-    "#glmFactorButton", "#resetButton", ".horizon-block > span", ".slider-label span", ".switch-row span",
+    "#glmFactorButton", "#glmAuditButton", "#glmAuditStatus", "#resetButton", ".horizon-block > span", ".slider-label span", ".switch-row span",
     ".probability-orb small", ".risk-summary .eyebrow", ".metric-grid span",
     ".chart-card .eyebrow", ".chart-card h3", "#dependencySource", "#validationVersion",
     ".section-title span", ".audit-card > p", ".timeline-card .eyebrow", ".timeline-card h3"
@@ -266,6 +274,15 @@ function money(value) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function grade(score) {
@@ -431,6 +448,11 @@ async function runStress() {
     });
     if (requestId !== state.requestId) return;
     state.latestResult = result;
+    state.auditMemoKey = "";
+    els.glmAuditMemo.innerHTML = "";
+    els.glmAuditStatus.textContent = isZh()
+      ? "场景已更新，可以生成新的 GLM 风险备忘录。"
+      : "Scenario updated. Generate a new GLM risk memo.";
     renderResult(result);
   } catch (error) {
     setStatus(`Stress engine failed: ${error.message}`, "warn");
@@ -480,6 +502,91 @@ async function applyGlmFactors() {
     setAgentStatus(`GLM factor selection failed: ${error.message}`, "warn");
   } finally {
     els.glmFactor.disabled = false;
+  }
+}
+
+function auditResultKey(result) {
+  return JSON.stringify({
+    address: result.profile?.address,
+    model: result.model?.version,
+    horizon: result.predictionHorizon,
+    factors: result.risks.map((risk) => risk.id).sort(),
+    severity: result.severity,
+    correlation: result.useCorrelation,
+    keeper: result.simulateKeeper,
+    locale: state.locale
+  });
+}
+
+function memoSection(title, items) {
+  const rows = (items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  return `
+    <section>
+      <h4>${escapeHtml(title)}</h4>
+      <ul>${rows}</ul>
+    </section>
+  `;
+}
+
+function renderAuditMemo(memo) {
+  const sourceLabel = memo.source === "GLM"
+    ? `${memo.model}${memo.cached ? (isZh() ? " · 缓存" : " · cached") : ""}`
+    : (isZh() ? "本地规则回退" : "Local rules fallback");
+  els.glmAuditStatus.textContent = isZh()
+    ? `来源：${sourceLabel}。GLM 仅解释已有证据，不负责计算概率。`
+    : `Source: ${sourceLabel}. GLM explains supplied evidence and does not calculate probabilities.`;
+  els.glmAuditMemo.innerHTML = `
+    <article class="ai-memo-summary">
+      <span>${isZh() ? "执行摘要" : "Executive Summary"}</span>
+      <p>${escapeHtml(memo.executiveSummary || "")}</p>
+    </article>
+    <div class="ai-memo-grid">
+      ${memoSection(isZh() ? "机制链" : "Mechanism Chain", memo.mechanismChain)}
+      ${memoSection(isZh() ? "缓解措施" : "Mitigations", memo.mitigations)}
+      ${memoSection(isZh() ? "监控指标" : "Monitoring Signals", memo.monitoringSignals)}
+      ${memoSection(isZh() ? "限制" : "Limitations", memo.limitations)}
+    </div>
+    ${memo.fallbackReason ? `<div class="ai-memo-warning">${escapeHtml(memo.fallbackReason)}</div>` : ""}
+  `;
+}
+
+async function generateGlmAudit() {
+  const result = state.latestResult;
+  if (!result || !result.risks.length) {
+    els.glmAuditStatus.textContent = isZh()
+      ? "请先选择至少一个风险因子。"
+      : "Select at least one risk factor first.";
+    return;
+  }
+
+  const key = auditResultKey(result);
+  els.glmAudit.disabled = true;
+  els.glmAuditStatus.textContent = isZh()
+    ? "GLM 正在阅读当前场景、统计结果和回测证据..."
+    : "GLM is reading the current scenario, statistical results, and validation evidence...";
+
+  try {
+    const data = await api("/api/agent/audit", {
+      method: "POST",
+      body: JSON.stringify({
+        locale: state.locale,
+        result
+      })
+    });
+    if (key !== auditResultKey(state.latestResult)) {
+      els.glmAuditStatus.textContent = isZh()
+        ? "场景已变化，请重新生成风险备忘录。"
+        : "The scenario changed. Generate the risk memo again.";
+      return;
+    }
+    state.auditMemoKey = key;
+    renderAuditMemo(data.memo || {});
+  } catch (error) {
+    els.glmAuditStatus.textContent = isZh()
+      ? `AI 风险备忘录生成失败：${error.message}`
+      : `AI risk memo failed: ${error.message}`;
+  } finally {
+    els.glmAudit.disabled = false;
   }
 }
 
@@ -856,6 +963,7 @@ els.horizonControl.addEventListener("click", (event) => {
 els.correlation.addEventListener("change", runStress);
 els.keeper.addEventListener("change", runStress);
 els.glmFactor.addEventListener("click", applyGlmFactors);
+els.glmAudit.addEventListener("click", generateGlmAudit);
 els.reset.addEventListener("click", resetScenario);
 els.riskGrid.addEventListener("change", runStress);
 

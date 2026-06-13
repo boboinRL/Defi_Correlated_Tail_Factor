@@ -123,6 +123,7 @@ const riskFactorMap = loadJson("risk_factor_map.json", { default: { riskFactorId
 const marketSources = loadJson("market_sources.json", { protocols: {}, defaults: { coingeckoIds: ["ethereum"], days: 30 }, dune: {} });
 const eventPriors = buildEventPriors(tailEvents);
 const marketCache = new Map();
+const glmAuditCache = new Map();
 
 function localIps() {
   return Object.values(networkInterfaces())
@@ -833,6 +834,101 @@ function normalizeClassification(classification, fallback) {
   };
 }
 
+function compactText(value, fallback = "", maxLength = 320) {
+  const text = typeof value === "string" ? value.trim() : "";
+  return (text || fallback).slice(0, maxLength);
+}
+
+function compactList(value, fallback = [], maxItems = 5, maxLength = 180) {
+  const items = Array.isArray(value) ? value : fallback;
+  return items
+    .map((item) => compactText(item, "", maxLength))
+    .filter(Boolean)
+    .slice(0, maxItems);
+}
+
+function deterministicAuditMemo(body, reason = "") {
+  const result = body.result || {};
+  const profile = result.profile || body.profile || {};
+  const risks = Array.isArray(result.risks) ? result.risks : [];
+  const names = risks.map((risk) => risk.name || risk.id).filter(Boolean);
+  const dependencies = Array.isArray(result.dependencies) ? result.dependencies : [];
+  const strongestPair = dependencies[0];
+  const horizon = result.predictionHorizon || body.horizon || "7d";
+  const joint = Number(result.jointProbability || 0);
+  const any = Number(result.anySelectedProbability || 0);
+  const queue = Number(result.queueCongestion || 0);
+  const coverage = Number(result.liquidationCoverage || 100);
+  const mitigations = [];
+  if (risks.some((risk) => risk.id === "oracle")) {
+    mitigations.push("Define stale-price circuit breakers and a tested fallback-oracle path.");
+  }
+  if (risks.some((risk) => risk.id === "liquidity")) {
+    mitigations.push("Predefine slippage, auction-size, and liquidity-depth escalation thresholds.");
+  }
+  if (risks.some((risk) => ["keeper", "gas"].includes(risk.id))) {
+    mitigations.push("Maintain redundant keepers with adaptive gas bidding and private transaction routing.");
+  }
+  if (risks.some((risk) => risk.id === "governance")) {
+    mitigations.push("Require timelocks, parameter-change bounds, and emergency rollback procedures.");
+  }
+  if (!mitigations.length) mitigations.push("Keep factor thresholds and incident response ownership under review.");
+
+  return {
+    source: "local fallback",
+    model: "local audit rules",
+    cached: false,
+    executiveSummary: `${profile.name || "The selected contract"} has a ${horizon} all-selected joint probability of ${(joint * 100).toFixed(3)}% and an any-factor probability of ${(any * 100).toFixed(2)}%. The result is driven by ${names.join(", ") || "the selected scenario factors"}.`,
+    mechanismChain: [
+      `${names.join(" + ") || "Selected factors"} create the modeled stress path.`,
+      strongestPair
+        ? `${strongestPair.factors?.join(" and ") || "The strongest pair"} has the highest displayed dependence in this scenario.`
+        : "No pair dependence is available because fewer than two factors are selected.",
+      `Modeled queue congestion is ${queue.toFixed(0)}% and liquidation coverage is ${coverage.toFixed(0)}%.`
+    ],
+    mitigations,
+    monitoringSignals: [
+      "Oracle freshness and cross-source price divergence",
+      "DEX depth, slippage, and protocol TVL change",
+      "Keeper inclusion latency and failed transaction rate",
+      "Liquidation queue depth and insurance-buffer utilization"
+    ],
+    limitations: [
+      "GLM explains and classifies the supplied evidence; it does not calculate the probability.",
+      "The current calibration uses a small curated event catalog and remains exploratory.",
+      "All-selected factors occurring in one horizon are not guaranteed to belong to one incident."
+    ],
+    fallbackReason: reason || "GLM_API_KEY is not configured."
+  };
+}
+
+function normalizeAuditMemo(value, fallback, source, model) {
+  return {
+    source,
+    model,
+    cached: false,
+    executiveSummary: compactText(value?.executiveSummary, fallback.executiveSummary, 520),
+    mechanismChain: compactList(value?.mechanismChain, fallback.mechanismChain, 5, 240),
+    mitigations: compactList(value?.mitigations, fallback.mitigations, 5, 240),
+    monitoringSignals: compactList(value?.monitoringSignals, fallback.monitoringSignals, 5, 200),
+    limitations: compactList(value?.limitations, fallback.limitations, 4, 240)
+  };
+}
+
+function auditCacheKey(body) {
+  const result = body.result || {};
+  return JSON.stringify({
+    address: result.profile?.address || body.profile?.address || "",
+    modelVersion: result.model?.version || "",
+    horizon: result.predictionHorizon || body.horizon || "",
+    factors: (result.risks || []).map((risk) => risk.id).sort(),
+    severity: Number(result.severity || body.severity || 0).toFixed(2),
+    correlation: result.useCorrelation !== false,
+    keeper: result.simulateKeeper !== false,
+    locale: body.locale || "en"
+  });
+}
+
 async function handleClassify(req, res) {
   const body = await parseBody(req);
   const profile = body.profile || (isAddress(body.address) ? await resolveProfile(Number(body.chainId || 1), body.address) : null);
@@ -903,6 +999,114 @@ async function handleClassify(req, res) {
     profile,
     classification: normalizeClassification({ ...classification, source: "GLM", model: glmModel }, fallback)
   });
+}
+
+async function handleAuditMemo(req, res) {
+  const body = await parseBody(req);
+  const result = body.result;
+  if (!result?.profile || !Array.isArray(result.risks)) {
+    return sendJson(res, 400, { error: "Expected the latest stress-test result." });
+  }
+
+  const key = auditCacheKey(body);
+  const cached = glmAuditCache.get(key);
+  if (cached && Date.now() - cached.timestamp < 30 * 60 * 1000) {
+    return sendJson(res, 200, { memo: { ...cached.memo, cached: true } });
+  }
+
+  const fallback = deterministicAuditMemo(body);
+  if (!glmApiKey) return sendJson(res, 200, { memo: fallback });
+
+  const compactResult = {
+    contract: {
+      name: result.profile.name,
+      protocol: result.profile.protocol,
+      category: result.profile.category,
+      verified: result.profile.verified,
+      oracle: result.profile.oracle
+    },
+    scenario: {
+      horizon: result.predictionHorizon,
+      severity: result.severity,
+      factors: result.risks.map((risk) => ({ id: risk.id, name: risk.name })),
+      allSelectedJointProbability: result.jointProbability,
+      anySelectedProbability: result.anySelectedProbability,
+      atLeastTwoProbability: result.atLeastTwoProbability,
+      jointConfidence95: result.jointConfidence95,
+      liquidationCoverage: result.liquidationCoverage,
+      expectedBadDebtUsdM: result.expectedBadDebtUsdM,
+      queueCongestion: result.queueCongestion,
+      governanceExposure: result.governanceExposure,
+      recoveryWindowMinutes: result.recoveryWindowMinutes
+    },
+    dependence: (result.dependencies || []).slice(0, 5).map((item) => ({
+      factors: item.factorIds,
+      correlation: item.tailDependence,
+      observedPhi: item.observedPhi,
+      jointEventCount: item.jointEventCount
+    })),
+    model: {
+      version: result.model?.version,
+      calibrationStatus: result.model?.calibrationStatus,
+      tailEventCount: result.model?.tailEventCount,
+      labelObservedThrough: result.model?.labelObservedThrough,
+      validation: result.model?.validation && {
+        observations: result.model.validation.observations,
+        positives: result.model.validation.positives,
+        brierScore: result.model.validation.brierScore,
+        logLoss: result.model.validation.logLoss
+      },
+      warnings: result.model?.warnings
+    }
+  };
+
+  let response;
+  try {
+    response = await fetchJson(glmBaseUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${glmApiKey}`
+      },
+      body: JSON.stringify({
+        model: glmModel,
+        messages: [
+          {
+            role: "system",
+            content: [
+              "You are a DeFi liquidation-resilience audit analyst.",
+              "Use only the supplied contract, scenario, probability, dependence, and validation evidence.",
+              "Do not recalculate, alter, or invent probabilities.",
+              "Return strict JSON with executiveSummary, mechanismChain, mitigations, monitoringSignals, limitations.",
+              "Each list must contain short actionable strings. State uncertainty and data limitations.",
+              `Write in ${body.locale === "zh-CN" ? "Simplified Chinese" : "English"}.`
+            ].join(" ")
+          },
+          {
+            role: "user",
+            content: JSON.stringify(compactResult)
+          }
+        ],
+        response_format: { type: "json_object" }
+      })
+    }, glmTimeoutMs);
+  } catch (error) {
+    return sendJson(res, 200, { memo: deterministicAuditMemo(body, error.message) });
+  }
+
+  const content = response?.choices?.[0]?.message?.content || "{}";
+  let parsed;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return sendJson(res, 200, {
+      memo: deterministicAuditMemo(body, "GLM returned a non-JSON audit response.")
+    });
+  }
+
+  const memo = normalizeAuditMemo(parsed, fallback, "GLM", glmModel);
+  glmAuditCache.set(key, { timestamp: Date.now(), memo });
+  return sendJson(res, 200, { memo });
 }
 
 async function handleExplain(req, res) {
@@ -986,6 +1190,7 @@ createServer(async (req, res) => {
     }
     if (req.method === "POST" && url.pathname === "/api/stress/run") return await handleStress(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/classify") return await handleClassify(req, res);
+    if (req.method === "POST" && url.pathname === "/api/agent/audit") return await handleAuditMemo(req, res);
     if (req.method === "POST" && url.pathname === "/api/agent/explain") return await handleExplain(req, res);
     if (url.pathname.startsWith("/api/")) return sendJson(res, 404, { error: "API route not found" });
     return serveStatic(url, res);

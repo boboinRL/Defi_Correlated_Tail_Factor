@@ -240,6 +240,20 @@
               <div class="validation-summary" id="validationSummary"></div>
               <div class="calibration-chart" id="calibrationChart" aria-label="Calibration curve"></div>
             </div>
+
+            <div class="chart-card ai-memo-card">
+              <div class="panel-head compact">
+                <div>
+                  <p class="eyebrow">AI Analysis</p>
+                  <h3>GLM Risk Memo</h3>
+                </div>
+                <button class="ghost-button" id="glmAuditButton" type="button">Generate AI Risk Memo</button>
+              </div>
+              <div class="ai-memo-status" id="glmAuditStatus">
+                Generate a structured explanation, mechanism chain, mitigations, monitoring signals, and limitations for the current scenario.
+              </div>
+              <div class="ai-memo" id="glmAuditMemo"></div>
+            </div>
           </section>
         </section>
 
