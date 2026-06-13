@@ -466,9 +466,15 @@ async function applyGlmFactors() {
       const risk = riskFactors.find((item) => item.id === id);
       return risk ? (isZh() ? risk.zhName : risk.name) : id;
     }).join(", ") || (isZh() ? "无" : "none");
+    const fallbackNote = data.fallbackReason
+      ? (isZh()
+          ? `GLM 请求未完成，已自动使用本地规则。原因：${data.fallbackReason}`
+          : `GLM request did not complete; local rules were used automatically. Reason: ${data.fallbackReason}`)
+      : "";
     setAgentStatus(isZh()
-      ? `${source} 选择了：${factorNames}。置信度：${confidence}。`
-      : `${source} selected: ${factorNames}. Confidence: ${confidence}. ${data.classification?.rationale || ""}`, "ok");
+      ? `${source} 选择了：${factorNames}。置信度：${confidence}。${fallbackNote}`
+      : `${source} selected: ${factorNames}. Confidence: ${confidence}. ${fallbackNote || data.classification?.rationale || ""}`,
+    data.fallbackReason ? "warn" : "ok");
     await runStress();
   } catch (error) {
     setAgentStatus(`GLM factor selection failed: ${error.message}`, "warn");

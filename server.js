@@ -10,6 +10,7 @@ const etherscanKey = process.env.ETHERSCAN_API_KEY || "";
 const glmApiKey = process.env.GLM_API_KEY || "";
 const glmBaseUrl = process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4/chat/completions";
 const glmModel = process.env.GLM_MODEL || "glm-5.1";
+const glmTimeoutMs = Number(process.env.GLM_TIMEOUT_MS || 60000);
 const coingeckoKey = process.env.COINGECKO_API_KEY || "";
 const duneKey = process.env.DUNE_API_KEY || "";
 const duneQueryId = process.env.DUNE_QUERY_ID || "";
@@ -433,14 +434,19 @@ function profileFromKnown(contract) {
   });
 }
 
-async function fetchJson(url, options = {}) {
+async function fetchJson(url, options = {}, timeoutMs = 8000) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(url, { ...options, signal: controller.signal });
     const text = await response.text();
     if (!response.ok) throw new Error(`HTTP ${response.status}: ${text.slice(0, 180)}`);
     return text ? JSON.parse(text) : {};
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error(`Request timed out after ${Math.round(timeoutMs / 1000)} seconds`);
+    }
+    throw error;
   } finally {
     clearTimeout(timeout);
   }
@@ -834,45 +840,58 @@ async function handleClassify(req, res) {
 
   if (!glmApiKey) return sendJson(res, 200, { profile, classification: deterministicClassification(profile) });
 
-  const response = await fetchJson(glmBaseUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${glmApiKey}`
-    },
-    body: JSON.stringify({
-      model: glmModel,
-      messages: [
-        {
-          role: "system",
-          content: [
-            "Classify a DeFi smart contract for risk-factor mapping.",
-            "Return strict JSON with category, riskFactorIds, confidence, and rationale.",
-            "Allowed riskFactorIds: oracle, liquidity, volatility, keeper, governance, stablecoin, gas, mev.",
-            "Do not estimate probabilities or invent numeric risk scores."
-          ].join(" ")
-        },
-        {
-          role: "user",
-          content: JSON.stringify({
-            name: profile.name,
-            protocol: profile.protocol,
-            category: profile.category,
-            verified: profile.verified,
-            sourceName: profile.sourceName,
-            compilerVersion: profile.compilerVersion,
-            abiAvailable: profile.abiAvailable,
-            sourceCodeAvailable: profile.sourceCodeAvailable
-          })
-        }
-      ],
-      response_format: { type: "json_object" }
-    })
-  });
+  const fallback = deterministicClassification(profile);
+  let response;
+  try {
+    response = await fetchJson(glmBaseUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${glmApiKey}`
+      },
+      body: JSON.stringify({
+        model: glmModel,
+        messages: [
+          {
+            role: "system",
+            content: [
+              "Classify a DeFi smart contract for risk-factor mapping.",
+              "Return strict JSON with category, riskFactorIds, confidence, and rationale.",
+              "Allowed riskFactorIds: oracle, liquidity, volatility, keeper, governance, stablecoin, gas, mev.",
+              "Do not estimate probabilities or invent numeric risk scores."
+            ].join(" ")
+          },
+          {
+            role: "user",
+            content: JSON.stringify({
+              name: profile.name,
+              protocol: profile.protocol,
+              category: profile.category,
+              verified: profile.verified,
+              sourceName: profile.sourceName,
+              compilerVersion: profile.compilerVersion,
+              abiAvailable: profile.abiAvailable,
+              sourceCodeAvailable: profile.sourceCodeAvailable
+            })
+          }
+        ],
+        response_format: { type: "json_object" }
+      })
+    }, glmTimeoutMs);
+  } catch (error) {
+    return sendJson(res, 200, {
+      profile,
+      classification: {
+        ...fallback,
+        source: "local fallback",
+        rationale: `GLM was unavailable, so local contract rules were used. ${error.message}`
+      },
+      fallbackReason: error.message
+    });
+  }
 
   const content = response?.choices?.[0]?.message?.content || "{}";
   let classification;
-  const fallback = deterministicClassification(profile);
   try {
     classification = JSON.parse(content);
   } catch {
