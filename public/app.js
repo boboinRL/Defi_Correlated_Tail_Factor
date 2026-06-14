@@ -515,7 +515,11 @@ async function applyGlmFactors() {
     }).join(", ") || (isZh() ? "无" : "none");
     const fallbackNote = data.fallbackReason
       ? (isZh()
-          ? `GLM 请求未完成，已自动使用本地规则。原因：${data.fallbackReason}`
+          ? data.fallbackCode === "GLM_CODING_QUOTA"
+            ? "GLM Coding Plan 当前没有可用调用额度，已自动使用本地规则。请检查 5 小时或每周额度，以及 API Key 所属账户。"
+            : data.fallbackCode === "GLM_ENDPOINT_OR_BALANCE"
+              ? "当前使用了普通 API 端点。如果这是 Coding Plan Key，请设置 GLM_API_MODE=coding 后重启服务。"
+            : `GLM 请求未完成，已自动使用本地规则。原因：${data.fallbackReason}`
           : `GLM request did not complete; local rules were used automatically. Reason: ${data.fallbackReason}`)
       : "";
     setAgentStatus(isZh()

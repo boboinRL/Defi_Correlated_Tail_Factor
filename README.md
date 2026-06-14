@@ -7,12 +7,19 @@ Ethereum-focused DeFi tail-risk stress testing and evidence-backed smart-contrac
 ```powershell
 cd "E:\DeFi\Tail-Factor"
 $env:GLM_API_KEY="your-key"
+$env:GLM_API_MODE="coding"
 node server.js
 ```
 
 Open `http://localhost:3000`.
 
 API keys must stay in environment variables. Do not place them in frontend files or commit them to Git.
+
+`GLM_API_MODE` defaults to `coding`, which uses the Coding Plan endpoint. Set it to `standard` only when using a regular pay-as-you-go API key:
+
+```powershell
+$env:GLM_API_MODE="standard"
+```
 
 ## Full Audit
 

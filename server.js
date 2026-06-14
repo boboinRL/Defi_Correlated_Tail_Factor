@@ -12,7 +12,12 @@ const port = Number(process.env.PORT || 3000);
 const root = join(process.cwd(), "public");
 const etherscanKey = process.env.ETHERSCAN_API_KEY || "";
 const glmApiKey = process.env.GLM_API_KEY || "";
-const glmBaseUrl = process.env.GLM_BASE_URL || "https://open.bigmodel.cn/api/paas/v4/chat/completions";
+const glmApiMode = (process.env.GLM_API_MODE || "coding").toLowerCase();
+const glmBaseUrl = process.env.GLM_BASE_URL || (
+  glmApiMode === "standard"
+    ? "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+    : "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions"
+);
 const glmModel = process.env.GLM_MODEL || "glm-5.1";
 const glmTimeoutMs = Number(process.env.GLM_TIMEOUT_MS || 60000);
 const coingeckoKey = process.env.COINGECKO_API_KEY || "";
@@ -460,6 +465,41 @@ async function fetchJson(url, options = {}, timeoutMs = 8000) {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function describeGlmError(error) {
+  const message = String(error?.message || error || "");
+  if (/HTTP 429/.test(message) && /1113|余额不足|资源包/.test(message)) {
+    if (glmApiMode === "standard") {
+      return {
+        code: "GLM_ENDPOINT_OR_BALANCE",
+        message: "GLM returned code 1113 on the standard API endpoint. If this is a Coding Plan key, set GLM_API_MODE=coding; otherwise check the standard API balance."
+      };
+    }
+    return {
+      code: "GLM_CODING_QUOTA",
+      message: "The Coding Plan endpoint has no currently available quota. Check the 5-hour or weekly Coding Plan quota and the API key account."
+    };
+  }
+  if (/HTTP 429/.test(message)) {
+    return {
+      code: "GLM_RATE_LIMIT",
+      message: "GLM API rate limit reached. Wait briefly and try again."
+    };
+  }
+  if (/HTTP 401|HTTP 403/.test(message)) {
+    return {
+      code: "GLM_AUTH_FAILED",
+      message: "GLM API authentication failed. Check that GLM_API_KEY contains the complete API Key ID and secret."
+    };
+  }
+  if (/aborted|timeout/i.test(message)) {
+    return {
+      code: "GLM_TIMEOUT",
+      message: "GLM API timed out. Local rules were used instead."
+    };
+  }
+  return { code: "GLM_UNAVAILABLE", message: message.slice(0, 240) };
 }
 
 function sha256(value) {
@@ -1538,14 +1578,16 @@ async function handleClassify(req, res) {
       })
     }, glmTimeoutMs);
   } catch (error) {
+    const glmError = describeGlmError(error);
     return sendJson(res, 200, {
       profile,
       classification: {
         ...fallback,
         source: "local fallback",
-        rationale: `GLM was unavailable, so local contract rules were used. ${error.message}`
+        rationale: `GLM was unavailable, so local contract rules were used. ${glmError.message}`
       },
-      fallbackReason: error.message
+      fallbackReason: glmError.message,
+      fallbackCode: glmError.code
     });
   }
 
@@ -1770,5 +1812,6 @@ createServer(async (req, res) => {
   console.log("DeFi tail-risk dashboard is running:");
   console.log(`  Local:   http://localhost:${port}`);
   for (const ip of localIps()) console.log(`  Phone:   http://${ip}:${port}`);
-  console.log("Optional env: ETHERSCAN_API_KEY, GLM_API_KEY, GLM_MODEL, GLM_BASE_URL, COINGECKO_API_KEY, DUNE_API_KEY, DUNE_QUERY_ID");
+  console.log(`  GLM:     ${glmApiMode} mode (${glmBaseUrl})`);
+  console.log("Optional env: ETHERSCAN_API_KEY, GLM_API_KEY, GLM_API_MODE, GLM_MODEL, GLM_BASE_URL, COINGECKO_API_KEY, DUNE_API_KEY, DUNE_QUERY_ID");
 });
