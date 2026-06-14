@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeFi Correlated Tail Factor - Product Overview</title>
+  <style>
+    :root {
+      --ink: #11213a;
+      --muted: #5d708c;
+      --line: #d8e1ed;
+      --paper: #ffffff;
+      --wash: #f4f7fb;
+      --blue: #2865f0;
+      --cyan: #12afc8;
+      --green: #159b72;
+      --amber: #dc9214;
+      --red: #e2445c;
+      --navy: #142746;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #dce4ee; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; }
+    body { padding: 18px; }
+    .page {
+      position: relative;
+      width: 297mm;
+      height: 210mm;
+      margin: 0 auto 18px;
+      padding: 17mm 19mm 14mm;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 12px 34px rgba(17, 33, 58, .14);
+      page-break-after: always;
+    }
+    .page:last-child { page-break-after: auto; }
+    .topline { position: absolute; inset: 0 0 auto; height: 5mm; background: linear-gradient(90deg, var(--blue) 0 42%, var(--cyan) 42% 67%, var(--green) 67%); }
+    .page-no { position: absolute; right: 19mm; bottom: 8mm; color: #8a9ab0; font-size: 8.5pt; }
+    .brandline { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8mm; }
+    .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 11pt; }
+    .mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 6px; background: var(--blue); color: white; font-weight: 900; }
+    .tag { color: var(--blue); font-size: 8.5pt; font-weight: 800; text-transform: uppercase; }
+    h1, h2, h3, h4, p { margin: 0; }
+    h1 { max-width: 230mm; font-size: 38pt; line-height: 1.04; letter-spacing: 0; }
+    h2 { font-size: 25pt; line-height: 1.08; }
+    h3 { font-size: 13pt; line-height: 1.2; }
+    h4 { font-size: 10pt; }
+    .lead { max-width: 235mm; margin-top: 6mm; color: var(--muted); font-size: 14pt; line-height: 1.48; }
+    .kicker { margin-bottom: 3mm; color: var(--blue); font-size: 9pt; font-weight: 900; text-transform: uppercase; }
+    .sub { margin-top: 3mm; color: var(--muted); font-size: 10.5pt; line-height: 1.45; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3.5mm; }
+    .card { border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+    .pad { padding: 5mm; }
+    .metric strong { display: block; margin-top: 2mm; font-size: 23pt; }
+    .metric span { color: var(--muted); font-size: 8.5pt; font-weight: 700; }
+    .pill { display: inline-block; padding: 1.5mm 2.5mm; border: 1px solid #bdd0fc; border-radius: 3px; background: #eef4ff; color: #2257bd; font-size: 8pt; font-weight: 800; }
+    .pill.green { border-color: #bce6d8; background: #eaf8f3; color: #117756; }
+    .pill.amber { border-color: #f0d397; background: #fff7e6; color: #8b5c0e; }
+    .pill.red { border-color: #f0b9c2; background: #fff0f2; color: #ae2940; }
+    .dark { background: var(--navy); color: white; border-color: var(--navy); }
+    .dark p, .dark .muted { color: #bfd0e7; }
+    .muted { color: var(--muted); }
+    .list { display: grid; gap: 3mm; margin: 4mm 0 0; padding: 0; list-style: none; }
+    .list li { position: relative; padding-left: 5mm; color: var(--muted); font-size: 9.5pt; line-height: 1.4; }
+    .list li::before { content: ""; position: absolute; left: 0; top: 1.5mm; width: 2.3mm; height: 2.3mm; border-radius: 50%; background: var(--blue); }
+    .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4mm; margin-top: 7mm; }
+    .step { position: relative; min-height: 34mm; padding: 5mm 4mm; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
+    .step:not(:last-child)::after { content: "›"; position: absolute; right: -3.3mm; top: 12mm; z-index: 2; color: var(--blue); font-size: 22pt; font-weight: 700; }
+    .step b { display: grid; place-items: center; width: 7mm; height: 7mm; margin-bottom: 3mm; border-radius: 50%; background: var(--blue); color: white; font-size: 9pt; }
+    .step p { margin-top: 2mm; color: var(--muted); font-size: 8.5pt; line-height: 1.35; }
+    .hero-visual { position: absolute; right: 19mm; bottom: 17mm; width: 110mm; height: 68mm; }
+    .orbit { position: absolute; border: 1px solid #bfd0e7; border-radius: 50%; }
+    .orbit.o1 { inset: 5mm 10mm; }
+    .orbit.o2 { inset: 13mm 20mm; }
+    .core { position: absolute; left: 42mm; top: 22mm; display: grid; place-items: center; width: 28mm; height: 28mm; border-radius: 50%; background: var(--navy); color: white; text-align: center; font-size: 8pt; font-weight: 800; }
+    .node { position: absolute; display: grid; place-items: center; width: 18mm; height: 18mm; border: 2px solid white; border-radius: 50%; color: white; font-size: 7.5pt; font-weight: 800; box-shadow: 0 4px 14px rgba(17,33,58,.18); }
+    .n1 { left: 3mm; top: 7mm; background: var(--blue); }
+    .n2 { right: 4mm; top: 4mm; background: var(--cyan); }
+    .n3 { left: 6mm; bottom: 2mm; background: var(--amber); }
+    .n4 { right: 9mm; bottom: 0; background: var(--red); }
+    .cover-copy { width: 145mm; padding-top: 9mm; }
+    .cover-note { position: absolute; left: 19mm; bottom: 18mm; width: 120mm; padding-top: 4mm; border-top: 1px solid var(--line); color: var(--muted); font-size: 9pt; line-height: 1.45; }
+    .dashboard { display: grid; grid-template-columns: 70mm 1fr; gap: 4mm; margin-top: 6mm; padding: 4mm; border: 1px solid #cad6e5; border-radius: 7px; background: var(--wash); }
+    .factor-list { display: grid; gap: 2mm; }
+    .factor { display: flex; align-items: center; justify-content: space-between; padding: 3mm; border: 1px solid #cad6e5; border-radius: 4px; background: white; font-size: 8pt; }
+    .factor.active { border-color: #8db0ff; background: #edf3ff; }
+    .check { width: 4mm; height: 4mm; border: 1px solid #8b9bb0; border-radius: 1px; }
+    .active .check { border-color: var(--blue); background: var(--blue); box-shadow: inset 0 0 0 1mm white; }
+    .risk-panel { padding: 5mm; border-radius: 5px; background: var(--navy); color: white; }
+    .ring { float: left; display: grid; place-items: center; width: 31mm; height: 31mm; margin-right: 5mm; border: 4mm solid var(--red); border-radius: 50%; font-size: 16pt; font-weight: 900; }
+    .mini-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2mm; clear: both; padding-top: 5mm; }
+    .mini-metrics div { padding: 3mm; border: 1px solid #d6dfeb; border-radius: 4px; background: white; }
+    .mini-metrics span { color: var(--muted); font-size: 7pt; }
+    .mini-metrics strong { display: block; margin-top: 1mm; font-size: 12pt; }
+    .formula { padding: 5mm; border-left: 4px solid var(--blue); background: #eef4ff; font-family: Consolas, monospace; font-size: 12pt; line-height: 1.5; }
+    .bars { display: grid; gap: 4mm; margin-top: 5mm; }
+    .bar-row { display: grid; grid-template-columns: 35mm 1fr 18mm; gap: 3mm; align-items: center; font-size: 8.5pt; }
+    .track { height: 4mm; border-radius: 2mm; background: #e6ecf4; overflow: hidden; }
+    .fill { height: 100%; border-radius: inherit; background: var(--blue); }
+    .matrix { display: grid; grid-template-columns: 25mm repeat(5, 1fr); gap: 1px; background: #dce4ef; border: 1px solid #dce4ef; }
+    .matrix div { display: grid; place-items: center; min-height: 8mm; background: white; font-size: 7.5pt; }
+    .matrix .head { color: var(--muted); font-weight: 800; }
+    .matrix .c1 { background: #e8f0ff; }
+    .matrix .c2 { background: #cbdcff; }
+    .matrix .c3 { background: #94b5ff; color: #123b93; font-weight: 800; }
+    .architecture { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; margin-top: 6mm; }
+    .layer { min-height: 87mm; padding: 5mm; border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: 6px; }
+    .layer:nth-child(2) { border-top-color: var(--cyan); }
+    .layer:nth-child(3) { border-top-color: var(--amber); }
+    .layer:nth-child(4) { border-top-color: var(--green); }
+    .layer .num { color: #a1b0c3; font-size: 25pt; font-weight: 900; }
+    .audit-finding { display: grid; grid-template-columns: 24mm 1fr 35mm; gap: 4mm; align-items: center; padding: 4mm; border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 4px; }
+    .audit-finding.high { border-left-color: var(--red); }
+    .audit-finding.benign { border-left-color: var(--green); }
+    .audit-finding p { color: var(--muted); font-size: 8.5pt; line-height: 1.35; }
+    .audit-page .flow { margin-top: 4mm; }
+    .audit-page .step { min-height: 29mm; padding: 3.5mm; }
+    .audit-page .grid-2 { margin-top: 4mm !important; }
+    .audit-page .list { gap: 2.2mm; }
+    .audit-page .audit-finding { padding: 2.5mm; }
+    .audit-page .audit-finding p { font-size: 7.7pt; line-height: 1.25; }
+    .audit-page .dark { padding: 4mm; }
+    .boundary { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+    .yes, .no { padding: 6mm; border-radius: 6px; }
+    .yes { border: 1px solid #b9e2d4; background: #eef9f5; }
+    .no { border: 1px solid #f0c2c9; background: #fff2f4; }
+    .footer-line { position: absolute; left: 19mm; right: 19mm; bottom: 8mm; height: 1px; background: var(--line); }
+    @media print {
+      @page { size: A4 landscape; margin: 0; }
+      html, body { background: white; }
+      body { padding: 0; }
+      .page { margin: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="page">
+    <div class="topline"></div>
+    <div class="brandline"><div class="brand"><span class="mark">TF</span> DeFi Correlated Tail Factor</div><span class="tag">Product Overview · June 2026</span></div>
+    <div class="cover-copy">
+      <p class="kicker">Tail-event intelligence for DeFi</p>
+      <h1>From correlated market shocks to evidence-backed contract audits.</h1>
+      <p class="lead">An integrated research dashboard for estimating multi-factor tail probability, testing liquidation resilience, and running traceable smart-contract audit agents.</p>
+      <div style="display:flex;gap:3mm;margin-top:8mm">
+        <span class="pill">Ethereum-first</span><span class="pill green">Calibrated probabilities</span><span class="pill amber">Autonomous audit pipeline</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="orbit o1"></div><div class="orbit o2"></div>
+      <div class="core">JOINT<br>TAIL RISK</div>
+      <div class="node n1">ORACLE</div><div class="node n2">LIQUIDITY</div>
+      <div class="node n3">KEEPER</div><div class="node n4">GOVERNANCE</div>
+    </div>
+    <p class="cover-note">Built for protocol teams, risk researchers, auditors, and investors who need more than a single risk score: they need the scenario, the dependence structure, the evidence, and the limitations.</p>
+    <div class="footer-line"></div><span class="page-no">01</span>
+  </section>
+
+  <section class="page">
+    <div class="topline"></div>
+    <div class="brandline"><div class="brand"><span class="mark">TF</span> Product Thesis</div><span class="tag">Why it exists</span></div>
+    <p class="kicker">The problem</p>
+    <h2>DeFi failures rarely arrive one factor at a time.</h2>
+    <p class="sub">Liquidation crises emerge from linked mechanisms: price feeds lag, collateral gaps down, DEX depth disappears, gas rises, keepers stall, and governance controls become part of the response surface.</p>
+    <div class="grid-3" style="margin-top:8mm">
+      <article class="card pad">
+        <span class="pill red">Fragmented analytics</span>
+        <h3 style="margin-top:4mm">Market risk and code risk are usually separated</h3>
+        <p class="sub">Probability dashboards ignore contract paths; audit reports rarely quantify joint market conditions.</p>
+      </article>
+      <article class="card pad">
+        <span class="pill amber">False precision</span>
+        <h3 style="margin-top:4mm">A single score hides the mechanism</h3>
+        <p class="sub">Users need factor marginals, dependence, confidence intervals, model versions, and scenario assumptions.</p>
+      </article>
+      <article class="card pad">
+        <span class="pill">Untraceable AI</span>
+        <h3 style="margin-top:4mm">LLMs can overclaim without evidence boundaries</h3>
+        <p class="sub">AI should classify and explain supplied evidence, not invent probabilities, source locations, or exploitability.</p>
+      </article>
+    </div>
+    <div class="card dark pad" style="margin-top:7mm">
+      <p class="kicker" style="color:#75a1ff">Our answer</p>
+      <div class="grid-3">
+        <div><h3>Statistical tail engine</h3><p class="sub">Calibrated marginal probabilities plus factor dependence and Gaussian-copula Monte Carlo.</p></div>
+        <div><h3>Contract-aware scenario builder</h3><p class="sub">Search an Ethereum contract, map its protocol type to relevant factors, and select 1d / 7d / 30d horizons.</p></div>
+        <div><h3>Evidence-backed audit agent</h3><p class="sub">Verified source, proxy resolution, Slither, deterministic triage, GLM analyst review, and downloadable reports.</p></div>
+      </div>
+    </div>
+    <div class="grid-4" style="margin-top:7mm">
+      <div class="metric card pad"><span>Forecast horizons</span><strong>3</strong><small class="muted">1d · 7d · 30d</small></div>
+      <div class="metric card pad"><span>Tail factors</span><strong>8</strong><small class="muted">Market + operations + governance</small></div>
+      <div class="metric card pad"><span>Historical feature rows</span><strong>1,956</strong><small class="muted">Current calibration dataset</small></div>
+      <div class="metric card pad"><span>Audit stages</span><strong>9</strong><small class="muted">Evidence to versioned report</small></div>
+    </div>
+    <div class="footer-line"></div><span class="page-no">02</span>
+  </section>
+
+  <section class="page">
+    <div class="topline"></div>
+    <div class="brandline"><div class="brand"><span class="mark">TF</span> Scenario Intelligence</div><span class="tag">Joint probability engine</span></div>
+    <div class="grid-2">
+      <div>
+        <p class="kicker">Interactive workflow</p>
+        <h2>Build a linked tail-event scenario.</h2>
+        <p class="sub">Users choose a contract, prediction horizon, shock severity, and any combination of risk factors. Reset returns every scenario metric to zero.</p>
+        <div class="dashboard">
+          <div class="factor-list">
+            <div class="factor active"><span class="check"></span><b>Oracle Depeg / Lag</b><strong>3.4%</strong></div>
+            <div class="factor active"><span class="check"></span><b>DEX Liquidity Drain</b><strong>4.5%</strong></div>
+            <div class="factor active"><span class="check"></span><b>Volatility Jump</b><strong>5.2%</strong></div>
+            <div class="factor"><span class="check"></span><b>Keeper Congestion</b><strong>2.9%</strong></div>
+            <div class="factor active"><span class="check"></span><b>Governance Risk</b><strong>2.0%</strong></div>
+          </div>
+          <div>
+            <div class="risk-panel">
+              <div class="ring">4.8%</div>
+              <p class="kicker" style="color:#75a1ff">Current scenario</p>
+              <h3>Oracle + Liquidity + Volatility + Governance</h3>
+              <p class="sub">All-selected probability is calculated by the statistical engine, not by GLM.</p>
+            </div>
+            <div class="mini-metrics">
+              <div><span>Coverage</span><strong>83%</strong></div>
+              <div><span>Capital gap</span><strong>$12.4M</strong></div>
+              <div><span>Queue</span><strong>41%</strong></div>
+              <div><span>Recovery</span><strong>45m</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="kicker">Probability definitions</p>
+        <h3>Three distinct questions, kept separate</h3>
+        <div class="formula" style="margin-top:4mm">
+          P(all selected factors within horizon)<br>
+          P(any selected factor within horizon)<br>
+          P(at least two selected factors within horizon)
+        </div>
+        <ul class="list">
+          <li>Marginal probabilities are estimated independently for each factor and horizon.</li>
+          <li>Historical co-occurrence is converted into a shrunk dependence matrix.</li>
+          <li>A stabilized Gaussian copula simulates correlated factor states.</li>
+          <li>Monte Carlo seeds make repeated calculations reproducible.</li>
+          <li>Confidence intervals communicate sampling uncertainty instead of hiding it.</li>
+        </ul>
+        <div class="card pad" style="margin-top:6mm">
+          <h3>Risk factors</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:2mm;margin-top:3mm">
+            <span class="pill">Oracle</span><span class="pill">Liquidity</span><span class="pill">Volatility</span><span class="pill">Keeper</span>
+            <span class="pill amber">Governance</span><span class="pill amber">Stablecoin</span><span class="pill green">Gas</span><span class="pill green">MEV / OEV</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-line"></div><span class="page-no">03</span>
+  </section>
+
+  <section class="page">
+    <div class="topline"></div>
+    <div class="brandline"><div class="brand"><span class="mark">TF</span> Data & Calibration</div><span class="tag">Transparent model lifecycle</span></div>
+    <div class="grid-2">
+      <div>
+        <p class="kicker">Data pipeline</p>
+        <h2>Historical signals become versioned model parameters.</h2>
+        <div class="flow" style="grid-template-columns:repeat(4,1fr)">
+          <div class="step"><b>1</b><h4>Collect</h4><p>CoinGecko prices and market history; DefiLlama TVL, DEX volume, and stablecoin supply.</p></div>
+          <div class="step"><b>2</b><h4>Label</h4><p>Curated historical black-swan events become factor and horizon labels.</p></div>
+          <div class="step"><b>3</b><h4>Calibrate</h4><p>Rolling windows estimate marginals and empirical co-occurrence.</p></div>
+          <div class="step"><b>4</b><h4>Validate</h4><p>Brier score, log loss, and calibration curves are saved with the model version.</p></div>
+        </div>
+        <div class="card pad" style="margin-top:6mm">
+          <p class="kicker">Current version</p>
+          <h3>empirical-tail-v0.3.0-20260613</h3>
+          <p class="sub">Status: early calibration. The dashboard exposes the version and warnings instead of presenting exploratory estimates as settled truth.</p>
+        </div>
+      </div>
+      <div>
+        <p class="kicker">Example 1-day marginals</p>
+        <div class="bars">
+          <div class="bar-row"><span>Liquidity</span><div class="track"><div class="fill" style="width:100%"></div></div><strong>1.15%</strong></div>
+          <div class="bar-row"><span>Volatility</span><div class="track"><div class="fill" style="width:91%"></div></div><strong>1.05%</strong></div>
+          <div class="bar-row"><span>Oracle</span><div class="track"><div class="fill" style="width:60%"></div></div><strong>0.69%</strong></div>
+          <div class="bar-row"><span>Keeper</span><div class="track"><div class="fill" style="width:51%"></div></div><strong>0.59%</strong></div>
+          <div class="bar-row"><span>Stablecoin</span><div class="track"><div class="fill" style="width:29%"></div></div><strong>0.33%</strong></div>
+          <div class="bar-row"><span>Governance</span><div class="track"><div class="fill" style="width:11%"></div></div><strong>0.13%</strong></div>
+        </div>
+        <p class="kicker" style="margin-top:7mm">Dependence surface</p>
+        <div class="matrix">
+          <div class="head">Factor</div><div class="head">Oracle</div><div class="head">Liquidity</div><div class="head">Volatility</div><div class="head">Keeper</div><div class="head">Gas</div>
+          <div class="head">Oracle</div><div class="c3">1.00</div><div class="c2">linked</div><div class="c2">linked</div><div class="c1">weak</div><div class="c1">weak</div>
+          <div class="head">Liquidity</div><div class="c2">linked</div><div class="c3">1.00</div><div class="c3">strong</div><div class="c2">linked</div><div class="c1">weak</div>
+          <div class="head">Volatility</div><div class="c2">linked</div><div class="c3">strong</div><div class="c3">1.00</div><div class="c2">linked</div><div class="c1">weak</div>
+          <div class="head">Keeper</div><div class="c1">weak</div><div class="c2">linked</div><div class="c2">linked</div><div class="c3">1.00</div><div class="c3">strong</div>
+        </div>
+      </div>
+    </div>
+    <div class="card pad" style="margin-top:7mm;border-left:4px solid var(--amber)">
+      <h3>Calibration warning</h3>
+      <p class="sub">The curated event catalog contains few independent incidents and overlapping horizon labels are serially dependent. Validation currently supports exploratory research, not an unconditional guarantee of future loss frequency.</p>
+    </div>
+    <div class="footer-line"></div><span class="page-no">04</span>
+  </section>
+
+  <section class="page audit-page">
+    <div class="topline"></div>
+    <div class="brandline"><div class="brand"><span class="mark">TF</span> Autonomous Audit Agent</div><span class="tag">Evidence before explanation</span></div>
+    <p class="kicker">One-click full audit</p>
+    <h2>From an Ethereum address to a traceable review queue.</h2>
+    <div class="flow">
+      <div class="step"><b>1</b><h4>Resolve</h4><p>Detect proxy, implementation, admin, beacon, and bytecode evidence.</p></div>
+      <div class="step"><b>2</b><h4>Collect</h4><p>Retrieve verified source and ABI from Sourcify or Etherscan.</p></div>
+      <div class="step"><b>3</b><h4>Analyze</h4><p>Compile with the matching Solidity version and execute Slither.</p></div>
+      <div class="step"><b>4</b><h4>Triage</h4><p>Cluster duplicates, extract source lines, score priority, and map tail factors.</p></div>
+      <div class="step"><b>5</b><h4>Review</h4><p>GLM analyst proposes a verdict; an adversarial GLM reviewer challenges overclaims.</p></div>
+    </div>
+    <div class="grid-2" style="margin-top:7mm">
+      <div>
+        <p class="kicker">Aave V3 Pool example</p>
+        <div class="grid-4">
+          <div class="metric card pad"><span>Raw findings</span><strong>149</strong></div>
+          <div class="metric card pad"><span>Clusters</span><strong>104</strong></div>
+          <div class="metric card pad"><span>Review queue</span><strong>24</strong></div>
+          <div class="metric card pad"><span>Likely benign</span><strong>4</strong></div>
+        </div>
+        <div style="display:grid;gap:3mm;margin-top:5mm">
+          <div class="audit-finding high"><span class="pill red">High</span><div><h4>Upgrade initialization candidate</h4><p>Source excerpt, proxy context, authorization preconditions, and recommended fork test are kept together.</p></div><span class="pill amber">Manual review</span></div>
+          <div class="audit-finding benign"><span class="pill">High</span><div><h4>Explicit user transferFrom pattern</h4><p>Known protocol asset-flow patterns are downgraded but never silently removed from the evidence trail.</p></div><span class="pill green">Likely benign</span></div>
+        </div>
+      </div>
+      <div class="card dark pad">
+        <p class="kicker" style="color:#75a1ff">Report contents</p>
+        <h3>Every final report is versioned and downloadable</h3>
+        <ul class="list">
+          <li>Evidence bundle ID and SHA-256 evidence hash</li>
+          <li>Compiler and Slither versions</li>
+          <li>Finding clusters with file, line, and source excerpts</li>
+          <li>Deterministic verdict and GLM critic verdict</li>
+          <li>Exploit preconditions and recommended tests</li>
+          <li>Cross-factor mechanism chains</li>
+          <li>Immediate actions and explicit limitations</li>
+          <li>Final report hash for traceability</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-line"></div><span class="page-no">05</span>
+  </section>
+
+  <section class="page">
+    <div class="topline"></div>
+    <div class="brandline"><div class="brand"><span class="mark">TF</span> System Architecture</div><span class="tag">Separation of responsibilities</span></div>
+    <p class="kicker">End-to-end design</p>
+    <h2>Each component does the job it can defend.</h2>
+    <div class="architecture">
+      <article class="layer">
+        <span class="num">01</span><h3>Data Sources</h3>
+        <ul class="list">
+          <li>Ethereum RPC</li><li>Sourcify</li><li>Etherscan</li><li>CoinGecko</li><li>DefiLlama</li><li>Curated tail events</li>
+        </ul>
+      </article>
+      <article class="layer">
+        <span class="num">02</span><h3>Deterministic Engines</h3>
+        <ul class="list">
+          <li>Contract metadata resolver</li><li>Risk factor mapping</li><li>Rolling marginals</li><li>Dependence matrix</li><li>Copula Monte Carlo</li><li>Slither triage</li>
+        </ul>
+      </article>
+      <article class="layer">
+        <span class="num">03</span><h3>GLM Agent Layer</h3>
+        <ul class="list">
+          <li>Contract classification</li><li>Factor recommendation</li><li>Scenario explanation</li><li>Audit analyst review</li><li>Adversarial critic review</li><li>Remediation narrative</li>
+        </ul>
+      </article>
+      <article class="layer">
+        <span class="num">04</span><h3>User Experience</h3>
+        <ul class="list">
+          <li>English / Chinese UI</li><li>Contract search</li><li>Scenario controls</li><li>Probability heatmap</li><li>Audit review queue</li><li>JSON report download</li>
+        </ul>
+      </article>
+    </div>
+    <div class="card pad" style="margin-top:7mm">
+      <div class="grid-3">
+        <div><span class="pill green">Statistics owns numbers</span><p class="sub">Probabilities, confidence intervals, correlations, validation metrics, and Monte Carlo outputs come from code and data.</p></div>
+        <div><span class="pill">GLM owns interpretation</span><p class="sub">The model classifies, summarizes, challenges, and explains evidence supplied by deterministic systems.</p></div>
+        <div><span class="pill amber">Humans own confirmation</span><p class="sub">Exploitability, severity acceptance, remediation approval, and deployment decisions remain accountable human judgments.</p></div>
+      </div>
+    </div>
+    <div class="footer-line"></div><span class="page-no">06</span>
+  </section>
+
+  <section class="page">
+    <div class="topline"></div>
+    <div class="brandline"><div class="brand"><span class="mark">TF</span> Usage & Boundaries</div><span class="tag">What users can trust</span></div>
+    <div class="grid-2">
+      <div>
+        <p class="kicker">How to use</p>
+        <h2>One dashboard, two complementary workflows.</h2>
+        <div class="card pad" style="margin-top:6mm">
+          <h3>Tail-risk research</h3>
+          <ul class="list">
+            <li>Search or select an Ethereum smart contract.</li>
+            <li>Choose 1d, 7d, or 30d.</li>
+            <li>Select linked factors manually or ask GLM for recommendations.</li>
+            <li>Adjust severity and dependence settings.</li>
+            <li>Read joint probability, confidence, bad-debt, queue, and recovery estimates.</li>
+          </ul>
+        </div>
+        <div class="card pad" style="margin-top:4mm">
+          <h3>Contract audit</h3>
+          <ul class="list">
+            <li>Click <b>Run Full Audit</b>.</li>
+            <li>Inspect evidence-backed candidates and source excerpts.</li>
+            <li>Review GLM analyst and critic reasoning.</li>
+            <li>Download the hashed JSON report.</li>
+            <li>Move credible candidates into fork tests and manual verification.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <p class="kicker">Trust boundaries</p>
+        <div class="boundary" style="margin-top:5mm">
+          <div class="yes">
+            <h3>Designed to provide</h3>
+            <ul class="list">
+              <li>Reproducible scenario calculations</li>
+              <li>Versioned model and evidence metadata</li>
+              <li>Transparent uncertainty and warnings</li>
+              <li>Prioritized audit candidates</li>
+              <li>Traceable AI interpretation</li>
+            </ul>
+          </div>
+          <div class="no">
+            <h3>Does not claim</h3>
+            <ul class="list">
+              <li>Guaranteed future loss frequency</li>
+              <li>Industry-certified correlations</li>
+              <li>Automatic proof of exploitability</li>
+              <li>Complete formal verification</li>
+              <li>Investment or security guarantees</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card dark pad" style="margin-top:7mm">
+          <p class="kicker" style="color:#75a1ff">Local launch</p>
+          <h3 style="font-family:Consolas,monospace">cd "E:\DeFi\Tail-Factor"</h3>
+          <h3 style="font-family:Consolas,monospace;margin-top:2mm">node server.js</h3>
+          <p class="sub">Then open <b>http://localhost:3000</b>. API keys remain in PowerShell environment variables and are never exposed to the frontend.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card pad" style="position:absolute;left:19mm;right:19mm;bottom:18mm;border-left:4px solid var(--blue)">
+      <h3>Product direction</h3>
+      <p class="sub">The next maturity layer is dynamic validation: mainnet-fork exploit tests, deployed-state invariant checks, richer incident labels, and broader protocol coverage. The current product already provides the evidence and model-version foundation required to add those capabilities responsibly.</p>
+    </div>
+    <div class="footer-line"></div><span class="page-no">07</span>
+  </section>
+  <script>
+    const previewPage = Number(new URLSearchParams(location.search).get("page"));
+    if (previewPage) {
+      document.querySelectorAll(".page").forEach((page, index) => {
+        page.style.display = index + 1 === previewPage ? "block" : "none";
+      });
+      document.body.style.padding = "0";
+    }
+  </script>
+</body>
+</html>
