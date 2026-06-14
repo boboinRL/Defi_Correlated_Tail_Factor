@@ -27,6 +27,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     linear-gradient(180deg, #eaf1fb 0, var(--bg) 280px),
     var(--bg);
@@ -194,6 +195,21 @@ input[type="search"]:focus {
   width: min(1440px, 100%);
   margin: 0 auto;
   padding: 22px;
+}
+
+.layout > *,
+.content,
+.workspace,
+.control-panel,
+.analysis-panel,
+.timeline-card,
+.full-audit-report,
+.audit-review-list,
+.audit-candidate,
+.audit-report-grid,
+.audit-report-grid > section {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .project-panel {
@@ -509,6 +525,12 @@ h3 {
   min-height: 72px;
   padding: 16px;
   border-bottom: 1px solid var(--line);
+}
+
+.panel-head > *,
+.audit-section-heading > *,
+.candidate-head > * {
+  min-width: 0;
 }
 
 .panel-head.compact {
@@ -1189,7 +1211,9 @@ input[type="range"] {
 .full-audit-report {
   display: grid;
   gap: 16px;
+  width: 100%;
   padding: 0 16px 16px;
+  overflow: hidden;
 }
 
 .audit-overview {
@@ -1227,7 +1251,10 @@ input[type="range"] {
 
 .audit-executive code {
   display: block;
+  max-width: 100%;
   margin-top: 4px;
+  white-space: normal;
+  word-break: break-all;
   overflow-wrap: anywhere;
   font-size: 0.76rem;
 }
@@ -1264,8 +1291,22 @@ input[type="range"] {
   align-items: start;
 }
 
+.candidate-head {
+  flex-wrap: wrap;
+}
+
+.candidate-head > div {
+  flex: 1 1 280px;
+}
+
+.candidate-head b {
+  flex: 0 0 auto;
+}
+
 .audit-candidate {
+  width: 100%;
   padding: 14px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-left: 4px solid #8496ad;
   background: #fff;
@@ -1301,26 +1342,36 @@ input[type="range"] {
   margin-top: 10px;
   color: var(--muted);
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .audit-candidate code {
   display: block;
+  max-width: 100%;
   margin-top: 8px;
+  white-space: normal;
+  word-break: break-all;
   overflow-wrap: anywhere;
   font-size: 0.75rem;
 }
 
 .audit-candidate pre {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   max-height: 190px;
   margin: 10px 0;
   padding: 10px;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
   border: 1px solid #dce4ef;
   background: #f5f7fa;
   color: #26364a;
   font-size: 0.72rem;
   line-height: 1.45;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .audit-report-grid {
@@ -1339,6 +1390,11 @@ input[type="range"] {
   padding-left: 18px;
   color: var(--muted);
   line-height: 1.45;
+}
+
+.audit-report-grid li,
+.recon-warning p {
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 760px) {
