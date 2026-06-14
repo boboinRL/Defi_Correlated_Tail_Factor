@@ -21,6 +21,7 @@ const glmBaseUrl = process.env.GLM_BASE_URL || (
 const glmModel = process.env.GLM_MODEL || "glm-5.1";
 const glmTimeoutMs = Number(process.env.GLM_TIMEOUT_MS || 60000);
 const coingeckoKey = process.env.COINGECKO_API_KEY || "";
+const coingeckoApiPlan = (process.env.COINGECKO_API_PLAN || "demo").toLowerCase();
 const duneKey = process.env.DUNE_API_KEY || "";
 const duneQueryId = process.env.DUNE_QUERY_ID || "";
 const ethereumRpcUrl = process.env.ETHEREUM_RPC_URL || "https://ethereum-rpc.publicnode.com";
@@ -284,8 +285,13 @@ async function fetchDefiLlamaProtocol(slug) {
 }
 
 async function fetchCoinGeckoCoin(id, days = 30) {
-  const baseUrl = coingeckoKey ? "https://pro-api.coingecko.com/api/v3" : "https://api.coingecko.com/api/v3";
-  const headers = coingeckoKey ? { "x-cg-pro-api-key": coingeckoKey } : {};
+  const usePro = Boolean(coingeckoKey) && coingeckoApiPlan === "pro";
+  const baseUrl = usePro ? "https://pro-api.coingecko.com/api/v3" : "https://api.coingecko.com/api/v3";
+  const headers = !coingeckoKey
+    ? {}
+    : usePro
+      ? { "x-cg-pro-api-key": coingeckoKey }
+      : { "x-cg-demo-api-key": coingeckoKey };
   const data = await fetchJson(`${baseUrl}/coins/${encodeURIComponent(id)}/market_chart?vs_currency=usd&days=${days}&interval=daily`, { headers });
   const prices = (data.prices || []).map((row) => Number(row[1])).filter(Number.isFinite);
   const volumes = (data.total_volumes || []).map((row) => Number(row[1])).filter(Number.isFinite);
@@ -299,6 +305,27 @@ async function fetchCoinGeckoCoin(id, days = 30) {
     maxDrawdown30d: maxDrawdown(prices),
     volumeSpike: volumeSpike(volumes)
   };
+}
+
+function describeMarketError(error) {
+  const message = String(error?.message || error || "");
+  if (/Demo API key/i.test(message) && /pro-api\.coingecko\.com/i.test(message)) {
+    return "CoinGecko Demo key was sent to the Pro endpoint. Set COINGECKO_API_PLAN=demo and restart the server.";
+  }
+  if (/Pro API key/i.test(message) && /api\.coingecko\.com/i.test(message)) {
+    return "CoinGecko Pro key requires COINGECKO_API_PLAN=pro. Update the setting and restart the server.";
+  }
+  if (/HTTP 429|CoinGecko 429/i.test(message)) {
+    return "CoinGecko request limit reached. Market adjustment is temporarily using the remaining data sources.";
+  }
+  if (/HTTP 401|HTTP 403|CoinGecko (401|403)/i.test(message)) {
+    return "CoinGecko API authentication failed. Check the API key and COINGECKO_API_PLAN setting.";
+  }
+  return message
+    .replace(/\s+/g, " ")
+    .replace(/\{.*$/s, "")
+    .trim()
+    .slice(0, 220) || "Market data source was unavailable.";
 }
 
 async function executeDuneQuery(profile) {
@@ -375,11 +402,11 @@ async function collectMarketSignals(profile, force = false) {
     .map((result) => result.value);
 
   for (const result of [protocolResult, duneResult, ...coinResults]) {
-    if (result.status === "rejected") warnings.push(result.reason?.message || "Market collector failed");
+    if (result.status === "rejected") warnings.push(describeMarketError(result.reason));
   }
 
   const signals = aggregateMarketSignals(protocol, coins, dune);
-  signals.warnings = warnings;
+  signals.warnings = [...new Set(warnings)];
   marketCache.set(cacheKey, { timestamp: Date.now(), value: signals });
   return signals;
 }
@@ -1822,5 +1849,6 @@ createServer(async (req, res) => {
   console.log(`  Local:   http://localhost:${port}`);
   for (const ip of localIps()) console.log(`  Phone:   http://${ip}:${port}`);
   console.log(`  GLM:     ${glmApiMode} mode (${glmBaseUrl})`);
-  console.log("Optional env: ETHERSCAN_API_KEY, GLM_API_KEY, GLM_API_MODE, GLM_MODEL, GLM_BASE_URL, COINGECKO_API_KEY, DUNE_API_KEY, DUNE_QUERY_ID");
+  console.log(`  CoinGecko: ${coingeckoKey ? coingeckoApiPlan : "public"} mode`);
+  console.log("Optional env: ETHERSCAN_API_KEY, GLM_API_KEY, GLM_API_MODE, GLM_MODEL, GLM_BASE_URL, COINGECKO_API_KEY, COINGECKO_API_PLAN, DUNE_API_KEY, DUNE_QUERY_ID");
 });

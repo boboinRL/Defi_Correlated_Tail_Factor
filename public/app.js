@@ -1078,7 +1078,7 @@ function renderDependencies(result) {
       <div class="dependency-score">${percent(Math.max(market.stress?.volatility || 0, market.stress?.liquidity || 0, market.stress?.stablecoin || 0), 0)}</div>
     </div>
     ${market.warnings?.length ? `
-      <div class="empty">${market.warnings.slice(0, 2).join(" ")}</div>
+      <div class="empty">${market.warnings.slice(0, 2).map((warning) => escapeHtml(warning)).join(" ")}</div>
     ` : ""}
   ` : "";
 

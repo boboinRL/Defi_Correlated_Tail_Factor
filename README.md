@@ -8,6 +8,8 @@ Ethereum-focused DeFi tail-risk stress testing and evidence-backed smart-contrac
 cd "E:\DeFi\Tail-Factor"
 $env:GLM_API_KEY="your-key"
 $env:GLM_API_MODE="coding"
+$env:COINGECKO_API_KEY="your-key"
+$env:COINGECKO_API_PLAN="demo"
 node server.js
 ```
 
@@ -19,6 +21,12 @@ API keys must stay in environment variables. Do not place them in frontend files
 
 ```powershell
 $env:GLM_API_MODE="standard"
+```
+
+`COINGECKO_API_PLAN` defaults to `demo`. Set it to `pro` only for a paid CoinGecko Pro key:
+
+```powershell
+$env:COINGECKO_API_PLAN="pro"
 ```
 
 ## Full Audit
