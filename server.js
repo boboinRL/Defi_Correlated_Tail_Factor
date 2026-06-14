@@ -1208,12 +1208,21 @@ async function handleSlitherAudit(req, res) {
   if (!isAddress(address)) return sendJson(res, 400, { error: "A valid contract address is required." });
 
   const script = join(process.cwd(), "scripts", "run-slither-audit.js");
-  const { stdout } = await execFileAsync(process.execPath, [script, String(chainId), address], {
-    cwd: process.cwd(),
-    timeout: Number(process.env.SLITHER_TIMEOUT_MS || 180000),
-    maxBuffer: 20 * 1024 * 1024,
-    windowsHide: true
-  });
+  let stdout;
+  try {
+    ({ stdout } = await execFileAsync(process.execPath, [script, String(chainId), address], {
+      cwd: process.cwd(),
+      timeout: Number(process.env.SLITHER_TIMEOUT_MS || 180000),
+      maxBuffer: 20 * 1024 * 1024,
+      windowsHide: true
+    }));
+  } catch (error) {
+    const detail = String(error?.stderr || error?.message || error);
+    const friendly = /EPERM|permission denied/i.test(detail)
+      ? "The Slither temporary workspace is still locked by Windows. The scanner now uses an isolated workspace; retry the scan after restarting the server."
+      : `Slither could not complete: ${detail.slice(0, 320)}`;
+    return sendJson(res, 500, { error: friendly });
+  }
   const report = JSON.parse(stdout.trim().split(/\r?\n/).at(-1));
   return sendJson(res, 200, { report });
 }

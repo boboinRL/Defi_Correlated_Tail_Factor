@@ -29,8 +29,8 @@ if (!sourceEntries.length) {
 }
 
 const safeBundleId = String(evidence.bundleId || `${chainId}-${address}`).replace(/[^a-zA-Z0-9._-]/g, "_");
-const scanWorkspace = join(workspaceRoot, safeBundleId);
-rmSync(scanWorkspace, { recursive: true, force: true });
+const scanRunId = `${safeBundleId}-${process.pid}-${Date.now()}`;
+const scanWorkspace = join(workspaceRoot, scanRunId);
 mkdirSync(scanWorkspace, { recursive: true });
 
 for (const [sourcePath, sourceText] of sourceEntries) {
@@ -53,7 +53,7 @@ const preferredSource = sourceEntries.find(([path, text]) =>
 if (!preferredSource) throw new Error("No Solidity compilation target was found in the evidence bundle.");
 
 mkdirSync(resultsRoot, { recursive: true });
-const rawResultPath = join(resultsRoot, `${safeBundleId}-raw.json`);
+const rawResultPath = join(resultsRoot, `${scanRunId}-raw.json`);
 const slitherPath = process.env.SLITHER_PATH || join(projectRoot, ".venv-audit", "Scripts", "slither.exe");
 const solcPath = process.env.SOLC_PATH || join(projectRoot, ".venv-audit", "Scripts", "solc.exe");
 if (!existsSync(slitherPath)) throw new Error(`Slither executable not found: ${slitherPath}`);
@@ -118,6 +118,11 @@ const report = {
 
 writeFileSync(join(resultsRoot, `${report.reportId}.json`), JSON.stringify(report, null, 2));
 writeFileSync(join(resultsRoot, `${chainId}-${address}-latest.json`), JSON.stringify(report, null, 2));
+try {
+  rmSync(scanWorkspace, { recursive: true, force: true, maxRetries: 3, retryDelay: 150 });
+} catch {
+  // Windows scanners can briefly retain file handles; stale temp workspaces are harmless.
+}
 process.stdout.write(`${JSON.stringify(report)}\n`);
 
 function normalizeFinding(detector, index, root) {
